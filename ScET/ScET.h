@@ -3,8 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_ScET.h"
 
-class ScET : public QMainWindow
-{
+class ScET: public QMainWindow {
 	Q_OBJECT
 
 public:

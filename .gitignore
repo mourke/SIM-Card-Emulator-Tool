@@ -32,3 +32,7 @@
 *.app
 
 *.DS_Store
+x64/
+.vs/
+ScET/x64/
+ScET/GeneratedFiles/
