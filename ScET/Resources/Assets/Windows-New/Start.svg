@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" version="1.1">
-   <g id="surface1">
-      <path style=" " d="M 9 5.15625 L 9 26.84375 L 10.53125 25.84375 L 25.84375 16 L 10.53125 6.15625 Z M 11 8.8125 L 22.15625 16 L 11 23.1875 Z " />
-   </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 48 40" style="enable-background:new 0 0 48 40;" xml:space="preserve">
+<g id="surface1">
+	<path d="M17.8,12v16l1.1-0.7L30.2,20l-11.3-7.3L17.8,12z M19.3,14.7l8.2,5.3l-8.2,5.3V14.7z"/>
+</g>
 </svg>
