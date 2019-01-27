@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScETClass</class>
- <widget class="QMainWindow" name="ScETClass">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -61,8 +61,8 @@
   </widget>
   <action name="actionStart">
    <property name="icon">
-    <iconset resource="ScET.qrc">
-     <normaloff>:/Windows-New/Resources/Assets/Windows-New/Start.svg</normaloff>:/Windows-New/Resources/Assets/Windows-New/Start.svg</iconset>
+    <iconset resource="../Resources/ScET.qrc">
+     <normaloff>:/Windows-New/Assets/Windows-New/Start.svg</normaloff>:/Windows-New/Assets/Windows-New/Start.svg</iconset>
    </property>
    <property name="text">
     <string>Start</string>
@@ -76,8 +76,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="ScET.qrc">
-     <normaloff>:/Windows-New/Resources/Assets/Windows-New/Stop.svg</normaloff>:/Windows-New/Resources/Assets/Windows-New/Stop.svg</iconset>
+    <iconset resource="../Resources/ScET.qrc">
+     <normaloff>:/Windows-New/Assets/Windows-New/Stop.svg</normaloff>:/Windows-New/Assets/Windows-New/Stop.svg</iconset>
    </property>
    <property name="text">
     <string>Stop</string>
@@ -85,8 +85,8 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset resource="ScET.qrc">
-     <normaloff>:/Windows-New/Resources/Assets/Windows-New/Save.svg</normaloff>:/Windows-New/Resources/Assets/Windows-New/Save.svg</iconset>
+    <iconset resource="../Resources/ScET.qrc">
+     <normaloff>:/Windows-New/Assets/Windows-New/Save.svg</normaloff>:/Windows-New/Assets/Windows-New/Save.svg</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -98,7 +98,7 @@
   <tabstop>textBrowser</tabstop>
  </tabstops>
  <resources>
-  <include location="ScET.qrc"/>
+  <include location="../Resources/ScET.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="/Windows-New">
+    <file>Assets/Windows-New/Export.svg</file>
+    <file>Assets/Windows-New/Import.svg</file>
+    <file>Assets/Windows-New/Save.svg</file>
+    <file>Assets/Windows-New/Start.svg</file>
+    <file>Assets/Windows-New/Stop.svg</file>
+  </qresource>
+  <qresource prefix="/macOS">
+    <file>Assets/macOS/Export.svg</file>
+    <file>Assets/macOS/Import.svg</file>
+    <file>Assets/macOS/Save.svg</file>
+    <file>Assets/macOS/Start.svg</file>
+    <file>Assets/macOS/Stop.svg</file>
+  </qresource>
+</RCC>

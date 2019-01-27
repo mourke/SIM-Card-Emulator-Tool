@@ -33,23 +33,105 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScET.cpp">
+    <ClCompile Include="Windows\MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\Frame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\TitleBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\Buttons\TitleBarButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="ScET.h">
+    <QtMoc Include="Windows\MainWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\TitleBar.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\Buttons\TitleBarButton.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="ScET.ui">
+    <QtUic Include="Windows\MainWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="ScET.qrc">
+    <None Include="Windows\Resources\Assets\Windows-New\Export.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\Windows-New\Import.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\Windows-New\Save.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\Windows-New\Start.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\Windows-New\Stop.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\macOS\Export.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\macOS\Import.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\macOS\Save.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\macOS\Start.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Windows\Resources\Assets\macOS\Stop.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\Windows-New\Export.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\Windows-New\Import.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\Windows-New\Save.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\Windows-New\Start.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\Windows-New\Stop.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\macOS\Export.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\macOS\Import.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\macOS\Save.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\macOS\Start.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\Resources\Assets\macOS\Stop.svg">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="Resources\ScET.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Widgets\Frame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
