@@ -1,4 +1,16 @@
 <RCC>
-    <qresource prefix="ScET">
+    <qresource prefix="/Windows-New">
+        <file>Resources/Assets/Windows-New/Export.svg</file>
+        <file>Resources/Assets/Windows-New/Import.svg</file>
+        <file>Resources/Assets/Windows-New/Save.svg</file>
+        <file>Resources/Assets/Windows-New/Start.svg</file>
+        <file>Resources/Assets/Windows-New/Stop.svg</file>
+    </qresource>
+    <qresource prefix="/macOS">
+        <file>Resources/Assets/macOS/Export.svg</file>
+        <file>Resources/Assets/macOS/Import.svg</file>
+        <file>Resources/Assets/macOS/Save.svg</file>
+        <file>Resources/Assets/macOS/Start.svg</file>
+        <file>Resources/Assets/macOS/Stop.svg</file>
     </qresource>
 </RCC>
