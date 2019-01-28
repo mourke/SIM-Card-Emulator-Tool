@@ -10,7 +10,7 @@ class TitleBarButton : private QAbstractButton {
 
 public:
 
-	enum Type { Minimize, Maximize, Close };
+	enum Type { Minimize, Maximize, Restore, Close };
 	Q_ENUM(Type)
 
 	Type type() const { return m_type; }
@@ -22,6 +22,7 @@ public:
 
 private:
 	QColor highlightColor;
+	QColor selectedColor;
 	Type m_type;
 };
 
