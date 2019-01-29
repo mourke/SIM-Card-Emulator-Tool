@@ -1,9 +1,9 @@
 #ifndef TITLEBARBUTTON_H
 #define TITLEBARBUTTON_H
 
-#include <QAbstractButton>
+#include <QToolButton>
 
-class TitleBarButton : private QAbstractButton {
+class TitleBarButton : public QToolButton {
 	Q_OBJECT
 
 	Q_PROPERTY(Type type READ type WRITE setType)
@@ -17,12 +17,11 @@ public:
 	void setType(const Type &type);
 
 	
-	TitleBarButton(QWidget *parent, Type type = Type::Close);
+	TitleBarButton(QWidget *parent, Type type);
 	~TitleBarButton();
 
 private:
-	QColor highlightColor;
-	QColor selectedColor;
+
 	Type m_type;
 };
 

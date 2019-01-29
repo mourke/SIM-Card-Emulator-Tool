@@ -123,6 +123,7 @@
     <None Include="Resources\Resources\Assets\macOS\Stop.svg">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resources\ScET.qrc">

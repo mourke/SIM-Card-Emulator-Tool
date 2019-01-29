@@ -4,29 +4,35 @@
 #include <QWidget>
 
 class QMouseEvent;
-class QToolButton;
+class TitleBarButton;
+class QLabel;
 
 class TitleBar : public QWidget {
 	Q_OBJECT
+
+	Q_PROPERTY(QString text READ text WRITE setText)
 public:
 	TitleBar(QWidget *parent);
+
+	QString text() const;
+	void setText(const QString &text);
 
 public slots:
 	void showSmall();
 	void showMaxRestore();
 
 protected:
-	void mousePressEvent(QMouseEvent *me);
-	void mouseMoveEvent(QMouseEvent *me);
+	void mousePressEvent(QMouseEvent *mouseEvent);
+	void mouseMoveEvent(QMouseEvent *mouseEvent);
 
 private:
-	QToolButton *minimize;
-	QToolButton *maximize;
-	QToolButton *close;
-	QPixmap restorePix, maxPix;
-	bool maxNormal;
-	QPoint startPos;
-	QPoint clickPos;
+	TitleBarButton *minimize;
+	TitleBarButton *maximize;
+	TitleBarButton *close;
+	bool windowIsMaximized;
+	QPoint startPosition;
+	QPoint clickPosition;
+	QLabel *titleLabel;
 };
 
 #endif // TITLEBAR_H
