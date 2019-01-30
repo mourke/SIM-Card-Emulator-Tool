@@ -11,9 +11,9 @@ void TitleBarButton::setType(const Type &type) {
 	m_type = type;
 
 	if (type == Type::Close) {
-		setStyleSheet("QToolButton { background-color: transparent; }  QToolButton:hover { background-color: rgb(232, 17, 35); } QToolButton:pressed { background-color: rgb(227, 101, 113); }");
+		setStyleSheet("QToolButton { border: none; background-color: transparent; }  QToolButton:hover { background-color: rgb(232, 17, 35); } QToolButton:pressed { background-color: rgba(232, 17, 35, 70); }");
 	} else {
-		setStyleSheet("QToolButton { background-color: transparent; }  QToolButton:hover { background-color: rgb(220, 220, 220); } QToolButton:pressed { background-color: rgb(178, 180, 184); }");
+		setStyleSheet("QToolButton { border: none; background-color: transparent; }  QToolButton:hover { background-color: rgba(0, 0, 0, 20); } QToolButton:pressed { background-color: rgba(0, 0, 0, 30); }");
 	}
 
 	switch (type) {

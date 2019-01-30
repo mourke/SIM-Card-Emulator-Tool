@@ -25,6 +25,7 @@ TitleBar::TitleBar(QWidget *parent) {
 
 	hbox->insertStretch(1, 500);
 	hbox->setSpacing(0);
+	hbox->setMargin(0);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
 	windowIsMaximized = false;
@@ -40,9 +41,7 @@ QString TitleBar::text() const {
 
 void TitleBar::setText(const QString &text) {
 	titleLabel->setText(text);
-	if (QWidget *parent = dynamic_cast<QWidget *>(this->parent())) {
-		parent->setWindowTitle(text);
-	}
+	parentWidget()->setWindowTitle(text);
 }
 
 void TitleBar::showSmall() {
