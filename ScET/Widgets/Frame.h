@@ -11,22 +11,23 @@ public:
 
 	Frame();
 
-	// Allows you to access the content area of the frame
-	// where widgets and layouts can be added
 	QWidget *contentWidget() const;
-
 	TitleBar *titleBar() const;
-
-	void mousePressEvent(QMouseEvent *e);
-	void mouseMoveEvent(QMouseEvent *e);
-	void mouseReleaseEvent(QMouseEvent *e);
 
 private:
 	TitleBar *m_titleBar;
-	QWidget *m_content;
-	QPoint m_old_pos;
-	bool m_mouse_down;
-	bool left, right, bottom;
+	QWidget *m_contentWidget;
+	QPoint oldMousePosition;
+	bool isMousePressed;
+	bool isMouseAtTop;
+	bool isMouseAtBottom;
+	bool isMouseAtLeft;
+	bool isMouseAtRight;
+
+	void updateMouseInformation(QMouseEvent *mouseEvent);
+	void mousePressEvent(QMouseEvent *mouseEvent) override;
+	void mouseMoveEvent(QMouseEvent *mouseEvent) override;
+	void mouseReleaseEvent(QMouseEvent *mouseEvent) override;
 };
 
 #endif // FRAME_H

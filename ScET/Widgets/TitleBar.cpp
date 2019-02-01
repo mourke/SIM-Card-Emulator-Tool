@@ -9,9 +9,16 @@ TitleBar::TitleBar(QWidget *parent) {
 	// Use a brush with a Highlight color role to render the background 
 	//setBackgroundRole(QPalette::Highlight);
 
-	minimize = new TitleBarButton(this, TitleBarButton::Type::Minimize);
-	maximize = new TitleBarButton(this, TitleBarButton::Type::Maximize);
-	close = new TitleBarButton(this, TitleBarButton::Type::Close);
+	minimizeButton = new TitleBarButton(this, TitleBarButton::Type::Minimize);
+	maximizeButton = new TitleBarButton(this, TitleBarButton::Type::Maximize);
+	closeButton = new TitleBarButton(this, TitleBarButton::Type::Close);
+
+	closeButton->setIconSize(QSize(10, 10));
+	closeButton->setMinimumSize(QSize(45, 30));
+	maximizeButton->setIconSize(QSize(10, 10));
+	maximizeButton->setMinimumSize(QSize(45, 30));
+	minimizeButton->setIconSize(QSize(10, 10));
+	minimizeButton->setMinimumSize(QSize(45, 30));
 
 	titleLabel = new QLabel(this);
 	
@@ -19,9 +26,9 @@ TitleBar::TitleBar(QWidget *parent) {
 	QHBoxLayout *hbox = new QHBoxLayout(this);
 
 	hbox->addWidget(titleLabel);
-	hbox->addWidget(minimize);
-	hbox->addWidget(maximize);
-	hbox->addWidget(close);
+	hbox->addWidget(minimizeButton);
+	hbox->addWidget(maximizeButton);
+	hbox->addWidget(closeButton);
 
 	hbox->insertStretch(1, 500);
 	hbox->setSpacing(0);
@@ -30,9 +37,9 @@ TitleBar::TitleBar(QWidget *parent) {
 
 	windowIsMaximized = false;
 
-	connect(close, SIGNAL(clicked()), parent, SLOT(close()));
-	connect(minimize, SIGNAL(clicked()), this, SLOT(showSmall()));
-	connect(maximize, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
+	connect(closeButton, SIGNAL(clicked()), parent, SLOT(close()));
+	connect(minimizeButton, SIGNAL(clicked()), this, SLOT(showSmall()));
+	connect(maximizeButton, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
 }
 
 QString TitleBar::text() const {
@@ -52,20 +59,20 @@ void TitleBar::showMaxRestore() {
 	if (windowIsMaximized) {
 		parentWidget()->showNormal();
 		windowIsMaximized = !windowIsMaximized;
-		maximize->setType(TitleBarButton::Type::Maximize);
+		maximizeButton->setType(TitleBarButton::Type::Maximize);
 	} else {
 		parentWidget()->showMaximized();
 		windowIsMaximized = !windowIsMaximized;
-		maximize->setType(TitleBarButton::Type::Restore);
+		maximizeButton->setType(TitleBarButton::Type::Restore);
 	}
 }
 
 void TitleBar::mousePressEvent(QMouseEvent *mouseEvent) {
-	startPosition = mouseEvent->globalPos();
 	clickPosition = mapToParent(mouseEvent->pos());
 }
 
 void TitleBar::mouseMoveEvent(QMouseEvent *mouseEvent) {
+	qDebug() << "Called mouse move event";
 	if (windowIsMaximized) return;
 	parentWidget()->move(mouseEvent->globalPos() - clickPosition);
 }

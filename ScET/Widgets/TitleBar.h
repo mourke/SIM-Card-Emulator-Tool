@@ -26,11 +26,10 @@ protected:
 	void mouseMoveEvent(QMouseEvent *mouseEvent);
 
 private:
-	TitleBarButton *minimize;
-	TitleBarButton *maximize;
-	TitleBarButton *close;
+	TitleBarButton *minimizeButton;
+	TitleBarButton *maximizeButton;
+	TitleBarButton *closeButton;
 	bool windowIsMaximized;
-	QPoint startPosition;
 	QPoint clickPosition;
 	QLabel *titleLabel;
 };

@@ -4,17 +4,13 @@
 
 
 Frame::Frame() {
-	m_mouse_down = false;
 	setFrameShape(Panel);
 
-	// Make this a borderless window which can't
-	// be resized or moved via the window system
 	setWindowFlags(Qt::FramelessWindowHint);
-	setMouseTracking(true);
+	setMouseTracking(true); // We need to recieve all mouse events even when the mouse is not being pressed.
 
 	m_titleBar = new TitleBar(this);
-
-	m_content = new QWidget(this);
+	m_contentWidget = new QWidget(this);
 
 	QVBoxLayout *vbox = new QVBoxLayout(this);
 	vbox->addWidget(m_titleBar);
@@ -22,62 +18,55 @@ Frame::Frame() {
 	vbox->setSpacing(0);
 
 	QVBoxLayout *layout = new QVBoxLayout(this);
-	layout->addWidget(m_content);
+	layout->addWidget(m_contentWidget);
 	layout->setMargin(5);
 	layout->setSpacing(0);
 	vbox->addLayout(layout);
 }
 
-// Allows you to access the content area of the frame
-// where widgets and layouts can be added
-QWidget* Frame::contentWidget() const { return m_content; }
+QWidget* Frame::contentWidget() const { return m_contentWidget; }
 
 TitleBar* Frame::titleBar() const { return m_titleBar; }
 
-void Frame::mousePressEvent(QMouseEvent *e) {
-	m_old_pos = e->pos();
-	m_mouse_down = e->button() == Qt::LeftButton;
+void Frame::mousePressEvent(QMouseEvent *mouseEvent) {
+	oldMousePosition = mouseEvent->globalPos();
+	updateMouseInformation(mouseEvent);
 }
 
-void Frame::mouseMoveEvent(QMouseEvent *e) {
-	int x = e->x();
-	int y = e->y();
+void Frame::mouseMoveEvent(QMouseEvent *mouseEvent) {
+	if (isMousePressed) {
+		QRect geometry = this->geometry();
+		QPoint mousePosition = mouseEvent->globalPos();
 
-	if (m_mouse_down) {
-		int dx = x - m_old_pos.x();
-		int dy = y - m_old_pos.y();
+		int offsetX = oldMousePosition.x() - mousePosition.x();
+		int offsetY = oldMousePosition.y() - mousePosition.y();
 
-		QRect g = geometry();
+		if (isMouseAtLeft) {
+			geometry.setX(geometry.x() - offsetX);
+		} else if (isMouseAtRight) {
+			geometry.setRight(geometry.right() - offsetX);
+		}
 
-		if (left)
-			g.setLeft(g.left() + dx);
-		if (right)
-			g.setRight(g.right() + dx);
-		if (bottom)
-			g.setBottom(g.bottom() + dy);
+		if (isMouseAtBottom) {
+			geometry.setBottom(geometry.bottom() - offsetY);
+		} else if (isMouseAtTop) {
+			geometry.setTop(geometry.top() - offsetY);
+		}
 
-		setGeometry(g);
-
-		m_old_pos = QPoint(!left ? e->x() : m_old_pos.x(), e->y());
+		setGeometry(geometry);
+		oldMousePosition = mousePosition;
 	} else {
-		QRect frame = rect();
-		qDebug() << "frame is " << frame;
-		qDebug() << "x is " << x << " y is " << y;
-		int threshold = 5;
-		bool isAtTop = y == 0;
-		bool isAtBottom = frame.height() - y <= threshold;
-		bool isAtLeft = x <= threshold;
-		bool isAtRight = frame.width() - x <= threshold;
+		updateMouseInformation(mouseEvent);
 
-		if (isAtTop || isAtBottom) {
-			if (isAtLeft) {
+		if (isMouseAtTop || isMouseAtBottom) {
+			if (isMouseAtLeft) {
 				setCursor(Qt::SizeBDiagCursor);
-			} else if (isAtRight) {
+			} else if (isMouseAtRight) {
 				setCursor(Qt::SizeFDiagCursor);
 			} else {
 				setCursor(Qt::SizeVerCursor);
 			}
-		} else if (isAtLeft || isAtRight) {
+		} else if (isMouseAtLeft || isMouseAtRight) {
 			setCursor(Qt::SizeHorCursor);
 		} else {
 			setCursor(Qt::ArrowCursor);
@@ -85,6 +74,19 @@ void Frame::mouseMoveEvent(QMouseEvent *e) {
 	}
 }
 
-void Frame::mouseReleaseEvent(QMouseEvent *e) {
-	m_mouse_down = false;
+void Frame::updateMouseInformation(QMouseEvent *mouseEvent) {
+	int x = mouseEvent->x();
+	int y = mouseEvent->y();
+	QRect frame = rect();
+	int threshold = 5;
+
+	isMousePressed = mouseEvent->button() == Qt::LeftButton;
+	isMouseAtTop = y <= threshold;
+	isMouseAtBottom = frame.height() - y <= threshold;
+	isMouseAtLeft = x <= threshold;
+	isMouseAtRight = frame.width() - x <= threshold;
+}
+
+void Frame::mouseReleaseEvent(QMouseEvent *mouseEvent) {
+	isMousePressed = false;
 }
