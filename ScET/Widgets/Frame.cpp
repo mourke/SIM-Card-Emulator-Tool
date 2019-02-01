@@ -60,21 +60,25 @@ void Frame::mouseMoveEvent(QMouseEvent *e) {
 
 		m_old_pos = QPoint(!left ? e->x() : m_old_pos.x(), e->y());
 	} else {
-		QRect r = rect();
-		left = qAbs(x - r.left()) <= 5;
-		right = qAbs(x - r.right()) <= 5;
-		bottom = qAbs(y - r.bottom()) <= 5;
-		bool hor = left | right;
+		QRect frame = rect();
+		qDebug() << "frame is " << frame;
+		qDebug() << "x is " << x << " y is " << y;
+		int threshold = 5;
+		bool isAtTop = y == 0;
+		bool isAtBottom = frame.height() - y <= threshold;
+		bool isAtLeft = x <= threshold;
+		bool isAtRight = frame.width() - x <= threshold;
 
-		if (hor && bottom) {
-			if (left)
+		if (isAtTop || isAtBottom) {
+			if (isAtLeft) {
 				setCursor(Qt::SizeBDiagCursor);
-			else
+			} else if (isAtRight) {
 				setCursor(Qt::SizeFDiagCursor);
-		} else if (hor) {
+			} else {
+				setCursor(Qt::SizeVerCursor);
+			}
+		} else if (isAtLeft || isAtRight) {
 			setCursor(Qt::SizeHorCursor);
-		} else if (bottom) {
-			setCursor(Qt::SizeVerCursor);
 		} else {
 			setCursor(Qt::ArrowCursor);
 		}
