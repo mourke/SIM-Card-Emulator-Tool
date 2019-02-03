@@ -1,10 +1,15 @@
 #include "Frame.h"
 #include <QtWidgets>
 #include "TitleBar.h"
+#include "AccentColor.h"
 
 
 Frame::Frame() {
 	setFrameShape(Panel);
+
+	setObjectName("mainFrame");
+	QString styleSheet = "QFrame#mainFrame { border: 1px solid %1; }";
+	setStyleSheet(styleSheet.arg(accentColor().name(QColor::HexArgb)));
 
 	setWindowFlags(Qt::FramelessWindowHint);
 	setMouseTracking(true); // We need to recieve all mouse events even when the mouse is not being pressed.

@@ -3,11 +3,11 @@
 #include "Buttons/TitleBarButton.h"
 
 
+
 TitleBar::TitleBar(QWidget *parent) {
 	// Don't let this widget inherit the parent's backround color
 	setAutoFillBackground(true);
-	// Use a brush with a Highlight color role to render the background 
-	//setBackgroundRole(QPalette::Highlight);
+	setBackgroundRole(QPalette::Light);
 
 	minimizeButton = new TitleBarButton(this, TitleBarButton::Type::Minimize);
 	maximizeButton = new TitleBarButton(this, TitleBarButton::Type::Maximize);
@@ -32,14 +32,43 @@ TitleBar::TitleBar(QWidget *parent) {
 
 	hbox->insertStretch(1, 500);
 	hbox->setSpacing(0);
-	hbox->setMargin(0);
+	hbox->setContentsMargins(15, 0, 0, 0);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-	windowIsMaximized = false;
 
 	connect(closeButton, SIGNAL(clicked()), parent, SLOT(close()));
 	connect(minimizeButton, SIGNAL(clicked()), this, SLOT(showSmall()));
 	connect(maximizeButton, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
+
+}
+
+void TitleBar::contextMenuEvent(QContextMenuEvent *event) {
+	QMenu contextMenu(this);
+
+	QAction restore("Restore", this);
+	restore.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarNormalButton)));
+	restore.setEnabled(parentWidget()->isMaximized());
+	connect(&restore, SIGNAL(triggered()), this, SLOT(showMaxRestore()));
+	contextMenu.addAction(&restore);
+
+	QAction minimize("Minimize", this);
+	minimize.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarMinButton)));
+	connect(&minimize, SIGNAL(triggered()), this, SLOT(showSmall()));
+	contextMenu.addAction(&minimize);
+
+	QAction maximize("Maximize", this);
+	maximize.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarMaxButton)));
+	maximize.setDisabled(parentWidget()->isMaximized());
+	connect(&maximize, SIGNAL(triggered()), this, SLOT(showMaxRestore()));
+	contextMenu.addAction(&maximize);
+
+	contextMenu.addSeparator();
+	QAction close("Close", this);
+	close.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarCloseButton)));
+	close.setShortcut(QKeySequence::Quit);
+	connect(&close, SIGNAL(triggered()), parent(), SLOT(close()));
+	contextMenu.addAction(&close);
+
+	contextMenu.exec(mapToGlobal(event->pos()));
 }
 
 QString TitleBar::text() const {
@@ -56,23 +85,30 @@ void TitleBar::showSmall() {
 }
 
 void TitleBar::showMaxRestore() {
-	if (windowIsMaximized) {
+	if (parentWidget()->isMaximized()) {
 		parentWidget()->showNormal();
-		windowIsMaximized = !windowIsMaximized;
 		maximizeButton->setType(TitleBarButton::Type::Maximize);
 	} else {
 		parentWidget()->showMaximized();
-		windowIsMaximized = !windowIsMaximized;
 		maximizeButton->setType(TitleBarButton::Type::Restore);
 	}
 }
 
 void TitleBar::mousePressEvent(QMouseEvent *mouseEvent) {
 	clickPosition = mapToParent(mouseEvent->pos());
+
+	shouldMoveWindow = cursor() == Qt::ArrowCursor && !parentWidget()->isMaximized() && mouseEvent->button() == Qt::LeftButton;
+}
+
+void TitleBar::mouseDoubleClickEvent(QMouseEvent *mouseEvent) {
+	if (mouseEvent->button() == Qt::LeftButton) showMaxRestore();
 }
 
 void TitleBar::mouseMoveEvent(QMouseEvent *mouseEvent) {
-	qDebug() << "Called mouse move event";
-	if (windowIsMaximized) return;
+	if (!shouldMoveWindow) return;
 	parentWidget()->move(mouseEvent->globalPos() - clickPosition);
+}
+
+void TitleBar::mouseReleaseEvent(QMouseEvent *mouseEvent) {
+	shouldMoveWindow = false;
 }

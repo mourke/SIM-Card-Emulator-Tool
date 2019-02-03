@@ -1,9 +1,9 @@
 #ifndef TITLEBARBUTTON_H
 #define TITLEBARBUTTON_H
 
-#include <QToolButton>
+#include <QPushButton>
 
-class TitleBarButton : public QToolButton {
+class TitleBarButton : public QPushButton {
 	Q_OBJECT
 
 	Q_PROPERTY(Type type READ type WRITE setType)
@@ -21,7 +21,6 @@ public:
 	~TitleBarButton();
 
 private:
-
 	Type m_type;
 };
 

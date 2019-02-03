@@ -45,6 +45,9 @@
     <ClCompile Include="Widgets\Buttons\TitleBarButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AccentColor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Windows\MainWindow.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\Buttons\TitleBarButton.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\Frame.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -123,7 +129,6 @@
     <None Include="Resources\Resources\Assets\macOS\Stop.svg">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resources\ScET.qrc">
@@ -131,7 +136,7 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Widgets\Frame.h">
+    <ClInclude Include="AccentColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

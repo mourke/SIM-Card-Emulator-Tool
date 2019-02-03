@@ -7,6 +7,11 @@ class TitleBar;
 class QMouseEvent;
 
 class Frame : public QFrame {
+	Q_OBJECT
+
+	Q_PROPERTY(QWidget contentWidget READ contentWidget)
+	Q_PROPERTY(TitleBar titleBar READ titleBar)
+
 public:
 
 	Frame();
@@ -24,6 +29,7 @@ private:
 	bool isMouseAtLeft;
 	bool isMouseAtRight;
 
+	
 	void updateMouseInformation(QMouseEvent *mouseEvent);
 	void mousePressEvent(QMouseEvent *mouseEvent) override;
 	void mouseMoveEvent(QMouseEvent *mouseEvent) override;

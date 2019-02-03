@@ -22,14 +22,17 @@ public slots:
 	void showMaxRestore();
 
 protected:
+	void contextMenuEvent(QContextMenuEvent *event);
 	void mousePressEvent(QMouseEvent *mouseEvent);
+	void mouseDoubleClickEvent(QMouseEvent *mouseEvent);
 	void mouseMoveEvent(QMouseEvent *mouseEvent);
+	void mouseReleaseEvent(QMouseEvent *mouseEvent);
 
 private:
 	TitleBarButton *minimizeButton;
 	TitleBarButton *maximizeButton;
 	TitleBarButton *closeButton;
-	bool windowIsMaximized;
+	bool shouldMoveWindow = false;
 	QPoint clickPosition;
 	QLabel *titleLabel;
 };
