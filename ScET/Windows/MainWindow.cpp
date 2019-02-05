@@ -1,6 +1,21 @@
 #include "MainWindow.h"
+#include "Widgets/MainFrame.h"
+#include "Widgets/TitleBar.h"
+#include "Widgets/ToolBar.h"
+#include <QtWidgets>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-	ui.setupUi(this);
-	setWindowFlags(Qt::Widget); // So it can be added as a child widget
+MainWindow::MainWindow(QObject *parent) : QObject(parent) {
+	m_frame = new MainFrame();
+}
+
+void MainWindow::show() const {
+	return m_frame->show();
+}
+
+QTextBrowser* MainWindow::centralWidget() const {
+	return m_frame->textBrowser();
+}
+
+ToolBar* MainWindow::mainToolBar() const {
+	return m_frame->mainToolBar();
 }

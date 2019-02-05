@@ -2,8 +2,9 @@
 #define TITLEBARBUTTON_H
 
 #include <QPushButton>
+#include <QtUiPlugin/QDesignerExportWidget>
 
-class TitleBarButton : public QPushButton {
+class /* QDESIGNER_WIDGET_EXPORT */ TitleBarButton : public QPushButton {
 	Q_OBJECT
 
 	Q_PROPERTY(Type type READ type WRITE setType)
@@ -17,7 +18,7 @@ public:
 	void setType(const Type &type);
 
 	
-	TitleBarButton(QWidget *parent, Type type);
+	TitleBarButton(QWidget *parent);
 	~TitleBarButton();
 
 private:

@@ -2,8 +2,8 @@
 #include <QtWidgets>
 #include "AccentColor.h"
 
-TitleBarButton::TitleBarButton(QWidget *parent, Type type) : QPushButton(parent) {
-	setType(type);
+TitleBarButton::TitleBarButton(QWidget *parent) : QPushButton(parent) {
+
 }
 
 void TitleBarButton::setType(const Type &type) {

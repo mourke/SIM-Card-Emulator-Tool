@@ -1,44 +1,27 @@
 #include "TitleBar.h"
 #include <QtWidgets>
 #include "Buttons/TitleBarButton.h"
+#include "MainFrame.h"
 
+TitleBar::TitleBar(QWidget *parent): QWidget(parent) {
+}
 
+void TitleBar::enterEvent(QEvent *event) {
+	setCursor(Qt::ArrowCursor); // make sure resize cursor isn't selected
+}
 
-TitleBar::TitleBar(QWidget *parent) {
-	// Don't let this widget inherit the parent's backround color
-	setAutoFillBackground(true);
-	setBackgroundRole(QPalette::Light);
+TitleBarButton* TitleBar::minimizeButton() {
+	return mainFrame()->ui.minimizeButton;
+}
+TitleBarButton* TitleBar::maximizeButton() {
+	return mainFrame()->ui.maximizeButton;
+}
+TitleBarButton* TitleBar::closeButton() {
+	return mainFrame()->ui.closeButton;
+}
 
-	minimizeButton = new TitleBarButton(this, TitleBarButton::Type::Minimize);
-	maximizeButton = new TitleBarButton(this, TitleBarButton::Type::Maximize);
-	closeButton = new TitleBarButton(this, TitleBarButton::Type::Close);
-
-	closeButton->setIconSize(QSize(10, 10));
-	closeButton->setMinimumSize(QSize(45, 30));
-	maximizeButton->setIconSize(QSize(10, 10));
-	maximizeButton->setMinimumSize(QSize(45, 30));
-	minimizeButton->setIconSize(QSize(10, 10));
-	minimizeButton->setMinimumSize(QSize(45, 30));
-
-	titleLabel = new QLabel(this);
-	
-
-	QHBoxLayout *hbox = new QHBoxLayout(this);
-
-	hbox->addWidget(titleLabel);
-	hbox->addWidget(minimizeButton);
-	hbox->addWidget(maximizeButton);
-	hbox->addWidget(closeButton);
-
-	hbox->insertStretch(1, 500);
-	hbox->setSpacing(0);
-	hbox->setContentsMargins(15, 0, 0, 0);
-	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-	connect(closeButton, SIGNAL(clicked()), parent, SLOT(close()));
-	connect(minimizeButton, SIGNAL(clicked()), this, SLOT(showSmall()));
-	connect(maximizeButton, SIGNAL(clicked()), this, SLOT(showMaxRestore()));
-
+MainFrame* TitleBar::mainFrame() {
+	return qobject_cast<MainFrame *>(parentWidget());
 }
 
 void TitleBar::contextMenuEvent(QContextMenuEvent *event) {
@@ -71,15 +54,6 @@ void TitleBar::contextMenuEvent(QContextMenuEvent *event) {
 	contextMenu.exec(mapToGlobal(event->pos()));
 }
 
-QString TitleBar::text() const {
-	return titleLabel->text();
-}
-
-void TitleBar::setText(const QString &text) {
-	titleLabel->setText(text);
-	parentWidget()->setWindowTitle(text);
-}
-
 void TitleBar::showSmall() {
 	parentWidget()->showMinimized();
 }
@@ -87,10 +61,10 @@ void TitleBar::showSmall() {
 void TitleBar::showMaxRestore() {
 	if (parentWidget()->isMaximized()) {
 		parentWidget()->showNormal();
-		maximizeButton->setType(TitleBarButton::Type::Maximize);
+		maximizeButton()->setType(TitleBarButton::Type::Maximize);
 	} else {
 		parentWidget()->showMaximized();
-		maximizeButton->setType(TitleBarButton::Type::Restore);
+		maximizeButton()->setType(TitleBarButton::Type::Restore);
 	}
 }
 

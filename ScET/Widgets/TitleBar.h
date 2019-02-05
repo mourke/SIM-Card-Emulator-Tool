@@ -2,20 +2,16 @@
 #define TITLEBAR_H
 
 #include <QWidget>
+#include <QtUiPlugin/QDesignerExportWidget>
 
-class QMouseEvent;
 class TitleBarButton;
-class QLabel;
+class MainFrame;
 
-class TitleBar : public QWidget {
+class /* QDESIGNER_WIDGET_EXPORT */ TitleBar : public QWidget {
 	Q_OBJECT
 
-	Q_PROPERTY(QString text READ text WRITE setText)
 public:
 	TitleBar(QWidget *parent);
-
-	QString text() const;
-	void setText(const QString &text);
 
 public slots:
 	void showSmall();
@@ -27,14 +23,15 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *mouseEvent);
 	void mouseMoveEvent(QMouseEvent *mouseEvent);
 	void mouseReleaseEvent(QMouseEvent *mouseEvent);
+	void enterEvent(QEvent *event) override;
 
 private:
-	TitleBarButton *minimizeButton;
-	TitleBarButton *maximizeButton;
-	TitleBarButton *closeButton;
+	TitleBarButton* minimizeButton();
+	TitleBarButton* maximizeButton();
+	TitleBarButton* closeButton();
+	MainFrame* mainFrame();
 	bool shouldMoveWindow = false;
 	QPoint clickPosition;
-	QLabel *titleLabel;
 };
 
 #endif // TITLEBAR_H

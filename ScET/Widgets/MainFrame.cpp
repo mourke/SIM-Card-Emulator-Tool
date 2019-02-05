@@ -1,44 +1,21 @@
-#include "Frame.h"
+#include "MainFrame.h"
 #include <QtWidgets>
 #include "TitleBar.h"
 #include "AccentColor.h"
 
-
-Frame::Frame() {
-	setFrameShape(Panel);
-
-	setObjectName("mainFrame");
-	QString styleSheet = "QFrame#mainFrame { border: 1px solid %1; }";
+MainFrame::MainFrame(QWidget *parent) : QFrame(parent) {
+	ui.setupUi(this);
+	QString styleSheet = "MainFrame { border: 1px solid %1; }";
 	setStyleSheet(styleSheet.arg(accentColor().name(QColor::HexArgb)));
-
 	setWindowFlags(Qt::FramelessWindowHint);
-	setMouseTracking(true); // We need to recieve all mouse events even when the mouse is not being pressed.
-
-	m_titleBar = new TitleBar(this);
-	m_contentWidget = new QWidget(this);
-
-	QVBoxLayout *vbox = new QVBoxLayout(this);
-	vbox->addWidget(m_titleBar);
-	vbox->setMargin(0);
-	vbox->setSpacing(0);
-
-	QVBoxLayout *layout = new QVBoxLayout(this);
-	layout->addWidget(m_contentWidget);
-	layout->setMargin(5);
-	layout->setSpacing(0);
-	vbox->addLayout(layout);
 }
 
-QWidget* Frame::contentWidget() const { return m_contentWidget; }
-
-TitleBar* Frame::titleBar() const { return m_titleBar; }
-
-void Frame::mousePressEvent(QMouseEvent *mouseEvent) {
+void MainFrame::mousePressEvent(QMouseEvent *mouseEvent) {
 	oldMousePosition = mouseEvent->globalPos();
 	updateMouseInformation(mouseEvent);
 }
 
-void Frame::mouseMoveEvent(QMouseEvent *mouseEvent) {
+void MainFrame::mouseMoveEvent(QMouseEvent *mouseEvent) {
 	if (isMousePressed) {
 		QRect geometry = this->geometry();
 		QPoint mousePosition = mouseEvent->globalPos();
@@ -65,9 +42,9 @@ void Frame::mouseMoveEvent(QMouseEvent *mouseEvent) {
 
 		if (isMouseAtTop || isMouseAtBottom) {
 			if (isMouseAtLeft) {
-				setCursor(Qt::SizeBDiagCursor);
+				setCursor(isMouseAtTop ? Qt::SizeFDiagCursor : Qt::SizeBDiagCursor);
 			} else if (isMouseAtRight) {
-				setCursor(Qt::SizeFDiagCursor);
+				setCursor(isMouseAtTop ? Qt::SizeBDiagCursor : Qt::SizeFDiagCursor);
 			} else {
 				setCursor(Qt::SizeVerCursor);
 			}
@@ -79,7 +56,7 @@ void Frame::mouseMoveEvent(QMouseEvent *mouseEvent) {
 	}
 }
 
-void Frame::updateMouseInformation(QMouseEvent *mouseEvent) {
+void MainFrame::updateMouseInformation(QMouseEvent *mouseEvent) {
 	int x = mouseEvent->x();
 	int y = mouseEvent->y();
 	QRect frame = rect();
@@ -92,6 +69,6 @@ void Frame::updateMouseInformation(QMouseEvent *mouseEvent) {
 	isMouseAtRight = frame.width() - x <= threshold;
 }
 
-void Frame::mouseReleaseEvent(QMouseEvent *mouseEvent) {
+void MainFrame::mouseReleaseEvent(QMouseEvent *mouseEvent) {
 	isMousePressed = false;
 }
