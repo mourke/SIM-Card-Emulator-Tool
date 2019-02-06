@@ -2,8 +2,12 @@
 <!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
-<g id="surface1">
-	<path d="M0,0v16h16V3.3l-0.2-0.2l-2.9-2.9L12.7,0H0z M1.5,1.5h2.2v4.4h8.7v-4l2.2,2.2v10.6h-1.5V8H2.9v6.5H1.4v-13H1.5z M5.1,1.5H8
-		V3h1.5V1.5H11v2.9H5.2V1.5H5.1z M4.4,9.5h7.3v5.1H4.4C4.4,14.6,4.4,9.5,4.4,9.5z"/>
+<style type="text/css">
+	.st0{enable-background:new    ;}
+</style>
+<g class="st0">
+	<path d="M14,1c0.1,0,0.3,0,0.4,0.1c0.1,0.1,0.2,0.1,0.3,0.2c0.1,0.1,0.2,0.2,0.2,0.3C15,1.7,15,1.9,15,2v13H2.8L1,13.2V2
+		c0-0.1,0-0.3,0.1-0.4c0.1-0.1,0.1-0.2,0.2-0.3c0.1-0.1,0.2-0.2,0.3-0.2C1.7,1,1.9,1,2,1H14z M14,2h-1v6H3V2H2v10.8L3.2,14H4v-4h7v4
+		h3V2z M4,7h8V2H4V7z M10,11H5v3h1v-2h1v2h3V11z"/>
 </g>
 </svg>

@@ -231,7 +231,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows-New/Maximize</normaloff>:/Windows-New/Maximize</iconset>
+          <normaloff>:/Windows-New/Stop</normaloff>:/Windows-New/Stop</iconset>
         </property>
         <property name="iconSize">
          <size>

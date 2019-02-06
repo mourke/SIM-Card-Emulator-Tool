@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
-<g id="surface1">
-	<path d="M1.1,0L0,1.1L6.9,8L0,14.9L1.1,16L8,9.1l6.9,6.9l1.1-1.1L9.1,8L16,1.1L14.9,0L8,6.9L1.1,0z"/>
+	 viewBox="0 0 10 10" style="enable-background:new 0 0 10 10;" xml:space="preserve">
+<style type="text/css">
+	.st0{enable-background:new    ;}
+</style>
+<g class="st0">
+	<path d="M5.7,5L10,9.3L9.3,10L5,5.7L0.7,10L0,9.3L4.3,5L0,0.7L0.7,0L5,4.3L9.3,0L10,0.7L5.7,5z"/>
 </g>
 </svg>
