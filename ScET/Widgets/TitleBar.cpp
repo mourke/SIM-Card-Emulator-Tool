@@ -45,7 +45,7 @@ void TitleBar::contextMenuEvent(QContextMenuEvent *event) {
 	contextMenu.addAction(&maximize);
 
 	contextMenu.addSeparator();
-	QAction close("Close", this);
+	QAction close("Close\tAlt+F4", this);
 	close.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarCloseButton)));
 	close.setShortcut(QKeySequence::Quit);
 	connect(&close, SIGNAL(triggered()), parent(), SLOT(close()));
@@ -71,7 +71,7 @@ void TitleBar::showMaxRestore() {
 void TitleBar::mousePressEvent(QMouseEvent *mouseEvent) {
 	clickPosition = mapToParent(mouseEvent->pos());
 
-	shouldMoveWindow = cursor() == Qt::ArrowCursor && !parentWidget()->isMaximized() && mouseEvent->button() == Qt::LeftButton;
+	shouldMoveWindow = cursor() == Qt::ArrowCursor && mouseEvent->button() == Qt::LeftButton;
 }
 
 void TitleBar::mouseDoubleClickEvent(QMouseEvent *mouseEvent) {
@@ -80,7 +80,25 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *mouseEvent) {
 
 void TitleBar::mouseMoveEvent(QMouseEvent *mouseEvent) {
 	if (!shouldMoveWindow) return;
-	parentWidget()->move(mouseEvent->globalPos() - clickPosition);
+
+	if (parentWidget()->isMaximized()) {
+		showMaxRestore();
+	}
+
+	QScreen *screen = QGuiApplication::primaryScreen();
+	QCursor cursor;
+	QPoint cursorPosition = cursor.pos();
+
+	QPoint newWindowPosition = mouseEvent->globalPos() - clickPosition;
+	int maxScreenHeight = screen->availableGeometry().height();
+
+	// Stop window falling off bottom of screen
+	if (cursorPosition.y() >= maxScreenHeight) {
+		cursor.setPos(cursorPosition.x(), maxScreenHeight);
+		newWindowPosition.setY(parentWidget()->geometry().y());
+	} 
+
+	parentWidget()->move(newWindowPosition);
 }
 
 void TitleBar::mouseReleaseEvent(QMouseEvent *mouseEvent) {

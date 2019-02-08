@@ -101,6 +101,9 @@
         <property name="flat">
          <bool>true</bool>
         </property>
+        <property name="type" stdset="0">
+         <number>0</number>
+        </property>
        </widget>
       </item>
       <item>
@@ -125,6 +128,9 @@
         </property>
         <property name="flat">
          <bool>true</bool>
+        </property>
+        <property name="type" stdset="0">
+         <number>1</number>
         </property>
        </widget>
       </item>
@@ -154,6 +160,9 @@
         <property name="flat">
          <bool>true</bool>
         </property>
+        <property name="type" stdset="0">
+         <number>3</number>
+        </property>
        </widget>
       </item>
      </layout>
@@ -181,7 +190,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="startButton">
+       <widget class="ToolBarButton" name="startButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -193,6 +202,9 @@
           <width>48</width>
           <height>48</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Start</string>
         </property>
         <property name="text">
          <string/>
@@ -213,7 +225,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="stopButton">
+       <widget class="ToolBarButton" name="stopButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -225,6 +240,9 @@
           <width>48</width>
           <height>48</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Stop</string>
         </property>
         <property name="text">
          <string/>
@@ -248,7 +266,7 @@
        <widget class="QWidget" name="segmentedControl" native="true"/>
       </item>
       <item>
-       <widget class="QPushButton" name="saveButton">
+       <widget class="ToolBarButton" name="saveButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -260,6 +278,9 @@
           <width>48</width>
           <height>48</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Save</string>
         </property>
         <property name="text">
          <string/>
@@ -280,7 +301,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="exportButton">
+       <widget class="ToolBarButton" name="exportButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -292,6 +313,9 @@
           <width>48</width>
           <height>48</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Export</string>
         </property>
         <property name="text">
          <string/>
@@ -312,7 +336,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="importButton">
+       <widget class="ToolBarButton" name="importButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -324,6 +348,9 @@
           <width>48</width>
           <height>48</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>Import</string>
         </property>
         <property name="text">
          <string/>
@@ -385,6 +412,11 @@
    <extends>QWidget</extends>
    <header>ToolBar.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ToolBarButton</class>
+   <extends>QPushButton</extends>
+   <header>Buttons/ToolBarButton.h</header>
   </customwidget>
  </customwidgets>
  <resources>

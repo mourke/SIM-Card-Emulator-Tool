@@ -2,12 +2,11 @@
 #define TITLEBAR_H
 
 #include <QWidget>
-#include <QtUiPlugin/QDesignerExportWidget>
 
 class TitleBarButton;
 class MainFrame;
 
-class /* QDESIGNER_WIDGET_EXPORT */ TitleBar : public QWidget {
+class TitleBar : public QWidget {
 	Q_OBJECT
 
 public:

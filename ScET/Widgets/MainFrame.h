@@ -1,5 +1,5 @@
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef MAINFRAME_H
+#define MAINFRAME_H
 
 #include <QFrame>
 #include "ui_MainFrame.h"
@@ -33,7 +33,7 @@ private:
 	bool isMouseAtLeft = false;
 	bool isMouseAtRight = false;
 
-	
+
 	void updateMouseInformation(QMouseEvent *mouseEvent);
 	void mousePressEvent(QMouseEvent *mouseEvent) override;
 	void mouseMoveEvent(QMouseEvent *mouseEvent) override;
@@ -42,4 +42,4 @@ private:
 	friend TitleBar;
 };
 
-#endif // FRAME_H
+#endif // MAINFRAME_H

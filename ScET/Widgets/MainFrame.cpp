@@ -23,15 +23,23 @@ void MainFrame::mouseMoveEvent(QMouseEvent *mouseEvent) {
 		int offsetX = oldMousePosition.x() - mousePosition.x();
 		int offsetY = oldMousePosition.y() - mousePosition.y();
 
+		bool isMinWidth = geometry.width() <= minimumWidth();
+		bool isMinHeight = geometry.height() <= minimumHeight();
+
+
 		if (isMouseAtLeft) {
+			if ((isMinWidth && offsetX <= 0)) return;
 			geometry.setX(geometry.x() - offsetX);
 		} else if (isMouseAtRight) {
+			if ((isMinWidth && offsetX >= 0)) return;
 			geometry.setRight(geometry.right() - offsetX);
 		}
 
 		if (isMouseAtBottom) {
+			if ((isMinHeight && offsetY >= 0)) return;
 			geometry.setBottom(geometry.bottom() - offsetY);
 		} else if (isMouseAtTop) {
+			if ((isMinHeight && offsetY <= 0)) return;
 			geometry.setTop(geometry.top() - offsetY);
 		}
 
