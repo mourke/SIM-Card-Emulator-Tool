@@ -263,7 +263,33 @@
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="segmentedControl" native="true"/>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="SegmentedControl" name="segmentedControl" native="true"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="ToolBarButton" name="saveButton">
@@ -417,6 +443,12 @@
    <class>ToolBarButton</class>
    <extends>QPushButton</extends>
    <header>Buttons/ToolBarButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SegmentedControl</class>
+   <extends>QWidget</extends>
+   <header>SegmentedControl.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
