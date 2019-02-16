@@ -20,8 +20,6 @@ public:
 	const QList<Segment *>& segments() const { return m_segments; }
 
 	segmented_index_t selectedSegmentIndex() const { return m_selectedSegmentIndex;  }
-	void setSelectedSegmentIndex(segmented_index_t selectedSegmentIndex);
-	void selectSegment(segmented_index_t index) { setSelectedSegmentIndex(index); }
 
 	void addSegment(const QString &text);
 	void insertSegment(segmented_index_t index, const QString &text);
@@ -34,15 +32,22 @@ public:
 	void setSegmentWidth(int width, segmented_index_t index);
 	int widthForSegment(segmented_index_t index) const;
 
+Q_SIGNALS:
+	void selectedSegmentIndexChanged(segmented_index_t newIndex);
+
+public Q_SLOTS:
+	void setSelectedSegmentIndex(segmented_index_t selectedSegmentIndex);
+	void selectSegment(Segment *segment) { setSelectedSegmentIndex(m_segments.indexOf(segment)); }
+	void selectSegment(segmented_index_t index) { setSelectedSegmentIndex(index); }
+
 protected:
 	QList<Segment *> m_segments;
-	segmented_index_t m_selectedSegmentIndex;
-	segmented_index_t highlightedSegmentIndex;
-	segmented_index_t pressedSegmentIndex;
+	segmented_index_t m_selectedSegmentIndex = 0;
 	void invalidateSize();
 
 private:
 	bool isSegmentIndexValid(segmented_index_t index) const;
+	void insertSegment(segmented_index_t index, const QVariant &value);
 };
 
 #endif // SEGMENTEDCONTROL_H

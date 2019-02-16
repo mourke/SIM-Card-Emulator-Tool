@@ -2,18 +2,55 @@
 #include <QtWidgets>
 #include "TitleBar.h"
 #include "AccentColor.h"
+#include "SegmentedControl.h"
 
 MainFrame::MainFrame(QWidget *parent) : QFrame(parent) {
 	ui.setupUi(this);
+
 	QString styleSheet = "MainFrame { border: 1px solid %1; }";
 	setStyleSheet(styleSheet.arg(accentColor().name(QColor::HexArgb)));
 	setWindowFlags(Qt::FramelessWindowHint);
+
+	QSettings settings;
+
+	settings.beginGroup("mainFrame");
+
+	restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
+	move(settings.value("pos", pos()).toPoint());
+	resize(settings.value("size", size()).toSize());
+
+	if (settings.value("maximized", isMaximized()).toBool()) {
+		showMaximized();
+		ui.maximizeButton->setType(TitleBarButton::Type::Restore);
+	}
+
+	settings.endGroup();
+
+	ui.segmentedControl->addSegment("Application Layer");
+	ui.segmentedControl->addSegment("Protocol Layer");
 }
 
 void MainFrame::mousePressEvent(QMouseEvent *mouseEvent) {
 	oldMousePosition = mouseEvent->globalPos();
 	updateMouseInformation(mouseEvent);
 }
+
+void MainFrame::closeEvent(QCloseEvent *closeEvent) {
+	QSettings settings;
+
+	settings.beginGroup("mainFrame");
+
+	settings.setValue("geometry", saveGeometry());
+	settings.setValue("maximized", isMaximized());
+
+	if (!isMaximized()) {
+		settings.setValue("pos", pos());
+		settings.setValue("size", size());
+	}
+
+	settings.endGroup();
+}
+
 
 void MainFrame::mouseMoveEvent(QMouseEvent *mouseEvent) {
 	if (isMousePressed) {
