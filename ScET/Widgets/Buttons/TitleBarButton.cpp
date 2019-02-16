@@ -21,20 +21,20 @@ void TitleBarButton::setType(const Type &type) {
 
 	switch (type) {
 	case Type::Close:
-		setToolTip("Close");
-		setIcon(QIcon(":/Windows-New/Close"));
+		setToolTip(tr("Close"));
+		setIcon(QIcon(":/Windows/Close"));
 		break;
 	case Type::Maximize:
-		setToolTip("Maximize");
-		setIcon(QIcon(":/Windows-New/Maximize"));
+		setToolTip(tr("Maximize"));
+		setIcon(QIcon(":/Windows/Maximize"));
 		break;
 	case Type::Restore:
-		setToolTip("Restore");
-		setIcon(QIcon(":/Windows-New/Restore"));
+		setToolTip(tr("Restore"));
+		setIcon(QIcon(":/Windows/Restore"));
 		break;
 	case Type::Minimize:
-		setToolTip("Minimize");
-		setIcon(QIcon(":/Windows-New/Minimize"));
+		setToolTip(tr("Minimize"));
+		setIcon(QIcon(":/Windows/Minimize"));
 		break;
 	}
 }

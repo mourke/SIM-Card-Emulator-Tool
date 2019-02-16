@@ -211,7 +211,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows-New/Start</normaloff>:/Windows-New/Start</iconset>
+          <normaloff>:/Windows/Start</normaloff>:/Windows/Start</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -249,7 +249,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows-New/Stop</normaloff>:/Windows-New/Stop</iconset>
+          <normaloff>:/Windows/Stop</normaloff>:/Windows/Stop</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -313,7 +313,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows-New/Save</normaloff>:/Windows-New/Save</iconset>
+          <normaloff>:/Windows/Save</normaloff>:/Windows/Save</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -348,7 +348,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows-New/Export</normaloff>:/Windows-New/Export</iconset>
+          <normaloff>:/Windows/Export</normaloff>:/Windows/Export</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -383,7 +383,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows-New/Import</normaloff>:/Windows-New/Import</iconset>
+          <normaloff>:/Windows/Import</normaloff>:/Windows/Import</iconset>
         </property>
         <property name="iconSize">
          <size>

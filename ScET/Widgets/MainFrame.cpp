@@ -25,9 +25,9 @@ MainFrame::MainFrame(QWidget *parent) : QFrame(parent) {
 	}
 
 	settings.endGroup();
-
-	ui.segmentedControl->addSegment("Application Layer");
-	ui.segmentedControl->addSegment("Protocol Layer");
+	
+	ui.segmentedControl->addSegment(tr("Application Layer"));
+	ui.segmentedControl->addSegment(tr("Protocol Layer"));
 }
 
 void MainFrame::mousePressEvent(QMouseEvent *mouseEvent) {

@@ -1,14 +1,14 @@
 <RCC>
-    <qresource prefix="/Windows-New">
-        <file alias="Export">Assets/Windows-New/Export.svg</file>
-        <file alias="Import">Assets/Windows-New/Import.svg</file>
-        <file alias="Save">Assets/Windows-New/Save.svg</file>
-        <file alias="Start">Assets/Windows-New/Start.svg</file>
-        <file alias="Stop">Assets/Windows-New/Stop.svg</file>
-        <file alias="Close">Assets/Windows-New/Close.svg</file>
-        <file alias="Maximize">Assets/Windows-New/Maximize.svg</file>
-        <file alias="Minimize">Assets/Windows-New/Minimize.svg</file>
-        <file alias="Restore">Assets/Windows-New/Restore.svg</file>
+    <qresource prefix="/Windows">
+        <file alias="Close">Assets/Windows/Close.svg</file>
+        <file alias="Export">Assets/Windows/Export.svg</file>
+        <file alias="Import">Assets/Windows/Import.svg</file>
+        <file alias="Maximize">Assets/Windows/Maximize.svg</file>
+        <file alias="Minimize">Assets/Windows/Minimize.svg</file>
+        <file alias="Restore">Assets/Windows/Restore.svg</file>
+        <file alias="Save">Assets/Windows/Save.svg</file>
+        <file alias="Start">Assets/Windows/Start.svg</file>
+        <file alias="Stop">Assets/Windows/Stop.svg</file>
     </qresource>
     <qresource prefix="/macOS">
         <file>Assets/macOS/Export.svg</file>
