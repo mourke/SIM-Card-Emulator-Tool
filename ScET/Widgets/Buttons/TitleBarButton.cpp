@@ -7,6 +7,8 @@ TitleBarButton::TitleBarButton(QWidget *parent) : QPushButton(parent) {
 }
 
 void TitleBarButton::setType(const Type &type) {
+	if (m_type == type) return;
+
 	m_type = type;
 
 	if (type == Type::Close) {
@@ -40,7 +42,6 @@ void TitleBarButton::setType(const Type &type) {
 }
 
 bool TitleBarButton::event(QEvent *event) {
-	
 	if (event->type() == QEvent::HoverEnter) {
 		QPixmap pixmap = icon().pixmap(iconSize());
 		QImage tmp = pixmap.toImage();

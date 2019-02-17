@@ -9,7 +9,7 @@ Segment::Segment(QWidget *parent) : QAbstractButton(parent) {
 
 void Segment::setSelected(const bool &selected) {
 	setChecked(selected);
-	if (selected) emit segmentSelected(this);
+	if (selected) emit this->selected();
 }
 
 Segment::~Segment() {

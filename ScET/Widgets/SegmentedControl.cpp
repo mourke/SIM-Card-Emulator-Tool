@@ -45,7 +45,10 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &va
 	
 	Segment *segment = new Segment(this);
 
-	QObject::connect(segment, SIGNAL(segmentSelected(Segment *)), this, SLOT(selectSegment(Segment *)));
+	QObject::connect(segment, &Segment::selected, this, [this, segment] {
+		int index = this->segments().indexOf(segment);
+		this->setSelectedSegmentIndex(index);
+	});
 
 	if (value.type() == QVariant::Type::Icon) {
 		QIcon icon = value.value<QIcon>();
