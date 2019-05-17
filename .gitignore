@@ -24,7 +24,6 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
@@ -36,4 +35,3 @@ x64/
 .vs/
 ScET/x64/
 ScET/GeneratedFiles/
-.vs/
