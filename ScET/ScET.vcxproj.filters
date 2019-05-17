@@ -161,6 +161,9 @@
     <None Include="Resources\Localisation\scet_es.ts">
       <Filter>Translation Files</Filter>
     </None>
+    <None Include="Resources\Localisation\scet_fr.ts">
+      <Filter>Translation Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resources\ScET.qrc">

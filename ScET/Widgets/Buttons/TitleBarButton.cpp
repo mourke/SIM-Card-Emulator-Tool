@@ -7,8 +7,6 @@ TitleBarButton::TitleBarButton(QWidget *parent) : QPushButton(parent) {
 }
 
 void TitleBarButton::setType(const Type &type) {
-	if (m_type == type) return;
-
 	m_type = type;
 
 	if (type == Type::Close) {

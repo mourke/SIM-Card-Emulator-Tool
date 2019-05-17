@@ -53,7 +53,7 @@
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_NETWORKAUTH_LIB;QT_QML_LIB;QT_QUICK_LIB;QT_QUICKWIDGETS_LIB;QT_QUICKCONTROLS2_LIB;QT_SERIALBUS_LIB;QT_SERIALPORT_LIB;QT_SVG_LIB;QT_WIDGETS_LIB;QT_WINEXTRAS_LIB;QT_UITOOLS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Frameworks\include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -63,14 +63,14 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Frameworks\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Concurrentd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5NetworkAuthd.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5QuickWidgetsd.lib;Qt5QuickControls2d.lib;Qt5SerialBusd.lib;Qt5SerialPortd.lib;Qt5Svgd.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;Qt5UiToolsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libusb-1.0.lib;qtmaind.lib;Qt5Concurrentd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5NetworkAuthd.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5QuickWidgetsd.lib;Qt5QuickControls2d.lib;Qt5SerialBusd.lib;Qt5SerialPortd.lib;Qt5Svgd.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;Qt5UiToolsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <QtMoc>
       <OutputFile>.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
-      <IncludePath>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath>$(SolutionDir)Frameworks\include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</IncludePath>
       <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_NETWORKAUTH_LIB;QT_QML_LIB;QT_QUICK_LIB;QT_QUICKWIDGETS_LIB;QT_QUICKCONTROLS2_LIB;QT_SERIALBUS_LIB;QT_SERIALPORT_LIB;QT_SVG_LIB;QT_WIDGETS_LIB;QT_WINEXTRAS_LIB;QT_UITOOLS_LIB;%(PreprocessorDefinitions)</Define>
     </QtMoc>
     <QtUic>
@@ -86,23 +86,23 @@
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_NETWORKAUTH_LIB;QT_QML_LIB;QT_QUICK_LIB;QT_QUICKWIDGETS_LIB;QT_QUICKCONTROLS2_LIB;QT_SERIALBUS_LIB;QT_SERIALPORT_LIB;QT_SVG_LIB;QT_WIDGETS_LIB;QT_WINEXTRAS_LIB;QT_UITOOLS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Frameworks\include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat />
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Frameworks\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;Qt5Concurrent.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Network.lib;Qt5NetworkAuth.lib;Qt5Qml.lib;Qt5Quick.lib;Qt5QuickWidgets.lib;Qt5QuickControls2.lib;Qt5SerialBus.lib;Qt5SerialPort.lib;Qt5Svg.lib;Qt5Widgets.lib;Qt5WinExtras.lib;Qt5UiTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libusb-1.0.lib;qtmain.lib;Qt5Concurrent.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Network.lib;Qt5NetworkAuth.lib;Qt5Qml.lib;Qt5Quick.lib;Qt5QuickWidgets.lib;Qt5QuickControls2.lib;Qt5SerialBus.lib;Qt5SerialPort.lib;Qt5Svg.lib;Qt5Widgets.lib;Qt5WinExtras.lib;Qt5UiTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <QtMoc>
       <OutputFile>.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
-      <IncludePath>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath>$(SolutionDir)Frameworks\include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtConcurrent;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtNetworkAuth;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtQuickWidgets;$(QTDIR)\include\QtQuickControls2;$(QTDIR)\include\QtSerialBus;$(QTDIR)\include\QtSerialPort;$(QTDIR)\include\QtSvg;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtWinExtras;$(QTDIR)\include\QtUiTools;%(AdditionalIncludeDirectories)</IncludePath>
       <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CONCURRENT_LIB;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_NETWORKAUTH_LIB;QT_QML_LIB;QT_QUICK_LIB;QT_QUICKWIDGETS_LIB;QT_QUICKCONTROLS2_LIB;QT_SERIALBUS_LIB;QT_SERIALPORT_LIB;QT_SVG_LIB;QT_WIDGETS_LIB;QT_WINEXTRAS_LIB;QT_UITOOLS_LIB;%(PreprocessorDefinitions)</Define>
     </QtMoc>
     <QtUic>
