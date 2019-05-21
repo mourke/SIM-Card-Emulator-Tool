@@ -16,15 +16,6 @@ typedef unsigned long long segmented_index_t;
   * resizes segments to fit proportionally within their 
   * superview unless they have a specific width set. 
   *
-  * @b Rationale
-  * Why did we choose to have that class the way it is?)
-  *
-  * @b Resource @b Ownership
-  * Resource ownerships (acquired/transfered...)
-  *
-  * @note
-  * A useful note for users of this class
-  *
   */
 class SegmentedControl : public QWidget {
 	Q_OBJECT
@@ -204,6 +195,7 @@ protected:
 private:
 	bool isSegmentIndexValid(segmented_index_t index) const;
 	void insertSegment(segmented_index_t index, const QVariant &value);
+	void updateSegmentPositions();
 };
 
 #endif // SEGMENTEDCONTROL_H

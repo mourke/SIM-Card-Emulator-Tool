@@ -6,8 +6,13 @@ SegmentedControl::SegmentedControl(QWidget *parent) : QWidget(parent) {
 	QHBoxLayout *layout = new QHBoxLayout();
 
 	layout->setContentsMargins(10, 10, 10, 2);
-	layout->setSpacing(24);
 
+#if defined(Q_OS_MAC)
+	layout->setSpacing(0);
+#elif defined(Q_OS_WIN)
+	layout->setSpacing(24);
+#endif
+	
 	setLayout(layout);
 }
 
@@ -24,11 +29,11 @@ void SegmentedControl::setSelectedSegmentIndex(segmented_index_t selectedSegment
 }
 
 void SegmentedControl::addSegment(const QString &text) {
-	insertSegment(segments().count(), text);
+	insertSegment(m_segments.count(), text);
 }
 
 void SegmentedControl::addSegment(const QIcon &icon) {
-	insertSegment(segments().count(), icon);
+	insertSegment(m_segments.count(), icon);
 }
 
 void SegmentedControl::insertSegment(segmented_index_t index, const QIcon &icon) {
@@ -41,12 +46,12 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QString &tex
 
 void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &value) {
 	if (index < 0) throw std::out_of_range("Cannot add a negative index to an array.");
-	if (index > segments().count()) throw std::out_of_range("Segments can only be added one from the end of the array.");
+	if (index > m_segments.count()) throw std::out_of_range("Segments can only be added one from the end of the array.");
 	
 	Segment *segment = new Segment(this);
 
 	QObject::connect(segment, &Segment::selected, this, [this, segment] {
-		int index = this->segments().indexOf(segment);
+		int index = this->m_segments.indexOf(segment);
 		this->setSelectedSegmentIndex(index);
 	});
 
@@ -60,12 +65,12 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &va
 
 	segment->sizeToFit();
 
-	if (index == segments().count()) {
+	if (index == m_segments.count()) {
 		m_segments.append(segment);
 		layout()->addWidget(segment);
 	} else {
-		for (int i = segments().count(); i > index; --i) {
-			if (i == segments().count()) {
+		for (int i = m_segments.count(); i > index; --i) {
+			if (i == m_segments.count()) {
 				m_segments.append(segment);
 				continue;
 			}
@@ -75,19 +80,20 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &va
 		invalidateSize();
 	}
 
+	updateSegmentPositions();
 	segment->setSelected(m_selectedSegmentIndex == index);
 }
 
 void SegmentedControl::removeSegment(segmented_index_t index) {
 	if (!isSegmentIndexValid(index)) return;
-	Segment *segment = segments()[index];
+	Segment *segment = m_segments[index];
 	removeSegment(segment);
 }
 
 void SegmentedControl::removeSegment(Segment *segment) {
 	if (!m_segments.contains(segment)) return;
 
-	segmented_index_t index = segments().indexOf(segment);
+	segmented_index_t index = m_segments.indexOf(segment);
 	if (index == m_selectedSegmentIndex) {
 		setSelectedSegmentIndex(0);
 	}
@@ -96,10 +102,11 @@ void SegmentedControl::removeSegment(Segment *segment) {
 	layout()->removeWidget(segment);
 	segment->disconnect();
 	delete segment;
+	updateSegmentPositions();
 }
 
 void SegmentedControl::removeAllSegments() {
-	for (Segment *segment : segments()) {
+	for (Segment *segment : m_segments) {
 		removeSegment(segment);
 	}
 }
@@ -122,8 +129,23 @@ void SegmentedControl::invalidateSize() {
 		}
 	}
 
-	for (Segment *segment : segments()) {
+	for (Segment *segment : m_segments) {
 		layout()->addWidget(segment);
+	}
+}
+
+void SegmentedControl::updateSegmentPositions() {
+	for (int i = 0; i < m_segments.count(); ++i) {
+		Segment *segment = m_segments[i];
+		if (i == 0) {
+			segment->position = Segment::Position::Start;
+		}
+		else if (i == m_segments.count() - 1) {
+			segment->position = Segment::Position::End;
+		}
+		else {
+			segment->position = Segment::Position::Default;
+		}
 	}
 }
 
