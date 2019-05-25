@@ -65,6 +65,15 @@
     <ClCompile Include="Widgets\Segment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tracer\Tracer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tracer\TracerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tracer\ADPUSplitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Windows\MainWindow.h">
@@ -89,6 +98,15 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\Segment.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Tracer\TracerManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Tracer\ADPUSplitter.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Tracer\Tracer.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -172,6 +190,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AccentColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracer\SIMTraceUSB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
