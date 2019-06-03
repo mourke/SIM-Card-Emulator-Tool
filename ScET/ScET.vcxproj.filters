@@ -71,7 +71,13 @@
     <ClCompile Include="Tracer\TracerManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tracer\ADPUSplitter.cpp">
+    <ClCompile Include="Tracer\APDUSplitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tracer\APDUCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tracer\APDUResponse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,15 +104,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\Segment.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Tracer\TracerManager.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Tracer\ADPUSplitter.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Tracer\Tracer.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -193,6 +190,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tracer\SIMTraceUSB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracer\APDUCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracer\APDUResponse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracer\APDUSplitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracer\Tracer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracer\TracerManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

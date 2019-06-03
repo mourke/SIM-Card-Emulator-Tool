@@ -2,6 +2,7 @@
 #include "libusb.h"
 #include "SIMTraceUSB.h"
 #include "Tracer.h"
+#include <cassert>
 
 TracerManager::TracerManager() {
 	libusb_init(&this->context);
@@ -10,6 +11,9 @@ TracerManager::TracerManager() {
 
 TracerManager::~TracerManager() {
 	libusb_exit(this->context);
+	for (Tracer *tracer : tracers) {
+		delete tracer;
+	}
 }
 
 std::optional<Tracer *> TracerManager::findTracer() {
@@ -30,7 +34,8 @@ std::optional<Tracer *> TracerManager::findTracer() {
 	libusb_free_device_list(devices, 1);
 	
 	if (device != nullptr) {
-		Tracer *tracer = new Tracer(device);
+		Tracer *tracer = new Tracer(device, context);
+		tracers.push_back(tracer);
 		return std::make_optional(tracer);
 	}
 

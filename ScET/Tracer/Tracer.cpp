@@ -2,10 +2,14 @@
 #include "libusb.h"
 #include "SIMTraceUSB.h"
 #include <iostream>
-#include "ADPUSplitter.h"
+#include "APDUSplitter.h"
+#include "APDUCommand.h"
+#include "APDUResponse.h"
+#include <QString>
 
-Tracer::Tracer(libusb_device *device) : QObject(Q_NULLPTR) {
+Tracer::Tracer(libusb_device *device, libusb_context *context) {
 	this->device = device;
+	this->context = context;
 }
 
 Tracer::~Tracer() {
@@ -35,8 +39,9 @@ int Tracer::startSniffing() {
 		}
 	}
 
-	this->splitter = new ADPUSplitter();
-	QObject::connect(splitter, SIGNAL(callback(uint8_t *, unsigned int , void *)), this, SLOT(adpuSplit(uint8_t *, unsigned int, void *)));
+	this->splitter = new APDUSplitter([this](APDUCommand &command, APDUResponse &response) {
+		printf("APDU: (HH:mm:ss:SSS:): %s %s\n", command.string().toStdString().c_str(), response.string().toStdString().c_str());
+	});
 
 	uint8_t buffer[16 * 265];
 	int bufferSize;
@@ -44,7 +49,7 @@ int Tracer::startSniffing() {
 
 	while (sniffing) {
 		error = libusb_bulk_transfer(handle, SIMTRACE_IN_BULK, buffer, sizeof(buffer), &bufferSize, 100000);
-		if (error == LIBUSB_SUCCESS) {
+		if ((error == LIBUSB_SUCCESS || error == LIBUSB_ERROR_TIMEOUT) && bufferSize > 0) {
 			processMessage(buffer, bufferSize);
 		}
 	}
@@ -58,32 +63,36 @@ returnError:
 	return error;
 }
 
-void Tracer::adpuSplit(uint8_t *buffer, unsigned int bufferSize, void *userData) {
-	printf("APDU: %s\n", hexdump(buffer, bufferSize));
-}
-
 void Tracer::processMessage(uint8_t *buffer, int bufferSize) {
 	SIMTraceHeader *header = (SIMTraceHeader *)buffer;
-	uint8_t *payload = buffer += sizeof(*header);
-	int payloadSize = bufferSize - sizeof(*header);
 
-	if (payloadSize < 0) return;
+	if (header->totalBufferSize != bufferSize) { // multiple traces have been mangled together, we must separate them
+		uint8_t *demangledBuffer = buffer + header->totalBufferSize;
+		size_t demangledBufferSize = bufferSize - header->totalBufferSize;
+		processMessage(buffer, bufferSize - demangledBufferSize); // process the original trace and then the demangled one
+		return processMessage(demangledBuffer, demangledBufferSize); // recursively call this in case there are more than two traces mangled together
+	}
+
+	size_t headerSize = sizeof(*header);
+	uint8_t *payload = buffer + headerSize; // point to the first element of the data
+	int payloadSize = bufferSize - headerSize;
+
+	if (payloadSize <= 0) return;
 
 	switch (header->command) {
 	case SIMTraceCommand::Data:
 		if (header->flags == SIMTraceFlag::ATR) {
 			printf("ATR ");
-			adpuSplit(buffer, bufferSize, nullptr);
+			printf("APDU: %s\n", hexdump(payload, payloadSize));
 		} else if (header->flags == SIMTraceFlag::PPSFiDi) {
-			printf("PPS(Fi=%u/Di=%u) ", header->reset[0], header->reset[1]);
+			printf("PPS(Fi=%u/Di=%u) \n", header->reset[0], header->reset[1]);
 		} else if (header->flags == SIMTraceFlag::WaitTimeExpired) {
-			splitter->boundary();
+			printf("Wait time expired\n");
+			splitter->setBoundary();
 		} else {
-			splitter->input(payload, payloadSize);
+			splitter->splitInput(payload, payloadSize);
+			//printf("Raw output: %s\n", hexdump(payload, payloadSize));
 		}
-		
-		break;
-	case SIMTraceCommand::Reset:
 		break;
 	default:
 		printf("unknown simtrace msg type 0x%02x\n", header->command);
@@ -95,17 +104,13 @@ void Tracer::stopSniffing() {
 	sniffing = false;
 }
 
-bool Tracer::isSniffing() {
-	return this->sniffing;
-}
-
 bool Tracer::isConnected() {
 	return false;
 }
 
-const char * Tracer::hexdump(const void *data, unsigned int len) {
-	static char string[65535];
-	unsigned char *d = (unsigned char *)data;
+const char * Tracer::hexdump(const uint8_t *data, unsigned int len) {
+	static char string[UINT16_MAX];
+	uint8_t *d = (uint8_t *)data;
 	unsigned int i, left, ofs;
 
 	string[0] = '\0';
