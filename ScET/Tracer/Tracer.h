@@ -2,8 +2,13 @@
 #define TRACER_H
 
 #include <cstdint>
+#include <chrono>
+#include <thread>
+#include <optional>
 
 struct libusb_device;
+struct libusb_device_handle;
+struct libusb_transfer;
 class libusb_context;
 class APDUSplitter;
 
@@ -17,8 +22,6 @@ class APDUSplitter;
 class Tracer {
 
 public:
-	~Tracer();
-
 	/**
 	 * Starts sniffing SIM requests on the current tracer.
 	 *
@@ -44,16 +47,22 @@ public:
 	 * @retval	`true` if the tracer is connected to the system.
 	 */
 	bool isConnected();
-
 private:
+	~Tracer();
 	Tracer(libusb_device *device, libusb_context *context = nullptr);
 	libusb_device *device;
 	libusb_context *context; // will be freed by manager
+	libusb_device_handle *handle;
+	libusb_transfer *transfer;
+	uint8_t interface = 0; // the interface that the handle has claimed
 	APDUSplitter *splitter;
+	std::optional<std::chrono::time_point<std::chrono::steady_clock>> firstAPDUTime;
+	std::thread eventsThread;
 	bool sniffing = false;
-	void processMessage(uint8_t *buffer, int bufferSize);
-	const char * hexdump(const uint8_t *data, unsigned int len);
 
+	void finishedSniffing();
+	void processInput(uint8_t *buffer, int bufferSize);
+	
 	friend class TracerManager;
 };
 
