@@ -5,12 +5,16 @@
 #include <chrono>
 #include <thread>
 #include <optional>
+#include <QObject>
 
 struct libusb_device;
 struct libusb_device_handle;
 struct libusb_transfer;
 class libusb_context;
 class APDUSplitter;
+class APDUCommand;
+class APDUResponse;
+enum libusb_transfer_status;
 
 /** A wrapper class around libusb_device.
   *
@@ -19,9 +23,68 @@ class APDUSplitter;
   * with the tracer device.
   *
   */
-class Tracer {
+class Tracer : public QObject {
+	Q_OBJECT
+
+signals:
+	/**
+	 * Emitted when the tracer stops sniffing for whatever
+	 * reason. This is only emmitted if the trace session has 
+	 * started and then failed. If the trace session hasn't been
+	 * successfully started, `startSniffing()` will return the
+	 * error code for this. If a non-zero error code is returned, 
+	 * the trace session has been stopped due to an error.
+	 *
+	 * @param errorCode		libusb_transfer_status code if any.
+	 */
+	void stoppedSniffing(libusb_transfer_status errorCode);
+
+	/**
+	 * Emitted when a trace has begun and the SIM card has 
+	 * already been sending commands to the tracer, but 
+	 * because we have not been listening for them, we find 
+	 * ourselves at an arbitrary point in the trace. This may
+	 * make the APDUSplitter misbehave and thus return incorrect
+	 * values.
+	 */
+	void traceStartedMidSession();
+
+	/**
+	 * Emitted when an APDU command-response pair has been
+	 * successfully received and split.
+	 *
+	 * @param output	The output string that should be presented to the user.
+	 * @param command	The APDU command.
+	 * @param response	The APDU response.
+	 */
+	void apduCommandReceived(const QString &output, 
+							const APDUCommand &command, 
+							const APDUResponse &response);
+
+	/**
+	 * Emitted when an ATR command has been received from the tracer.
+	 *
+	 * @param output	The output string that should be presented to the user.
+	 */
+	void atrCommandReceived(const QString &output);
 
 public:
+	/**
+	 * A boolean value indicating whether the current tracer is 
+	 * sniffing SIM requests.
+	 *
+	 * @retval	`true` if the tracer is currently sniffing.
+	 */
+	bool isSniffing() const { return sniffing; }
+
+	/**
+	 * A boolean value indicating whether the current tracer is
+	 * still connected to the system.
+	 *
+	 * @retval	`true` if the tracer is connected to the system.
+	 */
+	bool isConnected() const;
+private:
 	/**
 	 * Starts sniffing SIM requests on the current tracer.
 	 *
@@ -32,24 +95,9 @@ public:
 	/** Stops sniffing requests. */
 	void stopSniffing();
 
-	/**
-	 * A boolean value indicating whether the current tracer is 
-	 * sniffing SIM requests.
-	 *
-	 * @retval	`true` if the tracer is currently sniffing.
-	 */
-	bool isSniffing() { return sniffing; }
-
-	/**
-	 * A boolean value indicating whether the current tracer is
-	 * still connected to the system.
-	 *
-	 * @retval	`true` if the tracer is connected to the system.
-	 */
-	bool isConnected();
-private:
-	~Tracer();
 	Tracer(libusb_device *device, libusb_context *context = nullptr);
+	Tracer(QObject *parent) = delete;
+	~Tracer();
 	libusb_device *device;
 	libusb_context *context; // will be freed by manager
 	libusb_device_handle *handle;

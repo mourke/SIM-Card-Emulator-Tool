@@ -106,6 +106,12 @@
     <QtMoc Include="Widgets\Segment.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Tracer\Tracer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Tracer\TracerManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Widgets\MainFrame.ui">
@@ -199,12 +205,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tracer\APDUSplitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tracer\Tracer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tracer\TracerManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,7 +16,8 @@ int main(int argc, char *argv[]) {
 	std::optional<Tracer *> tracer = TracerManager::sharedManager().findTracer();
 
 	if (tracer.has_value()) {
-		tracer.value()->startSniffing();
+		int error = TracerManager::sharedManager().startSniffing(tracer.value());
+		// TODO: handle error
 	}
 
 	return application.exec();

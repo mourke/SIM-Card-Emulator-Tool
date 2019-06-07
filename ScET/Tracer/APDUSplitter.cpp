@@ -12,6 +12,7 @@ void APDUSplitter::incrementState() {
 void APDUSplitter::insertByte(uint8_t character) {
 	switch (state) {
 	case State::Class:
+		start = make_optional(std::chrono::high_resolution_clock::now());
 		this->command.m_instructionClass = character;
 		incrementState();
 		break;
@@ -66,7 +67,7 @@ void APDUSplitter::insertByte(uint8_t character) {
 		break;
 	case State::StatusByte2:
 		this->response.m_status[1] = character;
-		std::invoke(m_callback, command, response);
+		std::invoke(m_callback, command, response, start.value());
 		reset();
 		break;
 	}
@@ -78,10 +79,11 @@ void APDUSplitter::reset() {
 	this->dataRemaining = 0;
 	this->command = APDUCommand();
 	this->response = APDUResponse();
+	start.reset();
 }
 
 void APDUSplitter::setBoundary() {
-	std::invoke(m_callback, command, response);
+	std::invoke(m_callback, command, response, start.value());
 	reset();
 }
 

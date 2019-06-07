@@ -142,7 +142,7 @@ public:
 	 */
 	int widthForSegment(segmented_index_t index) const;
 
-Q_SIGNALS:
+signals:
 	/**
 	 * Emitted when the selected segment index has been changed.
 	 *
@@ -150,7 +150,7 @@ Q_SIGNALS:
 	 */
 	void selectedSegmentIndexChanged(segmented_index_t newIndex);
 
-public Q_SLOTS:
+public slots:
 	/**
 	 * Sets the selected status of the specified segment. Setting this
 	 * deselects the previously selected segment.

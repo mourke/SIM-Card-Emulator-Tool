@@ -5,6 +5,8 @@
 #include <functional>
 #include "APDUCommand.h"
 #include "APDUResponse.h"
+#include <chrono>
+#include <optional>
 
 /** A class that splits input from a tracer into 
   * correct APDU commands and responses.
@@ -24,7 +26,7 @@ public:
 	  * has been successfully split into a command and response
 	  * pair.
 	  */
-	typedef std::function<void(APDUCommand &, APDUResponse &)> Callback;
+	typedef std::function<void(APDUCommand &, APDUResponse &, std::chrono::steady_clock::time_point &)> Callback;
 
 	APDUSplitter(Callback callback) : m_callback(callback) {};
 	
@@ -66,6 +68,7 @@ private:
 	State state = Class;
 	uint8_t insert = 0;
 	unsigned int dataRemaining = 0;
+	std::optional <std::chrono::steady_clock::time_point> start;
 
 	void reset();
 	void incrementState();

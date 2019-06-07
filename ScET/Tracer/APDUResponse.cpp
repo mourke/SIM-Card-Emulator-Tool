@@ -1,16 +1,14 @@
 #include "APDUResponse.h"
 #include <QString>
-#include <iostream>
 
 
 QString APDUResponse::string() const {
-	static char buffer[UINT16_MAX];
-	buffer[0] = '\0';
-	for (uint8_t character : m_data) {
-		sprintf(buffer + strlen(buffer), "%02x ", character);
-	}
-	sprintf(buffer, "(%02x %02x)", firstStatusByte(), secondStatusByte());
+	QString string;
 
-	buffer[sizeof(buffer) - 1] = '\0';
-	return QString(buffer);
+	for (uint8_t character : m_data) {
+		string += QString::asprintf("%02x ", character);
+	}
+	string += QString::asprintf("(%02x %02x)", firstStatusByte(), secondStatusByte());
+
+	return string;
 }

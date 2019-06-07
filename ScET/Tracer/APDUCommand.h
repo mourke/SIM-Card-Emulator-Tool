@@ -2,6 +2,7 @@
 #define APDU_COMMAND_H
 
 #include <vector>
+#include <cstdint>
 
 class QString;
 

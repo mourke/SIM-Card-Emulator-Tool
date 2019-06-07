@@ -11,9 +11,7 @@
 // The max value in milliseconds that the transfer will wait before failing. (100 seconds)
 static const unsigned int BULK_TRANSFER_TIMEOUT = 100000;
 
-Tracer::Tracer(libusb_device *device, libusb_context *context) {
-	this->device = device;
-	this->context = context;
+Tracer::Tracer(libusb_device *device, libusb_context *context) : QObject(nullptr), device(device), context(context) {
 }
 
 Tracer::~Tracer() {
@@ -64,21 +62,24 @@ int Tracer::startSniffing() {
 
 	libusb_free_config_descriptor(configDescriptor);
 
-	this->splitter = new APDUSplitter([this](APDUCommand &command, APDUResponse &response) {
+	this->splitter = new APDUSplitter([this](APDUCommand &command, APDUResponse &response, std::chrono::steady_clock::time_point &end) {
 		auto start = firstAPDUTime.value();
-		auto end = std::chrono::high_resolution_clock::now();
 
-		auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		int milliseconds = microseconds / 1000;
+		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+		unsigned long long milliseconds = microseconds / 1000;
 		microseconds = microseconds - (milliseconds * 1000);
-		int seconds = milliseconds / 1000;
+		unsigned long long seconds = milliseconds / 1000;
 		milliseconds = milliseconds - (seconds * 1000);
-		int minutes = seconds / 60;
+		unsigned long long minutes = seconds / 60;
 		seconds = seconds - (minutes * 60);
-		int hours = minutes / 60;
+		unsigned long long hours = minutes / 60;
 		minutes = minutes - (hours * 60);
 
-		printf("APDU:\t(%02d:%02d:%02d:%03d:%03lld): %s %s\n", hours, minutes, seconds, milliseconds, microseconds, command.string().toStdString().c_str(), response.string().toStdString().c_str());
+		QString output = QString::asprintf("APDU:\t(%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
+		output += command.string() + " " + response.string();
+
+		emit apduCommandReceived(output, command, response);
+		printf("%s\n", output.toStdString().c_str());
 	});
 
 	uint8_t buffer[16 * 265];
@@ -94,8 +95,7 @@ int Tracer::startSniffing() {
 			int error = libusb_submit_transfer(transfer); // submit next transfer
 			if (error == LIBUSB_SUCCESS) break;
 		}
-		case LIBUSB_TRANSFER_CANCELLED:
-		case LIBUSB_TRANSFER_ERROR:
+		default:
 			self->sniffing = false;
 			break;
 		}
@@ -132,8 +132,7 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 		}
 
 		if (header->flags & SIMTraceFlag::WaitTimeExpired) {
-			printf("Wait time expired\n"); // TODO: fix this idk if discarding is the best thing to do.
-			splitter->setBoundary();
+			printf("Wait time expired\n");
 			break;
 		}
 
@@ -153,18 +152,18 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 		if (!firstAPDUTime.has_value()) {
 			firstAPDUTime = std::make_optional(std::chrono::high_resolution_clock::now());
 			if (header->sequenceNumber > 10) { // first sequence number is never 0 it's usually around 6 so we say 10 just to be sure.
-				// TODO: Add warning about starting a trace from the middle
-				printf("WARNING: Attaching to a previously runnning trace may yeild unexpected results.\n");
+				emit traceStartedMidSession();
 			}
 		}
 
-		if (header->flags & SIMTraceFlag::ATR) {
-			printf("ATR:\t(00:00:00:000:000): %s\n", hexdump(payload, payloadSize));
+		if (header->flags & SIMTraceFlag::AnswerToReset) {
+			QString atr = QString::asprintf("ATR:\t(00:00:00:000:000): %s", hexdump(payload, payloadSize));
+			emit atrCommandReceived(atr);
+			printf("%s\n", atr.toStdString().c_str());
 			break;
 		}
 
 		splitter->splitInput(payload, payloadSize);
-		//printf("Raw output: %s\n", hexdump(payload, payloadSize));
 		break;
 	}
 	default:
@@ -176,22 +175,23 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 void Tracer::stopSniffing() {
 	if (sniffing == false) return;
 
-	sniffing = false;
+	libusb_cancel_transfer(transfer);
 	if (eventsThread.joinable()) {
 		eventsThread.join(); // Finished sniffing is called by this thread
 	}
 }
 
 void Tracer::finishedSniffing() {
-	if (transfer->status != LIBUSB_TRANSFER_CANCELLED) libusb_cancel_transfer(transfer);
+	libusb_transfer_status status = transfer->status;
 	libusb_free_transfer(transfer);
 	libusb_release_interface(handle, interface);
 	libusb_close(handle);
 	delete splitter;
 	firstAPDUTime.reset();
+	emit stoppedSniffing(status);
 }
 
-bool Tracer::isConnected() {
+bool Tracer::isConnected() const {
 	return false;
 }
 

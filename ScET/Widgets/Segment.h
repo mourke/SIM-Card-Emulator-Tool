@@ -137,7 +137,6 @@ public:
 	 */
 	void setSelectedTextColor(const QColor &color) { m_selectedTextColor = color; }
 
-
 	/**
 	 * The font of the text. This defaults to "Segoe UI" 
 	 * size 11 pt on Windows and "San Francisco" on macOS.
@@ -161,13 +160,13 @@ public:
 	 */
 	void sizeToFit();
 
-Q_SIGNALS:
+signals:
 	/**
 	 * Emitted when the segment has been selected.
 	 */
 	void selected();
 
-public Q_SLOTS:
+public slots:
 	/**
 	 * Sets the selected status of the segment. Setting this
 	 * has the same effect as calling setChecked() but that 

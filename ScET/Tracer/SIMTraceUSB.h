@@ -13,7 +13,7 @@ enum SIMTraceCommand : uint8_t {
 };
 
 enum SIMTraceFlag : uint8_t {
-	ATR = 0x01,
+	AnswerToReset = 0x01, // ATR
 	WaitTimeExpired = 0x04,
 	PPSFiDi = 0x08
 };
