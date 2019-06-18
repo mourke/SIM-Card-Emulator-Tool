@@ -13,8 +13,8 @@ struct libusb_transfer;
 class libusb_context;
 class APDUSplitter;
 class APDUCommand;
-class APDUResponse;
 enum libusb_transfer_status;
+enum libusb_error;
 
 /** A wrapper class around libusb_device.
   *
@@ -50,16 +50,13 @@ signals:
 	void traceStartedMidSession();
 
 	/**
-	 * Emitted when an APDU command-response pair has been
+	 * Emitted when an APDU command has been
 	 * successfully received and split.
 	 *
 	 * @param output	The output string that should be presented to the user.
 	 * @param command	The APDU command.
-	 * @param response	The APDU response.
 	 */
-	void apduCommandReceived(const QString &output, 
-							const APDUCommand &command, 
-							const APDUResponse &response);
+	void apduCommandReceived(const QString &output, const APDUCommand &command);
 
 	/**
 	 * Emitted when an ATR command has been received from the tracer.
@@ -90,7 +87,7 @@ private:
 	 *
 	 * @retval	A libusb_error status code. Returns `0` for success.
 	 */
-	int startSniffing();
+	libusb_error startSniffing();
 
 	/** Stops sniffing requests. */
 	void stopSniffing();

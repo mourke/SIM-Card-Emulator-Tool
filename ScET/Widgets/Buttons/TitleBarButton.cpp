@@ -1,6 +1,6 @@
 #include "TitleBarButton.h"
 #include <QtWidgets>
-#include "AccentColor.h"
+#include "Colors.h"
 
 TitleBarButton::TitleBarButton(QWidget *parent) : QPushButton(parent) {
 

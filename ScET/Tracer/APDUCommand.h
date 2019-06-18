@@ -16,6 +16,23 @@ class APDUCommand {
 
 public:
 
+	enum FileType {
+		IO,
+		SIMToolkit,
+		Authentication
+	};
+
+	enum Type : uint8_t {
+		Command,
+		Response = 0xFF
+	};
+
+
+	Type type() const;
+
+
+	FileType fileType() const { return m_fileType; }
+
 	/** Class of instruction.
 	  * 
 	  * @retval	CLA.
@@ -47,6 +64,18 @@ public:
 	  */
 	uint8_t dataLength() const { return (uint8_t)m_data.size(); }
 
+	/** Command processing status.
+	  *
+	  * @retval	SW1.
+	  */
+	uint8_t firstStatusByte() const { return m_status[0]; }
+
+	/** Command processing qualifier.
+	  *
+	  * @retval	SW2.
+	  */
+	uint8_t secondStatusByte() const { return m_status[1]; }
+
 	/** String of bytes sent in the data field 
 	  * of the command.
 	  *
@@ -57,14 +86,18 @@ public:
 	/** Returns a combination of all the parameters as 
 	  * a QString.
 	  *
-	  * @retval	CLA INS P1 P2 Lc Data.
+	  * @retval	CLA INS P1 P2 Lc Data (SW1 SW2).
 	  */
 	QString string() const;
 private:
+	void setInstructionCode(const uint8_t instructionCode);
+
+	FileType m_fileType = IO;
 	uint8_t m_instructionClass = 0;
 	uint8_t m_instructionCode = 0;
 	uint8_t m_parameters[2];
 	std::vector<uint8_t> m_data;
+	uint8_t m_status[2];
 
 	friend class APDUSplitter;
 };

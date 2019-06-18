@@ -35,7 +35,7 @@ PACK(struct SIMTraceHeader {
 static const uint16_t SIMTRACE_PID = 0x0762;
 
 // Vendor ID of the tracer.
-static const uint16_t SIMTRACE_VID = 0x16c0;
+static const uint16_t SIMTRACE_VID = 0x16C0;
 
 // The output endpoint of the tracer.
 static const uint16_t SIMTRACE_OUT = (LIBUSB_ENDPOINT_OUT | LIBUSB_TRANSFER_TYPE_ISOCHRONOUS);

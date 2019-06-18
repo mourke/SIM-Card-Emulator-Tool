@@ -4,8 +4,8 @@
 #include <iostream>
 #include "APDUSplitter.h"
 #include "APDUCommand.h"
-#include "APDUResponse.h"
 #include <QString>
+#include <QApplication>
 
 
 // The max value in milliseconds that the transfer will wait before failing. (100 seconds)
@@ -18,30 +18,11 @@ Tracer::~Tracer() {
 	libusb_unref_device(device); // TracerManager has increased the reference count of the device and we need to decrement it
 }
 
-
-const char * hexdump(const uint8_t *data, unsigned int len) {
-	static char string[UINT16_MAX];
-	uint8_t *d = (uint8_t *)data;
-	unsigned int i, left, ofs;
-
-	string[0] = '\0';
-	ofs = snprintf(string, sizeof(string) - 1, "(%u): ", len);
-
-	left = sizeof(string) - ofs;
-	for (i = 0; len--; i += 3) {
-		if (i >= sizeof(string) - 4)
-			break;
-		snprintf(string + ofs + i, 4, " %02x", *d++);
-	}
-	string[sizeof(string) - 1] = '\0';
-	return string;
-}
-
-int Tracer::startSniffing() {
+libusb_error Tracer::startSniffing() {
 	int error;
 
 	error = libusb_open(device, &handle);
-	if (error != LIBUSB_SUCCESS) return error;
+	if (error != LIBUSB_SUCCESS) return (libusb_error)error;
 	
 	libusb_config_descriptor *configDescriptor;
 	libusb_get_config_descriptor(device, 0, &configDescriptor);
@@ -56,13 +37,13 @@ int Tracer::startSniffing() {
 		if (interface == configDescriptor->bNumInterfaces) {
 			libusb_free_config_descriptor(configDescriptor);
 			libusb_close(handle);
-			return error;
+			return (libusb_error)error;
 		}
 	}
 
 	libusb_free_config_descriptor(configDescriptor);
 
-	this->splitter = new APDUSplitter([this](APDUCommand &command, APDUResponse &response, std::chrono::steady_clock::time_point &end) {
+	this->splitter = new APDUSplitter([this](APDUCommand &command, std::chrono::steady_clock::time_point &end) {
 		auto start = firstAPDUTime.value();
 
 		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
@@ -75,11 +56,13 @@ int Tracer::startSniffing() {
 		unsigned long long hours = minutes / 60;
 		minutes = minutes - (hours * 60);
 
-		QString output = QString::asprintf("APDU:\t(%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
-		output += command.string() + " " + response.string();
+		QString output = QString::asprintf("APDU: (%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
+		output += command.string();
 
-		emit apduCommandReceived(output, command, response);
-		printf("%s\n", output.toStdString().c_str());
+		QMetaObject::invokeMethod(QApplication::instance(), [this, output, command]() {
+			emit apduCommandReceived(output, command);
+		});
+		
 	});
 
 	uint8_t buffer[16 * 265];
@@ -107,7 +90,7 @@ int Tracer::startSniffing() {
 	if (error != LIBUSB_SUCCESS) {
 		stopSniffing();
 		finishedSniffing();
-		return error;
+		return (libusb_error)error;
 	}
 	
 
@@ -119,7 +102,7 @@ int Tracer::startSniffing() {
 		finishedSniffing();
 	});
 	
-	return error;
+	return (libusb_error)error;
 }
 
 void Tracer::processInput(uint8_t *buffer, int bufferSize) {
@@ -152,14 +135,23 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 		if (!firstAPDUTime.has_value()) {
 			firstAPDUTime = std::make_optional(std::chrono::high_resolution_clock::now());
 			if (header->sequenceNumber > 10) { // first sequence number is never 0 it's usually around 6 so we say 10 just to be sure.
-				emit traceStartedMidSession();
+				QMetaObject::invokeMethod(QApplication::instance(), [this]() {
+					emit traceStartedMidSession();
+				});
 			}
 		}
 
 		if (header->flags & SIMTraceFlag::AnswerToReset) {
-			QString atr = QString::asprintf("ATR:\t(00:00:00:000:000): %s", hexdump(payload, payloadSize));
-			emit atrCommandReceived(atr);
-			printf("%s\n", atr.toStdString().c_str());
+			QString string;
+			uint8_t *data = payload;
+			for (int i = 0; i < payloadSize; ++i) {
+				string += QString::asprintf("%02x ", *data++);
+			}
+
+			QString atr = QString::asprintf("ATR:  (00:00:00:000:000): ") + string.toUpper();
+			QMetaObject::invokeMethod(QApplication::instance(), [this, atr]() {
+				emit atrCommandReceived(atr);
+			});
 			break;
 		}
 
@@ -188,7 +180,9 @@ void Tracer::finishedSniffing() {
 	libusb_close(handle);
 	delete splitter;
 	firstAPDUTime.reset();
-	emit stoppedSniffing(status);
+	QMetaObject::invokeMethod(QApplication::instance(), [this, status]() {
+		emit stoppedSniffing(status);
+	});
 }
 
 bool Tracer::isConnected() const {

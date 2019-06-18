@@ -47,9 +47,6 @@
     <ClCompile Include="Widgets\Buttons\TitleBarButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AccentColor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Widgets\MainFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,7 +74,13 @@
     <ClCompile Include="Tracer\APDUCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tracer\APDUResponse.cpp">
+    <ClCompile Include="Colors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\BorderlessWindowFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Errors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,6 +113,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Tracer\TracerManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Widgets\BorderlessWindowFrame.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -192,19 +198,19 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AccentColor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tracer\SIMTraceUSB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tracer\APDUCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tracer\APDUResponse.h">
+    <ClInclude Include="Tracer\APDUSplitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tracer\APDUSplitter.h">
+    <ClInclude Include="Colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Errors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

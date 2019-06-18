@@ -4,7 +4,6 @@
 #include "Tracer.h"
 #include <cassert>
 #include "APDUCommand.h"
-#include "APDUResponse.h"
 
 TracerManager::TracerManager() : QObject(nullptr) {
 	libusb_init(&this->context);
@@ -56,8 +55,8 @@ void TracerManager::manageTracer(Tracer *tracer) {
 		emit traceStartedMidSession(tracer);
 	});
 
-	QObject::connect(tracer, &Tracer::apduCommandReceived, this, [this, tracer](const QString &output, const APDUCommand &command, const APDUResponse &response) {
-		emit apduCommandRecieved(tracer, output, command, response);
+	QObject::connect(tracer, &Tracer::apduCommandReceived, this, [this, tracer](const QString &output, const APDUCommand &command) {
+		emit apduCommandRecieved(tracer, output, command);
 	});
 
 	QObject::connect(tracer, &Tracer::atrCommandReceived, this, [this, tracer](const QString &output) {
@@ -86,9 +85,9 @@ bool TracerManager::isManagingTracer(Tracer *tracer) {
 	return std::find(tracers.begin(), tracers.end(), tracer) != tracers.end();
 }
 
-int TracerManager::startSniffing(Tracer *tracer) {
-	int error = tracer->startSniffing();
-	if (error < 0) {
+libusb_error TracerManager::startSniffing(Tracer *tracer) {
+	libusb_error error = tracer->startSniffing();
+	if (error == LIBUSB_SUCCESS) {
 		emit tracerStartedSniffing(tracer);
 	}
 	return error;

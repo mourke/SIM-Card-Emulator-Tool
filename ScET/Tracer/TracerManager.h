@@ -8,8 +8,8 @@
 class Tracer;
 class libusb_context;
 enum libusb_transfer_status;
+enum libusb_error;
 class APDUCommand;
-class APDUResponse;
 
 /** A manager class for all tracers connected to
   * the system.
@@ -28,7 +28,7 @@ signals:
 	 *
 	 * @param tracer	The tracer that has started sniffing.
 	 */
-	void tracerStartedSniffing(Tracer *);
+	void tracerStartedSniffing(Tracer *tracer);
 	
 	/**
 	 * Emitted when the tracer stops sniffing for whatever
@@ -56,18 +56,14 @@ signals:
 	void traceStartedMidSession(Tracer *tracer);
 
 	/**
-	 * Emitted when an APDU command-response pair has been
+	 * Emitted when an APDU command has been
 	 * successfully recieved and split.
 	 *
 	 * @param tracer	The tracer that has received the command.
 	 * @param output	The output string that should be presented to the user.
 	 * @param command	The APDU command.
-	 * @param response	The APDU response.
 	 */
-	void apduCommandRecieved(Tracer *tracer,
-		const QString &output,
-		const APDUCommand &command,
-		const APDUResponse &response);
+	void apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &command);
 
 	/**
 	 * Emitted when an ATR command has been received from the tracer.
@@ -104,7 +100,7 @@ public:
 	 *
 	 * @retval	A libusb_error status code. Returns `0` for success.
 	 */
-	int startSniffing(Tracer *tracer);
+	libusb_error startSniffing(Tracer *tracer);
 
 	/**
 	 * Stops sniffing requests. 

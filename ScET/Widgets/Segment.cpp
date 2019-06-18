@@ -1,6 +1,6 @@
 #include "Segment.h"
 #include <QtWidgets>
-#include "AccentColor.h"
+#include "Colors.h"
 
 Segment::Segment(QWidget *parent) : QAbstractButton(parent) {
 	setCheckable(true);
