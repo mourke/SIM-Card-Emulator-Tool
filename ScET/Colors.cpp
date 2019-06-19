@@ -4,24 +4,28 @@
 #pragma comment(lib, "windowsapp")
 
 
-QColor & accentColor() {
+QColor accentColor() {
 	winrt::Windows::UI::ViewManagement::UISettings settings;
 	auto color = settings.GetColorValue(winrt::Windows::UI::ViewManagement::UIColorType::Accent);
 	return QColor(color.R, color.G, color.B, color.A);
 }
 
-QColor & headerColor() {
-	return QColor(0x000080);
+QColor textViewLineBackgroundColor() {
+	return QColor(243, 246, 250);
 }
 
-QColor & dataColor() {
-	return QColor(0x8e05ff);
+QColor headerColor() {
+	return QColor(0, 0, 128);
 }
 
-QColor & statusCodeColor() {
-	return QColor(0x009933);
+QColor dataColor() {
+	return QColor(142, 5, 255);
 }
 
-QColor & responseColor() {
-	return QColor(0x7e8735);
+QColor statusCodeColor() {
+	return QColor(0, 153, 51);
+}
+
+QColor responseColor() {
+	return QColor(126, 135, 53);
 }

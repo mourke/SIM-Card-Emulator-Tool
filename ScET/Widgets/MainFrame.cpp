@@ -7,6 +7,7 @@
 #include "Tracer/Tracer.h"
 #include "Tracer/APDUCommand.h"
 #include "Errors.h"
+#include "Colors.h"
 
 
 MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
@@ -66,12 +67,23 @@ void MainFrame::tracerStoppedSniffing(Tracer *tracer, libusb_transfer_status err
 
 void MainFrame::traceStartedMidSession(Tracer *tracer) {
 	QMessageBox messageBox;
-	messageBox.warning(this, tr("Trace Started Mid Session"), tr("The SIM card about to be sniffed has already been making requests for which ScET has not been listening. You may find yourself at an arbitrary point in the trace which may result in incorrect values."));
+	messageBox.warning(this, tr("Trace Started Mid Session"), tr("The SIM card about to be sniffed has already been making requests for which ScET has not been listening. You may find yourself at an arbitrary point in the trace which may result in unexpected values."));
 	messageBox.setFixedSize(500, 200);
 }
 
 void MainFrame::apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &command) {
-	textBrowser()->insertPlainText(output + "\n");
+	textBrowser()->setTextColor(Qt::black);
+	int offset = 26; // apdu and timestamp
+	textBrowser()->insertPlainText(output.left(offset));
+	textBrowser()->setTextColor(headerColor());
+	textBrowser()->insertPlainText(output.mid(offset, 15));
+	offset += 15; // header
+	textBrowser()->setTextColor(command.type() == APDUCommand::Type::Command ? dataColor() : responseColor());
+	textBrowser()->insertPlainText(output.mid(offset, command.dataLength() * 3));
+	offset += command.dataLength() * 3; // data (two hexadecimal characters per data) and spacings between and after each character
+	textBrowser()->setTextColor(statusCodeColor());
+	textBrowser()->insertPlainText(output.mid(offset, 7));
+	textBrowser()->insertPlainText("\n");
 }
 
 void MainFrame::atrCommandReceived(Tracer *tracer, const QString &output) {
