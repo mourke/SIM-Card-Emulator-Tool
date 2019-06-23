@@ -28,9 +28,17 @@ public:
 	};
 
 
+	/** The type of the APDU command.
+	  *
+	  * @retval	Command or Response.
+	  */
 	Type type() const;
 
 
+	/** The filetype of the data the command points to.
+	  *
+	  * @retval	FileIO, STK/CAT or Authentication.
+	  */
 	FileType fileType() const { return m_fileType; }
 
 	/** Class of instruction.

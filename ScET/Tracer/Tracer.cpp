@@ -1,5 +1,5 @@
 #include "Tracer.h"
-#include "libusb.h"
+#include <libusb.h>
 #include "SIMTraceUSB.h"
 #include <iostream>
 #include "APDUSplitter.h"
@@ -79,7 +79,11 @@ libusb_error Tracer::startSniffing() {
 			if (error == LIBUSB_SUCCESS) break;
 		}
 		default:
-			self->sniffing = false;
+			QMetaObject::invokeMethod(QApplication::instance(), [self]() {
+				self->sniffing = false;
+				self->finishedSniffing();
+			});
+			
 			break;
 		}
 	}, this, BULK_TRANSFER_TIMEOUT);
@@ -92,15 +96,6 @@ libusb_error Tracer::startSniffing() {
 		finishedSniffing();
 		return (libusb_error)error;
 	}
-	
-
-	eventsThread = std::thread([this]() {
-		while (sniffing) {
-			int error = libusb_handle_events_completed(context, nullptr);
-			if (error != LIBUSB_SUCCESS) break;
-		}
-		finishedSniffing();
-	});
 	
 	return (libusb_error)error;
 }
@@ -168,9 +163,6 @@ void Tracer::stopSniffing() {
 	if (sniffing == false) return;
 
 	libusb_cancel_transfer(transfer);
-	if (eventsThread.joinable()) {
-		eventsThread.join(); // Finished sniffing is called by this thread
-	}
 }
 
 void Tracer::finishedSniffing() {
@@ -180,13 +172,15 @@ void Tracer::finishedSniffing() {
 	libusb_close(handle);
 	delete splitter;
 	firstAPDUTime.reset();
-	QMetaObject::invokeMethod(QApplication::instance(), [this, status]() {
-		emit stoppedSniffing(status);
-	});
+	emit stoppedSniffing(status);
 }
 
 bool Tracer::isConnected() const {
+	libusb_device_handle *handle;
+	if (libusb_open(device, &handle) != LIBUSB_ERROR_NO_DEVICE) { // libusb_device->attached is hidden. we must work around with this hack
+		libusb_close(handle);
+		return true;
+	}
 	return false;
 }
-
 

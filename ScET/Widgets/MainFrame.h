@@ -36,7 +36,8 @@ private slots:
 	void traceStartedMidSession(Tracer *tracer);
 	void apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &command);
 	void atrCommandReceived(Tracer *tracer, const QString &output);
-
+	void tracerConnected(Tracer *tracer);
+	void tracerDisconnected(Tracer *tracer);
 private:
 	Ui::MainFrame ui;
 	std::optional<Tracer *> tracer;

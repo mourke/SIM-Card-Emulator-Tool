@@ -23,6 +23,14 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	ui.segmentedControl->addSegment(tr("Application Layer"));
 
 	TracerManager &manager = TracerManager::sharedManager();
+	auto tracer = manager.findTracer();
+
+	if (tracer.has_value()) {
+		tracerConnected(tracer.value()); // TODO: remove this once libUSB implements hotplugging for windows
+	}
+	
+	QObject::connect(&manager, SIGNAL(tracerConnected(Tracer *)), this, SLOT(tracerConnected(Tracer *)));
+	QObject::connect(&manager, SIGNAL(tracerDisconnected(Tracer *)), this, SLOT(tracerDisconnected(Tracer *)));
 	QObject::connect(&manager, SIGNAL(tracerStartedSniffing(Tracer *)), this, SLOT(tracerStartedSniffing(Tracer *)));
 	QObject::connect(&manager, SIGNAL(tracerStoppedSniffing(Tracer *, libusb_transfer_status)), this, SLOT(tracerStoppedSniffing(Tracer *, libusb_transfer_status)));
 	QObject::connect(&manager, SIGNAL(traceStartedMidSession(Tracer *)), this, SLOT(traceStartedMidSession(Tracer *)));
@@ -30,20 +38,30 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	QObject::connect(&manager, SIGNAL(atrCommandReceived(Tracer *, const QString &)), this, SLOT(atrCommandReceived(Tracer *, const QString &)));
 }
 
+void MainFrame::tracerConnected(Tracer *tracer) {
+	this->tracer = std::make_optional(tracer);
+	ui.startButton->setEnabled(true);
+}
+
+void MainFrame::tracerDisconnected(Tracer *tracer) {
+	this->tracer.reset();
+	ui.startButton->setDisabled(true);
+	if (tracer->isSniffing()) {
+		QMessageBox messageBox;
+		messageBox.critical(this, tr("Sniffer Disconnected"), tr("The Sniffer was disconnected during a trace session. It is advised that the trace be stopped before unplugging the SIM card Sniffer."));
+		messageBox.setFixedSize(500, 200);
+	}
+}
+
 void MainFrame::startTracing() {
-	// TODO: Implement hotplugging 
-	std::optional<Tracer *> tracer = TracerManager::sharedManager().findTracer();
+	assert(tracer.has_value()); // logic error somewhere if this fails.
 
-	if (tracer.has_value()) {
-		libusb_error error = TracerManager::sharedManager().startSniffing(tracer.value());
+	libusb_error error = TracerManager::sharedManager().startSniffing(tracer.value());
 
-		if (error != LIBUSB_SUCCESS) {
-			QMessageBox messageBox;
-			messageBox.critical(this, tr("Error Starting Trace Session"), libUSBErrorToString(error));
-			messageBox.setFixedSize(500, 200);
-		}
-	} else {
-		// No tracer is connected to the computer
+	if (error != LIBUSB_SUCCESS) {
+		QMessageBox messageBox;
+		messageBox.critical(this, tr("Error Starting Trace Session"), libUSBErrorToString(error));
+		messageBox.setFixedSize(500, 200);
 	}
 }
 
@@ -55,14 +73,12 @@ void MainFrame::stopTracing() {
 
 void MainFrame::tracerStartedSniffing(Tracer *tracer) {
 	ui.startButton->setDisabled(true);
-	ui.stopButton->setDisabled(false);
-	this->tracer = std::make_optional(tracer);
+	ui.stopButton->setEnabled(true);
 }
 
 void MainFrame::tracerStoppedSniffing(Tracer *tracer, libusb_transfer_status errorCode) {
-	ui.startButton->setDisabled(false);
+	ui.startButton->setEnabled(tracer->isConnected());
 	ui.stopButton->setDisabled(true);
-	this->tracer.reset();
 }
 
 void MainFrame::traceStartedMidSession(Tracer *tracer) {

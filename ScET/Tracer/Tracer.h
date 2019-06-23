@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <chrono>
-#include <thread>
 #include <optional>
 #include <QObject>
 
@@ -102,7 +101,6 @@ private:
 	uint8_t interface = 0; // the interface that the handle has claimed
 	APDUSplitter *splitter;
 	std::optional<std::chrono::time_point<std::chrono::steady_clock>> firstAPDUTime;
-	std::thread eventsThread;
 	bool sniffing = false;
 
 	void finishedSniffing();

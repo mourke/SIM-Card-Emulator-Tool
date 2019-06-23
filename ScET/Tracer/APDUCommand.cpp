@@ -23,7 +23,7 @@ void APDUCommand::setInstructionCode(const uint8_t instructionCode) {
 	if (type() == Command) { // Response will have the same filetype as the command
 		if (instructionCode == 0x88 || instructionCode == 0x82) {
 			m_fileType = Authentication;
-		} else if (false) { // TODO: figure out what makes it an STK command
+		} else if ((instructionCode >> 4) == 1) { // of the form 1X
 			m_fileType = SIMToolkit;
 		} else {
 			m_fileType = IO;

@@ -3,12 +3,14 @@
 
 #include <optional>
 #include <vector>
+#include <thread>
 #include <QObject>
 
 class Tracer;
 class libusb_context;
 enum libusb_transfer_status;
 enum libusb_error;
+typedef int libusb_hotplug_callback_handle;
 class APDUCommand;
 
 /** A manager class for all tracers connected to
@@ -18,11 +20,34 @@ class APDUCommand;
   * The manager class will send notifications when  
   * tracers are hotplugged.
   *
+  * @b Note
+  *	Tool tips will need to be localised by the user as the platform's 
+  * localisations are not available.
+  *
   */
 class TracerManager : public QObject {
 	Q_OBJECT
 
 signals:
+	/**
+	 * Emitted as a tracer is plugged into the system.
+	 *
+	 * @param tracer	The tracer that has just connected to the system.
+	 */
+	void tracerConnected(Tracer *tracer);
+
+	/**
+	 * Emitted as a tracer is unplugged from the system.
+	 *
+	 * @b Note
+	 * The Tracer object will be deleted shortly after this method
+	 * is called so insure there are no references to the tracer
+	 * object that could be accidentally called.
+	 *
+	 * @param tracer	The tracer that is connected to the system.
+	 */
+	void tracerDisconnected(Tracer *tracer);
+
 	/**
 	 * Emitted when the tracer successfully starts sniffing.
 	 *
@@ -85,7 +110,9 @@ public:
 	void operator=(TracerManager const&) = delete;
 
 	/**
-	 * Finds a tracer connected to the system.
+	 * Finds a tracer connected to the system. The use of this 
+	 * method is discouraged. Listening for a connected tracer device
+	 * emitted by the `tracerConnected` signal is preferred.
 	 *
 	 * @retval	A Tracer object if a tracer is found. Otherwise,
 	 *			an empty optional.
@@ -120,6 +147,9 @@ private:
 	~TracerManager();
 	std::vector<Tracer *>tracers;
 	libusb_context *context;
+	libusb_hotplug_callback_handle hotplugHandle;
+	std::thread libUSBEventsThread;
+	bool handlingEvents;
 
 	void manageTracer(Tracer *tracer);
 	void stopManagingTracer(Tracer *tracer);
