@@ -12,7 +12,7 @@ TracerManager::TracerManager() : QObject(nullptr) {
 	assert(context != nullptr && "Failed to initialise libusb library");
 	//assert(libusb_has_capability(LIBUSB_CAP_HAS_HOTPLUG) != 0 && "This platform is not supported");
 	
-	error = libusb_hotplug_register_callback(context, (libusb_hotplug_event)(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED |
+	error = libusb_hotplug_register_callback(context, libusb_hotplug_event(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED |
 		LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT), LIBUSB_HOTPLUG_NO_FLAGS, SIMTRACE_VID, SIMTRACE_PID,
 		LIBUSB_HOTPLUG_MATCH_ANY, [](libusb_context *context, libusb_device *device, libusb_hotplug_event event, void *userData) -> int {
 		TracerManager *self = (TracerManager *)userData;

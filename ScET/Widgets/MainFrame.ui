@@ -647,26 +647,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>startButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MainFrame</receiver>
-   <slot>startTracing()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>21</x>
-     <y>61</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>154</x>
-     <y>-4</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>stopButton</sender>
    <signal>clicked()</signal>
    <receiver>MainFrame</receiver>
-   <slot>stopTracing()</slot>
+   <slot>stopButtonPressed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>84</x>
@@ -678,9 +662,77 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>startButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainFrame</receiver>
+   <slot>startButtonPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>30</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-3</x>
+     <y>178</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>authenticationCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainFrame</receiver>
+   <slot>checkboxStateChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>603</x>
+     <y>463</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>241</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fileIOCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainFrame</receiver>
+   <slot>checkboxStateChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>384</x>
+     <y>463</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>503</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SIMToolkitCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainFrame</receiver>
+   <slot>checkboxStateChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>635</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>startTracing()</slot>
-  <slot>stopTracing()</slot>
+  <slot>startButtonPressed()</slot>
+  <slot>stopButtonPressed()</slot>
+  <slot>exportButtonPressed()</slot>
+  <slot>importButtonPressed()</slot>
+  <slot>saveButtonPressed()</slot>
+  <slot>checkboxStateChanged(int)</slot>
  </slots>
 </ui>

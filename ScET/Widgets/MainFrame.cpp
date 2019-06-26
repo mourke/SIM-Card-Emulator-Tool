@@ -38,6 +38,64 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	QObject::connect(&manager, SIGNAL(atrCommandReceived(Tracer *, const QString &)), this, SLOT(atrCommandReceived(Tracer *, const QString &)));
 }
 
+void MainFrame::startButtonPressed() {
+	assert(tracer.has_value()); // logic error somewhere if this fails.
+
+	libusb_error error = TracerManager::sharedManager().startSniffing(tracer.value());
+
+	if (error != LIBUSB_SUCCESS) {
+		QMessageBox messageBox;
+		messageBox.critical(this, tr("Error Starting Trace Session"), libUSBErrorToString(error));
+		messageBox.setFixedSize(500, 200);
+	}
+}
+
+void MainFrame::stopButtonPressed() {
+	if (tracer.has_value() && tracer.value()->isSniffing()) {
+		TracerManager::sharedManager().stopSniffing(tracer.value());
+	}
+}
+
+void MainFrame::exportButtonPressed() {
+
+}
+
+void MainFrame::importButtonPressed() {
+
+}
+
+void MainFrame::saveButtonPressed() {
+
+}
+
+void MainFrame::checkboxStateChanged(int rawValue) {
+	filter = All;
+
+	if (!ui.authenticationCheckBox->isChecked()) {
+		filter = APDUFilter(filter ^ Authentication);
+	}
+
+	if (!ui.fileIOCheckBox->isChecked()) {
+		filter = APDUFilter(filter ^ FileIO);
+	}
+
+	if (!ui.SIMToolkitCheckBox->isChecked()) {
+		filter = APDUFilter(filter ^ STK);
+	}
+
+	textBrowser()->clear();
+
+	for (auto tuple : commands) {
+		QString output = std::get<0>(tuple);
+		std::optional<APDUCommand> command = std::get<1>(tuple);
+		if (command.has_value()) {
+			if (command.value().fileType() & filter) updateTextBrowser(output, command.value());
+		} else { // ATR
+			textBrowser()->insertPlainText(output + "\n");
+		}
+	}
+}
+
 void MainFrame::tracerConnected(Tracer *tracer) {
 	this->tracer = std::make_optional(tracer);
 	ui.startButton->setEnabled(true);
@@ -50,24 +108,6 @@ void MainFrame::tracerDisconnected(Tracer *tracer) {
 		QMessageBox messageBox;
 		messageBox.critical(this, tr("Sniffer Disconnected"), tr("The Sniffer was disconnected during a trace session. It is advised that the trace be stopped before unplugging the SIM card Sniffer."));
 		messageBox.setFixedSize(500, 200);
-	}
-}
-
-void MainFrame::startTracing() {
-	assert(tracer.has_value()); // logic error somewhere if this fails.
-
-	libusb_error error = TracerManager::sharedManager().startSniffing(tracer.value());
-
-	if (error != LIBUSB_SUCCESS) {
-		QMessageBox messageBox;
-		messageBox.critical(this, tr("Error Starting Trace Session"), libUSBErrorToString(error));
-		messageBox.setFixedSize(500, 200);
-	}
-}
-
-void MainFrame::stopTracing() {
-	if (tracer.has_value() && tracer.value()->isSniffing()) {
-		TracerManager::sharedManager().stopSniffing(tracer.value());
 	}
 }
 
@@ -88,6 +128,16 @@ void MainFrame::traceStartedMidSession(Tracer *tracer) {
 }
 
 void MainFrame::apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &command) {
+	commands.append(std::make_tuple(output, command));
+	if (command.fileType() & filter) updateTextBrowser(output, command); // only display if current filter allows
+}
+
+void MainFrame::atrCommandReceived(Tracer *tracer, const QString &output) {
+	commands.append(std::make_tuple(output, std::nullopt));
+	textBrowser()->insertPlainText(output + "\n");
+}
+
+void MainFrame::updateTextBrowser(const QString &output, const APDUCommand &command) {
 	textBrowser()->setTextColor(Qt::black);
 	int offset = 26; // apdu and timestamp
 	textBrowser()->insertPlainText(output.left(offset));
@@ -100,8 +150,4 @@ void MainFrame::apduCommandRecieved(Tracer *tracer, const QString &output, const
 	textBrowser()->setTextColor(statusCodeColor());
 	textBrowser()->insertPlainText(output.mid(offset, 7));
 	textBrowser()->insertPlainText("\n");
-}
-
-void MainFrame::atrCommandReceived(Tracer *tracer, const QString &output) {
-	textBrowser()->insertPlainText(output + "\n");
 }

@@ -26,11 +26,23 @@ public:
 	ToolBar * mainToolBar() const { return ui.mainToolBar; }
 	TitleBar * titleBar() const { return ui.titleBar;  }
 
-public slots:
-	void startTracing();
-	void stopTracing();
+	enum APDUFilter : uint8_t {
+		STK = 1 << 0,
+		FileIO = 1 << 1,
+		Authentication = 1 << 2,
+		All = STK | FileIO | Authentication
+	};
+
+	Q_ENUM(APDUFilter)
 
 private slots:
+	void startButtonPressed();
+	void stopButtonPressed();
+	void exportButtonPressed();
+	void importButtonPressed();
+	void saveButtonPressed();
+	void checkboxStateChanged(int rawValue);
+
 	void tracerStartedSniffing(Tracer *tracer);
 	void tracerStoppedSniffing(Tracer *tracer, libusb_transfer_status errorCode);
 	void traceStartedMidSession(Tracer *tracer);
@@ -40,7 +52,12 @@ private slots:
 	void tracerDisconnected(Tracer *tracer);
 private:
 	Ui::MainFrame ui;
+	APDUFilter filter = All;
 	std::optional<Tracer *> tracer;
+	QVector<std::tuple<QString, std::optional<APDUCommand>>> commands;
+
+	void updateTextBrowser(const QString &output, const APDUCommand &command);
+
 	friend class TitleBar;
 };
 

@@ -16,10 +16,10 @@ class APDUCommand {
 
 public:
 
-	enum FileType {
-		IO,
-		SIMToolkit,
-		Authentication
+	enum FileType : uint8_t {
+		SIMToolkit = 1 << 0,
+		IO = 1 << 1,
+		Authentication = 1 << 2
 	};
 
 	enum Type : uint8_t {
