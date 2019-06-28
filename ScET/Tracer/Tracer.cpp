@@ -43,7 +43,7 @@ libusb_error Tracer::startSniffing() {
 
 	libusb_free_config_descriptor(configDescriptor);
 
-	this->splitter = new APDUSplitter([this](APDUCommand &command, std::chrono::steady_clock::time_point &end) {
+	this->splitter = new APDUSplitter([this](APDUCommand command, std::chrono::steady_clock::time_point end) {
 		auto start = firstAPDUTime.value();
 
 		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
@@ -62,10 +62,7 @@ libusb_error Tracer::startSniffing() {
 		QMetaObject::invokeMethod(QApplication::instance(), [this, output, command]() {
 			emit apduCommandReceived(output, command);
 		});
-		
 	});
-
-	uint8_t buffer[16 * 265];
 
 	transfer = libusb_alloc_transfer(0);
 	libusb_fill_bulk_transfer(transfer, handle, SIMTRACE_IN_BULK, buffer, sizeof(buffer), [](libusb_transfer *transfer) {
@@ -83,7 +80,6 @@ libusb_error Tracer::startSniffing() {
 				self->sniffing = false;
 				self->finishedSniffing();
 			});
-			
 			break;
 		}
 	}, this, BULK_TRANSFER_TIMEOUT);
@@ -101,42 +97,45 @@ libusb_error Tracer::startSniffing() {
 }
 
 void Tracer::processInput(uint8_t *buffer, int bufferSize) {
-	SIMTraceHeader *header = (SIMTraceHeader *)buffer;
+	SIMTraceHeader header;
+	memcpy(&header, buffer, sizeof(SIMTraceHeader));
 
-	switch (header->command) {
+	switch (header.command) {
 	case SIMTraceCommand::Data: {
-		if (header->flags & SIMTraceFlag::PPSFiDi) {
-			printf("PPS(Fi=%u/Di=%u) \n", header->reset[0], header->reset[1]);
+		if (bufferSize > header.totalBufferSize) { // multiple traces have been mangled together, we must separate them
+			uint8_t *demangledBuffer = buffer + header.totalBufferSize;
+			size_t demangledBufferSize = bufferSize - header.totalBufferSize;
+			processInput(buffer, bufferSize - demangledBufferSize); // process the original trace and then the demangled one
+			return processInput(demangledBuffer, demangledBufferSize); // recursively call this in case there are more than two traces mangled together
+		} else if (bufferSize < header.totalBufferSize) { // something went wrong abort the trace
+			break;
 		}
 
-		if (header->flags & SIMTraceFlag::WaitTimeExpired) {
+		if (header.flags & SIMTraceFlag::PPSFiDi) {
+			printf("PPS(Fi=%u/Di=%u) \n", header.reset[0], header.reset[1]);
+		}
+
+		if (header.flags & SIMTraceFlag::WaitTimeExpired) {
 			printf("Wait time expired\n");
 			break;
 		}
 
-		if (header->totalBufferSize != bufferSize) { // multiple traces have been mangled together, we must separate them
-			uint8_t *demangledBuffer = buffer + header->totalBufferSize;
-			size_t demangledBufferSize = bufferSize - header->totalBufferSize;
-			processInput(buffer, bufferSize - demangledBufferSize); // process the original trace and then the demangled one
-			return processInput(demangledBuffer, demangledBufferSize); // recursively call this in case there are more than two traces mangled together
-		}
-
-		size_t headerSize = sizeof(*header);
+		size_t headerSize = sizeof(header);
 		uint8_t *payload = buffer + headerSize; // point to the first element of the data
 		int payloadSize = bufferSize - headerSize;
 
-		if (payloadSize <= 0) break;
-
 		if (!firstAPDUTime.has_value()) {
 			firstAPDUTime = std::make_optional(std::chrono::high_resolution_clock::now());
-			if (header->sequenceNumber > 10) { // first sequence number is never 0 it's usually around 6 so we say 10 just to be sure.
+			if (header.sequenceNumber > 1) { // first sequence number is never 0 it's usually around 6 so we say 10 just to be sure.
 				QMetaObject::invokeMethod(QApplication::instance(), [this]() {
 					emit traceStartedMidSession();
 				});
 			}
 		}
 
-		if (header->flags & SIMTraceFlag::AnswerToReset) {
+		if (payloadSize <= 0) break;
+
+		if (header.flags & SIMTraceFlag::AnswerToReset) {
 			QString string;
 			uint8_t *data = payload;
 			for (int i = 0; i < payloadSize; ++i) {
@@ -154,7 +153,7 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 		break;
 	}
 	default:
-		printf("Unknown SIMTraceCommand Type 0x%02x\n", header->command);
+		printf("Unknown SIMTraceCommand Type 0x%02x\n", header.command);
 		break;
 	}
 }

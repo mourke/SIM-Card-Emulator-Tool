@@ -102,6 +102,7 @@ private:
 	APDUSplitter *splitter;
 	std::optional<std::chrono::time_point<std::chrono::steady_clock>> firstAPDUTime;
 	bool sniffing = false;
+	uint8_t buffer[16 * 265];
 
 	void finishedSniffing();
 	void processInput(uint8_t *buffer, int bufferSize);

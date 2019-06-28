@@ -138,7 +138,6 @@ void MainFrame::atrCommandReceived(Tracer *tracer, const QString &output) {
 }
 
 void MainFrame::updateTextBrowser(const QString &output, const APDUCommand &command) {
-	textBrowser()->setTextColor(Qt::black);
 	int offset = 26; // apdu and timestamp
 	textBrowser()->insertPlainText(output.left(offset));
 	textBrowser()->setTextColor(headerColor());
@@ -150,4 +149,5 @@ void MainFrame::updateTextBrowser(const QString &output, const APDUCommand &comm
 	textBrowser()->setTextColor(statusCodeColor());
 	textBrowser()->insertPlainText(output.mid(offset, 7));
 	textBrowser()->insertPlainText("\n");
+	textBrowser()->setTextColor(Qt::black); // reset text color.
 }

@@ -22,10 +22,9 @@ class APDUSplitter {
 public:
 
 	/** The function called after an input from the tracer 
-	  * has been successfully split into a command and response
-	  * pair.
+	  * has been successfully split into an APDU command.
 	  */
-	typedef std::function<void(APDUCommand &, std::chrono::steady_clock::time_point &)> Callback;
+	typedef std::function<void(APDUCommand, std::chrono::steady_clock::time_point)> Callback;
 
 	APDUSplitter(Callback callback) : m_callback(callback) {};
 	
