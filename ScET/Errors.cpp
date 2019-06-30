@@ -16,7 +16,7 @@ QString libUSBErrorToString(libusb_error error) {
 		errorReason = QObject::tr("Access denied (insufficient permissions)");
 		break;
 	case LIBUSB_ERROR_NO_DEVICE:
-		errorReason = QObject::tr(" No such device (it may have been disconnected)");
+		errorReason = QObject::tr("No such device (it may have been disconnected)");
 		break;
 	case LIBUSB_ERROR_NOT_FOUND:
 		errorReason = QObject::tr("Entity not found");

@@ -142,10 +142,10 @@ void MainFrame::updateTextBrowser(const QString &output, const APDUCommand &comm
 	textBrowser()->insertPlainText(output.left(offset));
 	textBrowser()->setTextColor(headerColor());
 	textBrowser()->insertPlainText(output.mid(offset, 15));
-	offset += 15; // header
+	offset += 15; // header and space after
 	textBrowser()->setTextColor(command.type() == APDUCommand::Type::Command ? dataColor() : responseColor());
-	textBrowser()->insertPlainText(output.mid(offset, command.dataLength() * 3));
-	offset += command.dataLength() * 3; // data (two hexadecimal characters per data) and spacings between and after each character
+	textBrowser()->insertPlainText(output.mid(offset, command.data().size() * 3));
+	offset += command.data().size() * 3; // data (two hexadecimal characters per data) and spacings between and after each character
 	textBrowser()->setTextColor(statusCodeColor());
 	textBrowser()->insertPlainText(output.mid(offset, 7));
 	textBrowser()->insertPlainText("\n");
