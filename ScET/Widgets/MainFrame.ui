@@ -300,6 +300,41 @@
        </spacer>
       </item>
       <item>
+       <widget class="ToolBarButton" name="clearButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>48</width>
+          <height>48</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Clear</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../Resources/ScET.qrc">
+          <normaloff>:/Windows/Clear</normaloff>:/Windows/Clear</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>18</width>
+          <height>18</height>
+         </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="ToolBarButton" name="saveButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -335,7 +370,7 @@
        </widget>
       </item>
       <item>
-       <widget class="ToolBarButton" name="exportButton">
+       <widget class="ToolBarButton" name="openButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -349,49 +384,14 @@
          </size>
         </property>
         <property name="toolTip">
-         <string>Export</string>
+         <string>Open</string>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="icon">
          <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows/Export</normaloff>:/Windows/Export</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>18</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="ToolBarButton" name="importButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>48</width>
-          <height>48</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Import</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows/Import</normaloff>:/Windows/Import</iconset>
+          <normaloff>:/Windows/Open</normaloff>:/Windows/Open</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -650,7 +650,7 @@
    <sender>stopButton</sender>
    <signal>clicked()</signal>
    <receiver>MainFrame</receiver>
-   <slot>stopButtonPressed()</slot>
+   <slot>stopButtonClicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>84</x>
@@ -666,7 +666,7 @@
    <sender>startButton</sender>
    <signal>clicked()</signal>
    <receiver>MainFrame</receiver>
-   <slot>startButtonPressed()</slot>
+   <slot>startButtonClicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>30</x>
@@ -726,13 +726,61 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>openButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainFrame</receiver>
+   <slot>openButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>795</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>692</x>
+     <y>506</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainFrame</receiver>
+   <slot>saveButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>747</x>
+     <y>78</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>721</x>
+     <y>531</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainFrame</receiver>
+   <slot>clearButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>674</x>
+     <y>61</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>680</x>
+     <y>495</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>startButtonPressed()</slot>
-  <slot>stopButtonPressed()</slot>
-  <slot>exportButtonPressed()</slot>
-  <slot>importButtonPressed()</slot>
-  <slot>saveButtonPressed()</slot>
   <slot>checkboxStateChanged(int)</slot>
+  <slot>startButtonClicked()</slot>
+  <slot>stopButtonClicked()</slot>
+  <slot>saveButtonClicked()</slot>
+  <slot>openButtonClicked()</slot>
+  <slot>clearButtonClicked()</slot>
  </slots>
 </ui>

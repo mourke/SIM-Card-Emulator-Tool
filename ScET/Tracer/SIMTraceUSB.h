@@ -27,7 +27,7 @@ PACK(struct SIMTraceHeader {
 	uint8_t reset[2];
 	uint16_t sequenceNumber;
 	uint16_t offset; 
-	uint16_t totalBufferSize; // header size + data
+	uint16_t totalBufferSize; // header size + data size
 });
 
 

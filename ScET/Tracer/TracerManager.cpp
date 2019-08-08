@@ -106,6 +106,10 @@ void TracerManager::manageTracer(Tracer *tracer) {
 	QObject::connect(tracer, &Tracer::atrCommandReceived, this, [this, tracer](const QString &output) {
 		emit atrCommandReceived(tracer, output);
 	});
+
+	QObject::connect(tracer, &Tracer::simTraceCommandReceived, this, [this, tracer](const QString &input) {
+		emit simTraceCommandReceived(tracer, input);
+	});
 }
 
 void TracerManager::stopManagingTracer(Tracer *tracer) {

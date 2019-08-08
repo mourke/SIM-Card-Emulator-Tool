@@ -43,26 +43,7 @@ libusb_error Tracer::startSniffing() {
 
 	libusb_free_config_descriptor(configDescriptor);
 
-	this->splitter = new APDUSplitter([this](APDUCommand command, std::chrono::steady_clock::time_point end) {
-		auto start = firstAPDUTime.value();
-
-		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		unsigned long long milliseconds = microseconds / 1000;
-		microseconds = microseconds - (milliseconds * 1000);
-		unsigned long long seconds = milliseconds / 1000;
-		milliseconds = milliseconds - (seconds * 1000);
-		unsigned long long minutes = seconds / 60;
-		seconds = seconds - (minutes * 60);
-		unsigned long long hours = minutes / 60;
-		minutes = minutes - (hours * 60);
-
-		QString output = QString::asprintf("APDU: (%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
-		output += command.string();
-
-		QMetaObject::invokeMethod(QApplication::instance(), [this, output, command]() {
-			emit apduCommandReceived(output, command);
-		});
-	});
+	createSplitter();
 
 	transfer = libusb_alloc_transfer(0);
 	libusb_fill_bulk_transfer(transfer, handle, SIMTRACE_IN_BULK, buffer, sizeof(buffer), [](libusb_transfer *transfer) {
@@ -96,6 +77,33 @@ libusb_error Tracer::startSniffing() {
 	return (libusb_error)error;
 }
 
+void Tracer::createSplitter() {
+	this->splitter = new APDUSplitter([this](APDUCommand command, std::chrono::steady_clock::time_point end) {
+		auto start = firstAPDUTime.value();
+
+		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+		unsigned long long milliseconds = microseconds / 1000;
+		microseconds = microseconds - (milliseconds * 1000);
+		unsigned long long seconds = milliseconds / 1000;
+		milliseconds = milliseconds - (seconds * 1000);
+		unsigned long long minutes = seconds / 60;
+		seconds = seconds - (minutes * 60);
+		unsigned long long hours = minutes / 60;
+		minutes = minutes - (hours * 60);
+
+		QString output = QString::asprintf("APDU: (%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
+		output += command.string();
+
+		QMetaObject::invokeMethod(QApplication::instance(), [this, output, command]() {
+			emit apduCommandReceived(output, command);
+		});
+	});
+}
+
+void Tracer::deleteSplitter() {
+	delete splitter;
+}
+
 void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 	SIMTraceHeader header;
 	memcpy(&header, buffer, sizeof(SIMTraceHeader));
@@ -123,6 +131,14 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 		size_t headerSize = sizeof(header);
 		uint8_t *payload = buffer + headerSize; // point to the first element of the data
 		int payloadSize = bufferSize - headerSize;
+
+		QString simTraceCommand = QString::asprintf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", header.command, header.flags, header.reset[0], header.reset[1], header.sequenceNumber & 0x00FF, (header.sequenceNumber & 0xFF00) >> 8, header.offset & 0x00FF, (header.offset & 0xFF00) >> 8, header.totalBufferSize & 0x00FF, (header.totalBufferSize & 0xFF00) >> 8);
+		for (int i = 0; i < payloadSize; ++i) {
+			simTraceCommand += QString::asprintf("%02x", *(payload + i));
+		}
+		QMetaObject::invokeMethod(QApplication::instance(), [this, simTraceCommand]() {
+			emit simTraceCommandReceived(simTraceCommand);
+		});
 
 		if (!firstAPDUTime.has_value()) {
 			firstAPDUTime = std::make_optional(std::chrono::high_resolution_clock::now());
@@ -169,7 +185,7 @@ void Tracer::finishedSniffing() {
 	libusb_free_transfer(transfer);
 	libusb_release_interface(handle, interface);
 	libusb_close(handle);
-	delete splitter;
+	deleteSplitter();
 	firstAPDUTime.reset();
 	emit stoppedSniffing(status);
 }

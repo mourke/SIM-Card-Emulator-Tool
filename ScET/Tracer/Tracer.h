@@ -64,6 +64,13 @@ signals:
 	 */
 	void atrCommandReceived(const QString &output);
 
+	/**
+	 * Emitted when the tracer communicates with the computer.
+	 *
+	 * @param input	The raw hexadecimal input from the tracer.
+	 */
+	void simTraceCommandReceived(const QString &input);
+
 public:
 	/**
 	 * A boolean value indicating whether the current tracer is 
@@ -88,10 +95,13 @@ private:
 	 */
 	libusb_error startSniffing();
 
+	void createSplitter();
+	void deleteSplitter();
+
 	/** Stops sniffing requests. */
 	void stopSniffing();
 
-	Tracer(libusb_device *device, libusb_context *context = nullptr);
+	Tracer(libusb_device *device = nullptr, libusb_context *context = nullptr);
 	Tracer(QObject *parent) = delete;
 	~Tracer();
 	libusb_device *device;
@@ -108,6 +118,7 @@ private:
 	void processInput(uint8_t *buffer, int bufferSize);
 	
 	friend class TracerManager;
+	friend class MainFrame;
 };
 
 

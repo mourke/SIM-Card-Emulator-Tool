@@ -36,11 +36,11 @@ public:
 	Q_ENUM(APDUFilter)
 
 private slots:
-	void startButtonPressed();
-	void stopButtonPressed();
-	void exportButtonPressed();
-	void importButtonPressed();
-	void saveButtonPressed();
+	void startButtonClicked();
+	void stopButtonClicked();
+	void openButtonClicked();
+	void saveButtonClicked();
+	bool clearButtonClicked(); // returns true if user has confirmed clear
 	void checkboxStateChanged(int rawValue);
 
 	void tracerStartedSniffing(Tracer *tracer);
@@ -48,6 +48,7 @@ private slots:
 	void traceStartedMidSession(Tracer *tracer);
 	void apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &command);
 	void atrCommandReceived(Tracer *tracer, const QString &output);
+	void simTraceCommandReceived(Tracer *tracer, const QString &input);
 	void tracerConnected(Tracer *tracer);
 	void tracerDisconnected(Tracer *tracer);
 private:
@@ -55,7 +56,9 @@ private:
 	APDUFilter filter = All;
 	std::optional<Tracer *> tracer;
 	QVector<std::tuple<QString, std::optional<APDUCommand>>> commands;
+	QString simTraceCommands;
 
+	void reset();
 	void updateTextBrowser(const QString &output, const APDUCommand &command);
 
 	friend class TitleBar;

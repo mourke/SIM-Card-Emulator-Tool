@@ -98,6 +98,14 @@ signals:
 	 */
 	void atrCommandReceived(Tracer *tracer, const QString &output);
 
+	/**
+	 * Emitted when the tracer communicates with the computer.
+	 *
+	 * @param tracer	The tracer that has sent the input.
+	 * @param input	The raw hexadecimal input from the tracer.
+	 */
+	void simTraceCommandReceived(Tracer *tracer, const QString &input);
+
 public:
 	/** The shared manager instance */
 	static TracerManager & sharedManager() {
