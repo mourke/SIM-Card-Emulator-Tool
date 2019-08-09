@@ -15,7 +15,9 @@ Tracer::Tracer(libusb_device *device, libusb_context *context) : QObject(nullptr
 }
 
 Tracer::~Tracer() {
-	libusb_unref_device(device); // TracerManager has increased the reference count of the device and we need to decrement it
+	if (device != nullptr) {
+		libusb_unref_device(device); // TracerManager has increased the reference count of the device and we need to decrement it
+	}
 }
 
 libusb_error Tracer::startSniffing() {

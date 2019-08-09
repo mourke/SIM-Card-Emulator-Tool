@@ -39,6 +39,7 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	QObject::connect(&manager, SIGNAL(traceStartedMidSession(Tracer *)), this, SLOT(traceStartedMidSession(Tracer *)));
 	QObject::connect(&manager, SIGNAL(apduCommandRecieved(Tracer *, const QString &, const APDUCommand &)), this, SLOT(apduCommandRecieved(Tracer *, const QString &, const APDUCommand &)));
 	QObject::connect(&manager, SIGNAL(atrCommandReceived(Tracer *, const QString &)), this, SLOT(atrCommandReceived(Tracer *, const QString &)));
+	QObject::connect(&manager, SIGNAL(simTraceCommandReceived(Tracer *, const QString &)), this, SLOT(simTraceCommandReceived(Tracer *, const QString &)));
 }
 
 void MainFrame::startButtonClicked() {
