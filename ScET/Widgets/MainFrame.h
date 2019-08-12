@@ -60,6 +60,7 @@ private:
 
 	void reset();
 	void updateTextBrowser(const QString &output, const APDUCommand &command);
+	void moveCursorToEnd();
 
 	friend class TitleBar;
 };

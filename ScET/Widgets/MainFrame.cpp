@@ -183,6 +183,7 @@ void MainFrame::checkboxStateChanged(int rawValue) {
 		if (command.has_value()) {
 			if (command.value().fileType() & filter) updateTextBrowser(output, command.value());
 		} else { // ATR
+			textBrowser()->setTextColor(Qt::black);
 			textBrowser()->insertPlainText(output + "\n");
 		}
 	}
@@ -230,6 +231,8 @@ void MainFrame::apduCommandRecieved(Tracer *tracer, const QString &output, const
 
 void MainFrame::atrCommandReceived(Tracer *tracer, const QString &output) {
 	commands.append(std::make_tuple(output, std::nullopt));
+	moveCursorToEnd();
+	textBrowser()->setTextColor(Qt::black);
 	textBrowser()->insertPlainText(output + "\n");
 }
 
@@ -238,7 +241,9 @@ void MainFrame::simTraceCommandReceived(Tracer *tracer, const QString &input) {
 }
 
 void MainFrame::updateTextBrowser(const QString &output, const APDUCommand &command) {
+	moveCursorToEnd();
 	int offset = 26; // apdu and timestamp
+	textBrowser()->setTextColor(Qt::black);
 	textBrowser()->insertPlainText(output.left(offset));
 	textBrowser()->setTextColor(headerColor());
 	textBrowser()->insertPlainText(output.mid(offset, 15));
@@ -249,5 +254,10 @@ void MainFrame::updateTextBrowser(const QString &output, const APDUCommand &comm
 	textBrowser()->setTextColor(statusCodeColor());
 	textBrowser()->insertPlainText(output.mid(offset, 7));
 	textBrowser()->insertPlainText("\n");
-	textBrowser()->setTextColor(Qt::black); // reset text color.
+}
+
+void MainFrame::moveCursorToEnd() {
+	auto textCursor = textBrowser()->textCursor();
+	textCursor.movePosition(QTextCursor::End);
+	textBrowser()->setTextCursor(textCursor);
 }
