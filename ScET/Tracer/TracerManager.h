@@ -113,10 +113,6 @@ public:
 		return instance;
 	}
 
-	// prevent accidental copies
-	TracerManager(TracerManager const&) = delete;
-	void operator=(TracerManager const&) = delete;
-
 	/**
 	 * Finds a tracer connected to the system. The use of this 
 	 * method is discouraged. Listening for a connected tracer device
@@ -162,6 +158,8 @@ private:
 	void manageTracer(Tracer *tracer);
 	void stopManagingTracer(Tracer *tracer);
 	bool isManagingTracer(Tracer *tracer);
+
+	Q_DISABLE_COPY(TracerManager)
 };
 
 #endif // TRACERMANAGER_H

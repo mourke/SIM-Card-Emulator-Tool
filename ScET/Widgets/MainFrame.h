@@ -60,7 +60,9 @@ private:
 
 	void reset();
 	void updateTextBrowser(const QString &output, const APDUCommand &command);
+	void moveCursorToStart();
 	void moveCursorToEnd();
+	void openFile(const QString &fileName);
 
 	friend class TitleBar;
 };

@@ -15,9 +15,9 @@ class MainWindow : public QObject {
 	Q_PROPERTY(ToolBar mainToolBar READ mainToolBar)
 
 public:
-	MainFrame* frame() const { return m_frame; }
-	QTextBrowser* centralWidget() const;
-	ToolBar* mainToolBar() const;
+	MainFrame * frame() const { return m_frame; }
+	QTextBrowser * centralWidget() const;
+	ToolBar * mainToolBar() const;
 
 	void show() const;
 	MainWindow(QObject *parent = Q_NULLPTR);

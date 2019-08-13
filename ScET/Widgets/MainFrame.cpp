@@ -8,6 +8,8 @@
 #include "Tracer/APDUCommand.h"
 #include "Errors.h"
 #include "Colors.h"
+#include "FileManager.h"
+#include <SingleApplication.h>
 
 
 MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
@@ -40,6 +42,22 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	QObject::connect(&manager, SIGNAL(apduCommandRecieved(Tracer *, const QString &, const APDUCommand &)), this, SLOT(apduCommandRecieved(Tracer *, const QString &, const APDUCommand &)));
 	QObject::connect(&manager, SIGNAL(atrCommandReceived(Tracer *, const QString &)), this, SLOT(atrCommandReceived(Tracer *, const QString &)));
 	QObject::connect(&manager, SIGNAL(simTraceCommandReceived(Tracer *, const QString &)), this, SLOT(simTraceCommandReceived(Tracer *, const QString &)));
+
+	QObject::connect((SingleApplication *)SingleApplication::instance(), &SingleApplication::receivedMessage, this, [this](quint32 instanceId, QByteArray message) {
+		auto arguments = QString::fromUtf8(message).split("»");
+		if (arguments.size() > 1) {
+			QString fileName = arguments.at(1);
+			fileName.replace("'", "");
+			openFile(fileName);
+		}
+	});
+
+	auto arguments = QApplication::arguments();
+	if (arguments.size() > 1) {
+		QString fileName = arguments.at(1);
+		fileName.replace("'", "");
+		openFile(fileName);
+	}
 }
 
 void MainFrame::startButtonClicked() {
@@ -60,88 +78,61 @@ void MainFrame::stopButtonClicked() {
 }
 
 void MainFrame::saveButtonClicked() {
-	QString fileName = QFileDialog::getSaveFileName(this,
+	const QString fileName = QFileDialog::getSaveFileName(this,
 		tr("Save SIM Tracing Session"), "",
 		tr("HTML Document (*.html);;SIM Tracing Session (*.sts)"));
 
 	if (!fileName.isEmpty()) {
-		QFile file(fileName);
-		if (file.open(QIODevice::WriteOnly)) {
-			QTextStream out(&file);
-			QString extension = QFileInfo(fileName).suffix();
-			if (extension == "html") {
-				out << textBrowser()->toHtml();
-			} else {
-				out << simTraceCommands;
-			}
-			file.close();
-		} else {
-			QMessageBox::information(this, tr("Unable to save file"), file.errorString());
+		const QString extension = QFileInfo(fileName).suffix();
+		const QString contents = extension == "html" ? textBrowser()->toHtml() : simTraceCommands;
+		try {
+			FileManager::sharedManager().saveFile(fileName, contents);
+		} catch (const std::exception &exception) {
+			QMessageBox::information(this, tr("Unable to save file"), exception.what());
 		}
 	}
 }
 
 void MainFrame::openButtonClicked() {
-	QString fileName = QFileDialog::getOpenFileName(this,
+	const QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Open SIM Tracing Session"), "",
 		tr("SIM Tracing Session (*.sts)"));
 
 	if (!fileName.isEmpty()) {
-		QFile file(fileName);
+		openFile(fileName);
+	}
+}
 
-		if (file.open(QIODevice::ReadOnly)) {
-			if (!clearButtonClicked()) return;
+void MainFrame::openFile(const QString &fileName) {
+	if (!clearButtonClicked()) return; // user cancelled request
+	try {
+		auto data = FileManager::sharedManager().openFile(fileName);
+		auto bufferLength = data.size();
 
-			QTextStream in(&file);
-			Tracer fakeTracer;
+		if (bufferLength == 0) return; // file empty
 
-			QObject::connect(&fakeTracer, &Tracer::apduCommandReceived, this, [this, &fakeTracer](const QString &output, const APDUCommand &command) {
-				apduCommandRecieved(&fakeTracer, output, command);
-			});
+		auto buffer = &data[0];
+		Tracer fakeTracer;
+		fakeTracer.createSplitter();
 
-			QObject::connect(&fakeTracer, &Tracer::atrCommandReceived, this, [this, &fakeTracer](const QString &output) {
-				atrCommandReceived(&fakeTracer, output);
-			});
+		QObject::connect(&fakeTracer, &Tracer::apduCommandReceived, this, [this, &fakeTracer](const QString &output, const APDUCommand &command) {
+			apduCommandRecieved(&fakeTracer, output, command);
+		});
 
-			QObject::connect(&fakeTracer, &Tracer::simTraceCommandReceived, this, [this, &fakeTracer](const QString &input) {
-				simTraceCommandReceived(&fakeTracer, input);
-			});
+		QObject::connect(&fakeTracer, &Tracer::atrCommandReceived, this, [this, &fakeTracer](const QString &output) {
+			atrCommandReceived(&fakeTracer, output);
+		});
 
-			fakeTracer.createSplitter();
+		QObject::connect(&fakeTracer, &Tracer::simTraceCommandReceived, this, [this, &fakeTracer](const QString &input) {
+			simTraceCommandReceived(&fakeTracer, input);
+		});
 
-			while (!in.atEnd()) {
-				QString input = in.readLine();
-				int inputLength = input.length();
-				if (inputLength == 0) continue;
-				size_t bufferLength = inputLength / 2;
-				uint8_t *buffer = (uint8_t *)malloc(bufferLength);
-				for (int i = 0; i + 1 < inputLength; i += 2) {
-					uint8_t hex = 0;
-					QChar first = input[i].toLower();
-					QChar second = input[i + 1].toLower();
-					if (first.isDigit()) {
-						hex = first.digitValue() * 16;
-					} else {
-						hex += (first.toLatin1() - 'a' + 10) * 16;
-					}
-
-					if (second.isDigit()) {
-						hex += second.digitValue();
-					} else {
-						hex += second.toLatin1() - 'a' + 10;
-					}
-					*(buffer + i/2) = hex;
-				}
-				fakeTracer.processInput(buffer, bufferLength);
-				free(buffer);
-			}
-			
-			fakeTracer.deleteSplitter();
-			QObject::disconnect(&fakeTracer);
-			file.close();
-		} else {
-			QMessageBox::information(this, tr("Unable to open file"), file.errorString());
-		}
+		fakeTracer.processInput(buffer, bufferLength);
+		fakeTracer.deleteSplitter();
+		QObject::disconnect(&fakeTracer);
+		moveCursorToStart();
+	} catch (const std::exception &exception) {
+		QMessageBox::information(this, tr("Unable to open file"), exception.what());
 	}
 }
 
@@ -187,6 +178,8 @@ void MainFrame::checkboxStateChanged(int rawValue) {
 			textBrowser()->insertPlainText(output + "\n");
 		}
 	}
+
+	moveCursorToStart();
 }
 
 void MainFrame::reset() {
@@ -259,5 +252,11 @@ void MainFrame::updateTextBrowser(const QString &output, const APDUCommand &comm
 void MainFrame::moveCursorToEnd() {
 	auto textCursor = textBrowser()->textCursor();
 	textCursor.movePosition(QTextCursor::End);
+	textBrowser()->setTextCursor(textCursor);
+}
+
+void MainFrame::moveCursorToStart() {
+	auto textCursor = textBrowser()->textCursor();
+	textCursor.movePosition(QTextCursor::Start);
 	textBrowser()->setTextCursor(textCursor);
 }

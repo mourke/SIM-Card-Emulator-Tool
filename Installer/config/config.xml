@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>ScET</Name>
+    <Version>1.0.0</Version>
+    <Title>ScET Installer</Title>
+    <Publisher>Card Centric</Publisher>
+	<ProductUrl>http://en.cardcentric.com/</ProductUrl>
+    <StartMenuDir>Card Centric Ltd.</StartMenuDir>
+    <TargetDir>@ApplicationsDirX64@/ScET</TargetDir>
+	<RemoteRepositories>
+        <Repository>
+            <Url>https://github.com/mourke/SIM-Card-Emulator-Tool/Installer</Url>
+        </Repository>
+    </RemoteRepositories>
+</Installer>

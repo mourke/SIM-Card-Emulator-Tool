@@ -1,15 +1,38 @@
-#include "Windows/MainWindow.h"
 #include <QtWidgets/QApplication>
+#include <SingleApplication.h>
+#include "Windows/MainWindow.h"
+#include "Widgets/MainFrame.h"
+#include <windows.h>
+#include <WinUser.h>
+
 
 int main(int argc, char *argv[]) {
-	QApplication application(argc, argv);
+	SingleApplication application(argc, argv, true, SingleApplication::Mode::SecondaryNotification);
+
+	if (application.isSecondary()) {
+		AllowSetForegroundWindow(DWORD(application.primaryPid()));
+		application.sendMessage(application.arguments().join("»").toUtf8());
+		exit(0);
+	}
 
 	QCoreApplication::setOrganizationName("CardCentric");
 	QCoreApplication::setOrganizationDomain("com.cardcentric");
 	QCoreApplication::setApplicationName("ScET");
+	QCoreApplication::setApplicationVersion("0.1.0-1");
 	
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();
+
+	if (application.isPrimary()) {
+		QObject::connect(&application, &SingleApplication::instanceStarted, [mainWindow]() {
+			QFrame *frame = mainWindow->frame();
+			if (frame->isMinimized()) {
+				frame->showNormal();
+			} else {
+				frame->activateWindow();
+			}
+		});
+	}
 
 	return application.exec();
 }
