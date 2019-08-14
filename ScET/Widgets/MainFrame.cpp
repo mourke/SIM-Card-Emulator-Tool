@@ -10,6 +10,7 @@
 #include "Colors.h"
 #include "FileManager.h"
 #include <SingleApplication.h>
+#include "UpdateManager.h"
 
 
 MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
@@ -43,21 +44,53 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	QObject::connect(&manager, SIGNAL(atrCommandReceived(Tracer *, const QString &)), this, SLOT(atrCommandReceived(Tracer *, const QString &)));
 	QObject::connect(&manager, SIGNAL(simTraceCommandReceived(Tracer *, const QString &)), this, SLOT(simTraceCommandReceived(Tracer *, const QString &)));
 
-	QObject::connect((SingleApplication *)SingleApplication::instance(), &SingleApplication::receivedMessage, this, [this](quint32 instanceId, QByteArray message) {
-		auto arguments = QString::fromUtf8(message).split("»");
-		if (arguments.size() > 1) {
-			QString fileName = arguments.at(1);
-			fileName.replace("'", "");
-			openFile(fileName);
+	SingleApplication *application = (SingleApplication *)SingleApplication::instance();
+	QObject::connect(application, &QApplication::applicationStateChanged, [this](Qt::ApplicationState state) {
+		if (state == Qt::ApplicationState::ApplicationActive) {
+			checkForUpdates();
 		}
+	});
+	QObject::connect(application, &SingleApplication::receivedMessage, this, [this](quint32 instanceId, QByteArray message) {
+		auto arguments = QString::fromUtf8(message).split("»");
+		applicationReceivedArguments(arguments);
 	});
 
 	auto arguments = QApplication::arguments();
+	applicationReceivedArguments(arguments);
+}
+
+void MainFrame::applicationReceivedArguments(QStringList arguments) {
 	if (arguments.size() > 1) {
 		QString fileName = arguments.at(1);
 		fileName.replace("'", "");
 		openFile(fileName);
 	}
+}
+
+void MainFrame::checkForUpdates() {
+	UpdateManager::sharedManager().checkVersion(UpdateManager::CheckFrequency::Immediately, [this](std::optional<QString> version) -> UpdateManager::UpdateAction {
+		if (!version.has_value()) return UpdateManager::UpdateAction::DoNothing;
+
+		QMessageBox messageBox;
+		messageBox.setIcon(QMessageBox::Icon::Information);
+		messageBox.setWindowTitle(tr("Updates Found"));
+		messageBox.setText(QString(tr("Version %1 is now available to download")).arg(version.value()));
+		auto okButton = messageBox.addButton(QMessageBox::Ok);
+		auto skipButton = messageBox.addButton(tr("Skip"), QMessageBox::ButtonRole::NoRole);
+		auto updateButton = messageBox.addButton(tr("Update"), QMessageBox::ButtonRole::YesRole);
+
+		messageBox.exec();
+
+		if (messageBox.clickedButton() == okButton) {
+			return UpdateManager::UpdateAction::DoNothing;
+		}
+		else if (messageBox.clickedButton() == skipButton) {
+			return UpdateManager::UpdateAction::Skip;
+		}
+		else {
+			return UpdateManager::UpdateAction::Update;
+		}
+	});
 }
 
 void MainFrame::startButtonClicked() {

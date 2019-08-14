@@ -63,6 +63,8 @@ private:
 	void moveCursorToStart();
 	void moveCursorToEnd();
 	void openFile(const QString &fileName);
+	void applicationReceivedArguments(QStringList arguments);
+	void checkForUpdates();
 
 	friend class TitleBar;
 };

@@ -136,6 +136,9 @@
     <QtMoc Include="singleapplication.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="UpdateManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Widgets\MainFrame.ui">
@@ -229,9 +232,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Errors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UpdateManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FileManager.h">

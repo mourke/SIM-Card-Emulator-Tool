@@ -12,6 +12,5 @@
     <Script>installscript.qs</Script>
 	<UserInterfaces>
         <UserInterface>desktopshortcutform.ui</UserInterface>
-		<UserInterface>launchapplicationform.ui</UserInterface>
     </UserInterfaces>
 </Package>

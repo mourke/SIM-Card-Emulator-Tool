@@ -1,4 +1,3 @@
-#include <QtWidgets/QApplication>
 #include <SingleApplication.h>
 #include "Windows/MainWindow.h"
 #include "Widgets/MainFrame.h"
@@ -15,10 +14,10 @@ int main(int argc, char *argv[]) {
 		exit(0);
 	}
 
-	QCoreApplication::setOrganizationName("CardCentric");
-	QCoreApplication::setOrganizationDomain("com.cardcentric");
-	QCoreApplication::setApplicationName("ScET");
-	QCoreApplication::setApplicationVersion("0.1.0-1");
+	SingleApplication::setOrganizationName("CardCentric");
+	SingleApplication::setOrganizationDomain("com.cardcentric");
+	SingleApplication::setApplicationName("ScET");
+	SingleApplication::setApplicationVersion("0.1.0-1");
 	
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();
