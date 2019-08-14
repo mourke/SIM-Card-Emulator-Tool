@@ -68,7 +68,8 @@ void UpdateManager::finishedCheckingForUpdates(int exitCode, QProcess::ExitStatu
 		return;
 	}
 
-	QString version;
+	QString version(data);
+	version = version.split("version=\"").last().split("\"").first(); // extract version number
 	UpdateAction action = std::invoke(m_callback.value(), version);
 
 	switch (action) {

@@ -36,4 +36,5 @@ x64/
 ScET/x64/
 ScET/GeneratedFiles/
 ScET/.vs/
+Installer/packages/com.cardcentric.scet/data
 *.user

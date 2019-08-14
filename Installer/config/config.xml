@@ -9,9 +9,7 @@
     <TargetDir>@ApplicationsDirX64@/ScET</TargetDir>
 	<RemoteRepositories>
         <Repository>
-            <Url>https://raw.githubusercontent.com/mourke/SIM-Card-Emulator-Tool/master/Installer/repository/Updates.xml</Url>
-			<Username>mourke</Username>
-			<Password>deb70ad932e2d2f03e58cfe15261fe7929c079a8</Password>
+            <Url>https://mourke.github.io/</Url>
         </Repository>
     </RemoteRepositories>
 	<MaintenanceToolName>Uninstaller</MaintenanceToolName>

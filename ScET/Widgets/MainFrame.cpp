@@ -68,7 +68,7 @@ void MainFrame::applicationReceivedArguments(QStringList arguments) {
 }
 
 void MainFrame::checkForUpdates() {
-	UpdateManager::sharedManager().checkVersion(UpdateManager::CheckFrequency::Immediately, [this](std::optional<QString> version) -> UpdateManager::UpdateAction {
+	UpdateManager::sharedManager().checkVersion(UpdateManager::CheckFrequency::Daily, [this](std::optional<QString> version) -> UpdateManager::UpdateAction {
 		if (!version.has_value()) return UpdateManager::UpdateAction::DoNothing;
 
 		QMessageBox messageBox;
