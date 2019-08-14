@@ -54,11 +54,11 @@ TracerManager::TracerManager() : QObject(nullptr) {
 TracerManager::~TracerManager() {
 	handlingEvents = false;
 	if (libUSBEventsThread.joinable()) libUSBEventsThread.join();
-	libusb_hotplug_deregister_callback(context, hotplugHandle);
-	libusb_exit(this->context);
 	for (Tracer *tracer : tracers) {
 		stopManagingTracer(tracer);
 	}
+	libusb_hotplug_deregister_callback(context, hotplugHandle);
+	libusb_exit(this->context);
 }
 
 std::optional<Tracer *> TracerManager::findTracer() {
