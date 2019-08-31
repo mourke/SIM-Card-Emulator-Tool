@@ -418,6 +418,9 @@
      <property name="mouseTracking">
       <bool>true</bool>
      </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -437,14 +440,14 @@
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="topMargin">
        <number>0</number>
       </property>
       <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>
@@ -557,6 +560,41 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="ToolBarButton" name="moreButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>40</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Clear</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../Resources/ScET.qrc">
+          <normaloff>:/Windows/More</normaloff>:/Windows/More</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>22</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

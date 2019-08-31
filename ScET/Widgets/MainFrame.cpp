@@ -57,6 +57,16 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 
 	auto arguments = QApplication::arguments();
 	applicationReceivedArguments(arguments);
+
+	QObject::connect(textBrowser(), &QWidget::customContextMenuRequested, this, [this](const QPoint &position) {
+		QMenu *contextMenu = this->textBrowser()->createStandardContextMenu();
+		QAction restore(tr("Clear"), this);
+		restore.setDisabled(textBrowser()->toPlainText().isEmpty());
+		connect(&restore, SIGNAL(triggered()), this, SLOT(clearButtonClicked()));
+		contextMenu->addAction(&restore);
+		contextMenu->exec(this->textBrowser()->mapToGlobal(position));
+		delete contextMenu;
+	});
 }
 
 void MainFrame::applicationReceivedArguments(QStringList arguments) {
