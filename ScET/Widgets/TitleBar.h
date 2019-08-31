@@ -22,7 +22,6 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *mouseEvent);
 	void mouseMoveEvent(QMouseEvent *mouseEvent);
 	void mouseReleaseEvent(QMouseEvent *mouseEvent);
-	void enterEvent(QEvent *event) override;
 
 private:
 	TitleBarButton* minimizeButton();

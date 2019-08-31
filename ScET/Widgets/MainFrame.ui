@@ -416,7 +416,7 @@
       </font>
      </property>
      <property name="mouseTracking">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -428,7 +428,10 @@
       <number>0</number>
      </property>
      <property name="textInteractionFlags">
-      <set>Qt::TextBrowserInteraction</set>
+      <set>Qt::TextSelectableByMouse</set>
+     </property>
+     <property name="openLinks">
+      <bool>false</bool>
      </property>
     </widget>
    </item>

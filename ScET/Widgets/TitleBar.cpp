@@ -6,10 +6,6 @@
 TitleBar::TitleBar(QWidget *parent): QWidget(parent) {
 }
 
-void TitleBar::enterEvent(QEvent *event) {
-	setCursor(Qt::ArrowCursor); // make sure resize cursor isn't selected
-}
-
 TitleBarButton* TitleBar::minimizeButton() {
 	return mainFrame()->ui.minimizeButton;
 }

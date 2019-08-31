@@ -11,7 +11,6 @@ public:
 	~ToolBar();
 
 private:
-	void enterEvent(QEvent *event) override;
 };
 
 #endif // TOOLBAR_H

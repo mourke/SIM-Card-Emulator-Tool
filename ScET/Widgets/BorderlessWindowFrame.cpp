@@ -1,8 +1,10 @@
 #include "BorderlessWindowFrame.h"
 #include <QtWidgets>
+#include <QApplication>
 #include "Colors.h"
 
 BorderlessWindowFrame::BorderlessWindowFrame(QWidget *parent) : QFrame(parent) {
+	QApplication::instance()->installEventFilter(this);
 	QString styleSheet = "BorderlessWindowFrame { border: 1px solid %1; }";
 	setStyleSheet(styleSheet.arg(accentColor().name(QColor::HexArgb)));
 	setWindowFlags(Qt::FramelessWindowHint);
@@ -67,8 +69,7 @@ void BorderlessWindowFrame::mouseMoveEvent(QMouseEvent *mouseEvent) {
 		if (isMouseAtLeft) {
 			if ((isMinWidth && offsetX <= 0)) return;
 			geometry.setX(geometry.x() - offsetX);
-		}
-		else if (isMouseAtRight) {
+		} else if (isMouseAtRight) {
 			if ((isMinWidth && offsetX >= 0)) return;
 			geometry.setRight(geometry.right() - offsetX);
 		}
@@ -76,33 +77,27 @@ void BorderlessWindowFrame::mouseMoveEvent(QMouseEvent *mouseEvent) {
 		if (isMouseAtBottom) {
 			if ((isMinHeight && offsetY >= 0)) return;
 			geometry.setBottom(geometry.bottom() - offsetY);
-		}
-		else if (isMouseAtTop) {
+		} else if (isMouseAtTop) {
 			if ((isMinHeight && offsetY <= 0)) return;
 			geometry.setTop(geometry.top() - offsetY);
 		}
 
 		setGeometry(geometry);
 		oldMousePosition = mousePosition;
-	}
-	else {
+	} else {
 		updateMouseInformation(mouseEvent);
 
 		if (isMouseAtTop || isMouseAtBottom) {
 			if (isMouseAtLeft) {
 				setCursor(isMouseAtTop ? Qt::SizeFDiagCursor : Qt::SizeBDiagCursor);
-			}
-			else if (isMouseAtRight) {
+			} else if (isMouseAtRight) {
 				setCursor(isMouseAtTop ? Qt::SizeBDiagCursor : Qt::SizeFDiagCursor);
-			}
-			else {
+			} else {
 				setCursor(Qt::SizeVerCursor);
 			}
-		}
-		else if (isMouseAtLeft || isMouseAtRight) {
+		} else if (isMouseAtLeft || isMouseAtRight) {
 			setCursor(Qt::SizeHorCursor);
-		}
-		else {
+		} else {
 			setCursor(Qt::ArrowCursor);
 		}
 	}
@@ -123,4 +118,11 @@ void BorderlessWindowFrame::updateMouseInformation(QMouseEvent *mouseEvent) {
 
 void BorderlessWindowFrame::mouseReleaseEvent(QMouseEvent *mouseEvent) {
 	isMousePressed = false;
+}
+
+bool BorderlessWindowFrame::eventFilter(QObject *watched, QEvent *event) {
+	if (watched->parent() == this && event->type() == QEvent::Type::Enter) {
+		setCursor(Qt::ArrowCursor);
+	}
+	return QObject::eventFilter(watched, event);
 }
