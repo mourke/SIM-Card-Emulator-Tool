@@ -43,12 +43,12 @@
      <property name="autoFillBackground">
       <bool>true</bool>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
       <property name="spacing">
        <number>0</number>
       </property>
       <property name="leftMargin">
-       <number>15</number>
+       <number>0</number>
       </property>
       <property name="topMargin">
        <number>0</number>
@@ -60,28 +60,48 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="titleLabel">
+       <widget class="QPushButton" name="settingsButton">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="font">
-         <font>
-          <family>Segoe UI</family>
-         </font>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+     border: none;
+	 padding: 8px;
+     background-color: transparent;
+}
+ QPushButton:hover {
+     background-color: rgba(0, 0, 0, 25);
+}
+ QPushButton:pressed {
+     background-color: rgba(0, 0, 0, 51);
+}
+
+</string>
         </property>
         <property name="text">
          <string>ScET</string>
         </property>
-        <property name="textFormat">
-         <enum>Qt::PlainText</enum>
-        </property>
-        <property name="textInteractionFlags">
-         <set>Qt::NoTextInteraction</set>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="TitleBarButton" name="minimizeButton">
@@ -442,13 +462,13 @@
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="topMargin">
-       <number>0</number>
+       <number>9</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>9</number>
       </property>
       <item>
        <spacer name="horizontalSpacer_3">
@@ -560,41 +580,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="ToolBarButton" name="moreButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Clear</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="../Resources/ScET.qrc">
-          <normaloff>:/Windows/More</normaloff>:/Windows/More</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>22</width>
-          <height>22</height>
-         </size>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>
@@ -815,6 +800,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>settingsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainFrame</receiver>
+   <slot>showSettingsContextMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>15</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>241</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>checkboxStateChanged(int)</slot>
@@ -823,5 +824,6 @@
   <slot>saveButtonClicked()</slot>
   <slot>openButtonClicked()</slot>
   <slot>clearButtonClicked()</slot>
+  <slot>showSettingsContextMenu()</slot>
  </slots>
 </ui>

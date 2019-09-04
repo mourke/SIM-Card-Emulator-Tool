@@ -11,6 +11,7 @@
 #include "FileManager.h"
 #include <SingleApplication.h>
 #include "UpdateManager.h"
+#include "AboutDialog.h"
 
 
 MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
@@ -24,6 +25,8 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	
 	ui.segmentedControl->addSegment(tr("Protocol Layer"));
 	ui.segmentedControl->addSegment(tr("Application Layer"));
+
+	about = new AboutDialog(this);
 
 	TracerManager &manager = TracerManager::sharedManager();
 
@@ -47,7 +50,7 @@ MainFrame::MainFrame(QWidget *parent) : BorderlessWindowFrame(parent) {
 	SingleApplication *application = (SingleApplication *)SingleApplication::instance();
 	QObject::connect(application, &QApplication::applicationStateChanged, [this](Qt::ApplicationState state) {
 		if (state == Qt::ApplicationState::ApplicationActive) {
-			checkForUpdates();
+			checkForUpdates(UpdateManager::CheckFrequency::Daily);
 		}
 	});
 	QObject::connect(application, &SingleApplication::receivedMessage, this, [this](quint32 instanceId, QByteArray message) {
@@ -77,8 +80,8 @@ void MainFrame::applicationReceivedArguments(QStringList arguments) {
 	}
 }
 
-void MainFrame::checkForUpdates() {
-	UpdateManager::sharedManager().checkVersion(UpdateManager::CheckFrequency::Daily, [this](std::optional<QString> version) -> UpdateManager::UpdateAction {
+void MainFrame::checkForUpdates(UpdateManager::CheckFrequency frequency) {
+	UpdateManager::sharedManager().checkVersion(frequency, [this](std::optional<QString> version) -> UpdateManager::UpdateAction {
 		if (!version.has_value()) return UpdateManager::UpdateAction::DoNothing;
 
 		QMessageBox messageBox;
@@ -101,6 +104,36 @@ void MainFrame::checkForUpdates() {
 			return UpdateManager::UpdateAction::Update;
 		}
 	});
+}
+
+void MainFrame::showSettingsContextMenu() {
+	QMenu contextMenu(this);
+	contextMenu.setStyleSheet("QMenu::separator { margin: 0px 0px 0px -30px; } QMenu::item { padding: 6px 7px 6px 15px; color: black; } QMenu::item:selected { background-color: rgba(0, 0, 0, 25); }");
+	contextMenu.setWindowFlags(contextMenu.windowFlags() | Qt::NoDropShadowWindowHint);
+
+	QAction update(tr("Check for Updates"), this);
+	QAction support(tr("Contact Support"), this);
+	QAction about(tr("About ScET..."), this);
+	
+	connect(&update, &QAction::triggered, this, [this]() {
+		this->checkForUpdates(UpdateManager::CheckFrequency::Immediately);
+	});
+	connect(&support, &QAction::triggered, this, [this]() {
+		QDesktopServices::openUrl(QUrl("mailto:support@cardcentric.com"));
+	});
+	connect(&about, &QAction::triggered, this, [this]() {
+		this->about->exec();
+	});
+
+	contextMenu.addAction(&update);
+	contextMenu.addAction(&support);
+	contextMenu.addSeparator();
+	contextMenu.addAction(&about);
+
+	QPoint position = ui.settingsButton->pos();
+	position.setY(position.y() + ui.settingsButton->geometry().height()); // account for height
+	position.setX(position.x() + 1); // account for border
+	contextMenu.exec(mapToGlobal(position));
 }
 
 void MainFrame::startButtonClicked() {

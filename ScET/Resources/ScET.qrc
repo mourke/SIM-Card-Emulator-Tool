@@ -9,10 +9,7 @@
         <file alias="Stop">Assets/Windows/Stop.svg</file>
         <file alias="Open">Assets/Windows/Open.svg</file>
         <file alias="Clear">Assets/Windows/Clear.svg</file>
-        <file alias="Feedback">Assets/Windows/Feedback.svg</file>
-        <file alias="Info">Assets/Windows/Info.svg</file>
-        <file alias="Update">Assets/Windows/Update.svg</file>
-        <file alias="More">Assets/Windows/More.svg</file>
+        <file alias="Logo">Assets/Card Centric Logo.svg</file>
     </qresource>
     <qresource prefix="/macOS">
         <file>Assets/macOS/Save.svg</file>

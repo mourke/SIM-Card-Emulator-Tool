@@ -4,12 +4,14 @@
 #include "BorderlessWindowFrame.h"
 #include "ui_MainFrame.h"
 #include <optional>
+#include "UpdateManager.h"
 
 class TitleBar;
 class ToolBar;
 class QMouseEvent;
 class Tracer;
 class APDUCommand;
+class AboutDialog;
 enum libusb_transfer_status;
 
 class MainFrame : public BorderlessWindowFrame {
@@ -41,6 +43,7 @@ private slots:
 	void openButtonClicked();
 	void saveButtonClicked();
 	bool clearButtonClicked(); // returns true if user has confirmed clear
+	void showSettingsContextMenu();
 	void checkboxStateChanged(int rawValue);
 
 	void tracerStartedSniffing(Tracer *tracer);
@@ -54,6 +57,7 @@ private slots:
 private:
 	Ui::MainFrame ui;
 	APDUFilter filter = All;
+	AboutDialog *about;
 	std::optional<Tracer *> tracer;
 	QVector<std::tuple<QString, std::optional<APDUCommand>>> commands;
 	QString simTraceCommands;
@@ -64,7 +68,7 @@ private:
 	void moveCursorToEnd();
 	void openFile(const QString &fileName);
 	void applicationReceivedArguments(QStringList arguments);
-	void checkForUpdates();
+	void checkForUpdates(UpdateManager::CheckFrequency frequency);
 
 	friend class TitleBar;
 };
