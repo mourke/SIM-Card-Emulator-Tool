@@ -1,24 +1,10 @@
 #include "TitleBar.h"
 #include <QtWidgets>
 #include "Buttons/TitleBarButton.h"
-#include "MainFrame.h"
 
 TitleBar::TitleBar(QWidget *parent): QWidget(parent) {
 }
 
-TitleBarButton* TitleBar::minimizeButton() {
-	return mainFrame()->ui.minimizeButton;
-}
-TitleBarButton* TitleBar::maximizeButton() {
-	return mainFrame()->ui.maximizeButton;
-}
-TitleBarButton* TitleBar::closeButton() {
-	return mainFrame()->ui.closeButton;
-}
-
-MainFrame* TitleBar::mainFrame() {
-	return qobject_cast<MainFrame *>(parentWidget());
-}
 
 void TitleBar::contextMenuEvent(QContextMenuEvent *event) {
 	QMenu contextMenu(this);
@@ -48,55 +34,4 @@ void TitleBar::contextMenuEvent(QContextMenuEvent *event) {
 	contextMenu.addAction(&close);
 
 	contextMenu.exec(mapToGlobal(event->pos()));
-}
-
-void TitleBar::showSmall() {
-	parentWidget()->showMinimized();
-}
-
-void TitleBar::showMaxRestore() {
-	if (parentWidget()->isMaximized()) {
-		parentWidget()->showNormal();
-		maximizeButton()->setType(TitleBarButton::Type::Maximize);
-	} else {
-		parentWidget()->showMaximized();
-		maximizeButton()->setType(TitleBarButton::Type::Restore);
-	}
-}
-
-void TitleBar::mousePressEvent(QMouseEvent *mouseEvent) {
-	clickPosition = mapToParent(mouseEvent->pos());
-
-	shouldMoveWindow = cursor() == Qt::ArrowCursor && mouseEvent->button() == Qt::LeftButton;
-}
-
-void TitleBar::mouseDoubleClickEvent(QMouseEvent *mouseEvent) {
-	if (mouseEvent->button() == Qt::LeftButton) showMaxRestore();
-}
-
-void TitleBar::mouseMoveEvent(QMouseEvent *mouseEvent) {
-	if (!shouldMoveWindow) return;
-
-	if (parentWidget()->isMaximized()) {
-		showMaxRestore();
-	}
-
-	QScreen *screen = QGuiApplication::primaryScreen();
-	QCursor cursor;
-	QPoint cursorPosition = cursor.pos();
-
-	QPoint newWindowPosition = mouseEvent->globalPos() - clickPosition;
-	int maxScreenHeight = screen->availableGeometry().height();
-
-	// Stop window falling off bottom of screen
-	if (cursorPosition.y() >= maxScreenHeight) {
-		cursor.setPos(cursorPosition.x(), maxScreenHeight);
-		newWindowPosition.setY(parentWidget()->geometry().y());
-	} 
-
-	parentWidget()->move(newWindowPosition);
-}
-
-void TitleBar::mouseReleaseEvent(QMouseEvent *mouseEvent) {
-	shouldMoveWindow = false;
 }

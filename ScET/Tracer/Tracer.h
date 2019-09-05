@@ -118,7 +118,7 @@ private:
 	void processInput(uint8_t *buffer, int bufferSize);
 	
 	friend class TracerManager;
-	friend class MainFrame;
+	friend class MainWindow;
 };
 
 

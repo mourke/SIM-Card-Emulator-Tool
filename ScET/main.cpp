@@ -1,6 +1,5 @@
 #include <SingleApplication.h>
 #include "Windows/MainWindow.h"
-#include "Widgets/MainFrame.h"
 #include <windows.h>
 #include <WinUser.h>
 
@@ -24,11 +23,10 @@ int main(int argc, char *argv[]) {
 
 	if (application.isPrimary()) {
 		QObject::connect(&application, &SingleApplication::instanceStarted, [mainWindow]() {
-			QFrame *frame = mainWindow->frame();
-			if (frame->isMinimized()) {
-				frame->showNormal();
+			if (mainWindow->isMinimized()) {
+				mainWindow->showNormal();
 			} else {
-				frame->activateWindow();
+				mainWindow->activateWindow();
 			}
 		});
 	}

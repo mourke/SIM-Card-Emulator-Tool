@@ -47,9 +47,6 @@
     <ClCompile Include="Widgets\Buttons\TitleBarButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Widgets\MainFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Widgets\ToolBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,9 +74,6 @@
     <ClCompile Include="Colors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Widgets\BorderlessWindowFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Errors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -98,6 +92,9 @@
     <ClCompile Include="Widgets\AboutDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\BorderlessMainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Windows\MainWindow.h">
@@ -107,9 +104,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\Buttons\TitleBarButton.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Widgets\MainFrame.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\ToolBar.h">
@@ -130,9 +124,6 @@
     <QtMoc Include="Tracer\TracerManager.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Widgets\BorderlessWindowFrame.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="singleapplication_p.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -145,12 +136,15 @@
     <QtMoc Include="Widgets\AboutDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Windows\BorderlessMainWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="Widgets\MainFrame.ui">
+    <QtUic Include="Widgets\AboutDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="Widgets\AboutDialog.ui">
+    <QtUic Include="Windows\MainWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
