@@ -1,7 +1,7 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
-#include "BorderlessMainWindow.h"
+#include "FramelessMainWindow.h"
 #include "ui_MainWindow.h"
 #include <optional>
 #include "UpdateManager.h"
@@ -14,7 +14,7 @@ class APDUCommand;
 class AboutDialog;
 enum libusb_transfer_status;
 
-class MainWindow : public BorderlessMainWindow {
+class MainWindow : public FramelessMainWindow {
 	Q_OBJECT
 
 		Q_PROPERTY(QTextBrowser textBrowser READ textBrowser)
@@ -70,8 +70,9 @@ private:
 	void openFile(const QString &fileName);
 	void applicationReceivedArguments(QStringList arguments);
 	void checkForUpdates(UpdateManager::CheckFrequency frequency);
+	void changeEvent(QEvent *event) override;
 
 	bool shouldMoveWindow() override;
 };
 
-#endif // MAINWINDOW_H
+#endif // MAIN_WINDOW_H

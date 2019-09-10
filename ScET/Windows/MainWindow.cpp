@@ -15,11 +15,11 @@
 #include "AboutDialog.h"
 
 
-MainWindow::MainWindow(QWidget *parent) : BorderlessMainWindow(parent) {
+MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.setupUi(this);
 
 	restoreState(); // restore after ui updated
-	
+
 	if (isMaximized()) {
 		ui.maximizeButton->setType(TitleBarButton::Type::Restore);
 	}
@@ -342,13 +342,20 @@ void MainWindow::moveCursorToStart() {
 }
 
 void MainWindow::showMaxRestore() {
-	if (isMaximized()) {
-		showNormal();
-		ui.maximizeButton->setType(TitleBarButton::Type::Maximize);
-	} else {
-		showMaximized();
-		ui.maximizeButton->setType(TitleBarButton::Type::Restore);
+	isMaximized() ? showNormal() : showMaximized();
+}
+
+void MainWindow::changeEvent(QEvent *event) {
+	if (event->type() == QEvent::WindowStateChange) {
+		QWindowStateChangeEvent *stateChangeEvent = static_cast<QWindowStateChangeEvent *>(event);
+
+		if (stateChangeEvent->oldState() == Qt::WindowNoState && this->windowState() == Qt::WindowMaximized) {
+			ui.maximizeButton->setType(TitleBarButton::Type::Restore);
+		} else if (stateChangeEvent->oldState() == Qt::WindowMaximized && this->windowState() == Qt::WindowNoState) {
+			ui.maximizeButton->setType(TitleBarButton::Type::Maximize);
+		}
 	}
+	QWidget::changeEvent(event);
 }
 
 bool MainWindow::shouldMoveWindow() {

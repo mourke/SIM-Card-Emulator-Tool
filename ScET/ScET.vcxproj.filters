@@ -92,7 +92,7 @@
     <ClCompile Include="Widgets\AboutDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Windows\BorderlessMainWindow.cpp">
+    <ClCompile Include="Windows\FramelessMainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -136,7 +136,7 @@
     <QtMoc Include="Widgets\AboutDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Windows\BorderlessMainWindow.h">
+    <QtMoc Include="Windows\FramelessMainWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
