@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="TitleBar" name="titleBar" native="true">
+     <widget class="QWidget" name="titleBar" native="true">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -195,7 +195,7 @@
      </widget>
     </item>
     <item>
-     <widget class="ToolBar" name="mainToolBar" native="true">
+     <widget class="QWidget" name="mainToolBar" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
         <horstretch>0</horstretch>
@@ -204,6 +204,9 @@
       </property>
       <property name="mouseTracking">
        <bool>false</bool>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <property name="spacing">
@@ -436,11 +439,11 @@
     </item>
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
+      <property name="autoFillBackground">
+       <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="protocolPage">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -536,7 +539,7 @@
               </font>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/Windows/USB&quot;/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:13pt; font-weight:600;&quot;&gt;Connect sniffer&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/Windows/USB&quot;/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:13pt; font-weight:500;&quot;&gt;Connect sniffer&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -612,6 +615,9 @@
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="topMargin">
@@ -742,25 +748,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TitleBar</class>
-   <extends>QWidget</extends>
-   <header>TitleBar.h</header>
-   <container>1</container>
-   <slots>
-    <slot>showMaxRestore()</slot>
-    <slot>showSmall()</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>TitleBarButton</class>
    <extends>QPushButton</extends>
    <header>Buttons/TitleBarButton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ToolBar</class>
-   <extends>QWidget</extends>
-   <header>ToolBar.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ToolBarButton</class>

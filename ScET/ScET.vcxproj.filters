@@ -41,13 +41,7 @@
     <ClCompile Include="Windows\MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Widgets\TitleBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Widgets\Buttons\TitleBarButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Widgets\ToolBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Widgets\Buttons\ToolBarButton.cpp">
@@ -100,13 +94,7 @@
     <QtMoc Include="Windows\MainWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Widgets\TitleBar.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="Widgets\Buttons\TitleBarButton.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="Widgets\ToolBar.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="Widgets\Buttons\ToolBarButton.h">

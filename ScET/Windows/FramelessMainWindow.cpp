@@ -140,6 +140,41 @@ bool FramelessMainWindow::nativeEvent(const QByteArray &eventType, void *message
 		}
 		break;
 	}
+	case WM_NCRBUTTONDOWN: {
+		if (msg->wParam == HTCAPTION) {
+			QMenu contextMenu(this);
+
+			QAction restore(tr("Restore"), this);
+			restore.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarNormalButton)));
+			restore.setEnabled(isMaximized());
+			connect(&restore, SIGNAL(triggered()), this, SLOT(showMaxRestore()));
+			contextMenu.addAction(&restore);
+
+			QAction minimize(tr("Minimize"), this);
+			minimize.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarMinButton)));
+			connect(&minimize, SIGNAL(triggered()), this, SLOT(showMinimized()));
+			contextMenu.addAction(&minimize);
+
+			QAction maximize(tr("Maximize"), this);
+			maximize.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarMaxButton)));
+			maximize.setDisabled(isMaximized());
+			connect(&maximize, SIGNAL(triggered()), this, SLOT(showMaxRestore()));
+			contextMenu.addAction(&maximize);
+
+			contextMenu.addSeparator();
+			QAction close(tr("Close") + "\tAlt+F4", this);
+			close.setIcon(QIcon(style()->standardPixmap(QStyle::SP_TitleBarCloseButton)));
+			close.setShortcut(QKeySequence::Quit);
+			connect(&close, SIGNAL(triggered()), this, SLOT(close()));
+			contextMenu.addAction(&close);
+			
+			contextMenu.exec(QPoint(GET_X_LPARAM(msg->lParam), GET_Y_LPARAM(msg->lParam)));
+
+			*result = 0;
+			return true;
+		}
+		break;
+	}
 	case WM_GETMINMAXINFO: {
 		if (IsZoomed(msg->hwnd)) {
 			RECT frame = {0, 0, 0, 0};

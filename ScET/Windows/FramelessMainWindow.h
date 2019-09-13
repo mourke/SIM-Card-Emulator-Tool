@@ -28,6 +28,7 @@ private:
 	void showFullScreen();
 	QMargins insets; // the inset margins caused by the resize mouse grabber
 	QMargins m_contentsMargins;
+	bool rightMousePressedDown = false;
 #endif // Q_OS_WIN
 
 protected:

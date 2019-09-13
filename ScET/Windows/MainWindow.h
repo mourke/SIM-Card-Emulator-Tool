@@ -6,8 +6,6 @@
 #include <optional>
 #include "UpdateManager.h"
 
-class TitleBar;
-class ToolBar;
 class QMouseEvent;
 class Tracer;
 class APDUCommand;
@@ -18,15 +16,15 @@ class MainWindow : public FramelessMainWindow {
 	Q_OBJECT
 
 		Q_PROPERTY(QTextBrowser textBrowser READ textBrowser)
-		Q_PROPERTY(TitleBar titleBar READ titleBar)
-		Q_PROPERTY(ToolBar mainToolBar READ mainToolBar)
+		Q_PROPERTY(QWidget titleBar READ titleBar)
+		Q_PROPERTY(QWidget mainToolBar READ mainToolBar)
 
 public:
 	MainWindow(QWidget *parent = Q_NULLPTR);
 
 	QTextBrowser * textBrowser() const { return ui.textBrowser; }
-	ToolBar * mainToolBar() const { return ui.mainToolBar; }
-	TitleBar * titleBar() const { return ui.titleBar; }
+	QWidget * mainToolBar() const { return ui.mainToolBar; }
+	QWidget * titleBar() const { return ui.titleBar; }
 
 	enum APDUFilter : uint8_t {
 		STK = 1 << 0,

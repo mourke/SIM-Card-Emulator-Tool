@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include <QtWidgets>
-#include "TitleBar.h"
 #include "SegmentedControl.h"
 #include "Tracer/TracerManager.h"
 #include "Buttons/TitleBarButton.h"
@@ -30,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	QObject::connect(ui.segmentedControl, &SegmentedControl::selectedSegmentIndexChanged, this, [this](segmented_index_t selectedSegmentIndex) {
 		this->updateCurrentPageWidget();
 	});
+
+	ui.stackedWidget->setBackgroundRole(QPalette::ColorRole::Light);
 
 	about = new AboutDialog(this);
 
@@ -212,6 +213,7 @@ void MainWindow::openFile(const QString &fileName) {
 		fakeTracer.deleteSplitter();
 		QObject::disconnect(&fakeTracer);
 		moveCursorToStart();
+		updateCurrentPageWidget();
 	}
 	catch (const std::exception &exception) {
 		QMessageBox::information(this, tr("Unable to open file"), exception.what());
@@ -269,6 +271,7 @@ void MainWindow::reset() {
 	textBrowser()->clear();
 	commands.clear();
 	simTraceCommands.clear();
+	updateCurrentPageWidget();
 }
 
 void MainWindow::tracerConnected(Tracer *tracer) {
@@ -365,11 +368,11 @@ void MainWindow::changeEvent(QEvent *event) {
 
 bool MainWindow::shouldMoveWindow() {
 	QWidget *action = QApplication::widgetAt(QCursor::pos());
-	return action == ui.titleBar || action == this;
+	return action == ui.titleBar;
 }
 
 void MainWindow::updateCurrentPageWidget() {
-	if (tracer.has_value()) {
+	if (tracer.has_value() || !textBrowser()->toPlainText().isEmpty()) {
 		ui.segmentedControl->selectedSegmentIndex() == 0 ? ui.stackedWidget->setCurrentWidget(ui.protocolPage) : ui.stackedWidget->setCurrentWidget(ui.applicationPage);
 	} else {
 		ui.stackedWidget->setCurrentWidget(ui.noDevicePage);
