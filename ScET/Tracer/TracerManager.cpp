@@ -10,7 +10,7 @@
 TracerManager::TracerManager() : QObject(nullptr) {
 	int error = libusb_init(&this->context);
 	assert(context != nullptr && "Failed to initialise libusb library");
-	//assert(libusb_has_capability(LIBUSB_CAP_HAS_HOTPLUG) != 0 && "This platform is not supported");
+	assert(libusb_has_capability(LIBUSB_CAP_HAS_HOTPLUG) != 0 && "This platform is not supported");
 	
 	error = libusb_hotplug_register_callback(context, libusb_hotplug_event(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED |
 		LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT), LIBUSB_HOTPLUG_NO_FLAGS, SIMTRACE_VID, SIMTRACE_PID,
@@ -18,6 +18,7 @@ TracerManager::TracerManager() : QObject(nullptr) {
 		TracerManager *self = (TracerManager *)userData;
 
 		if (event == LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED) {
+			libusb_ref_device(device); // stop from being deallocated when labda returns
 			Tracer *tracer = new Tracer(device, context);
 			self->manageTracer(tracer);
 			QMetaObject::invokeMethod(QApplication::instance(), [self, tracer]() {
@@ -37,7 +38,7 @@ TracerManager::TracerManager() : QObject(nullptr) {
 		return 0;
 	}, this, &hotplugHandle);
 
-	//assert(error == LIBUSB_SUCCESS && "Failed to create hotplug callback");
+	assert(error == LIBUSB_SUCCESS && "Failed to create hotplug callback");
 
 	handlingEvents = true;
 
@@ -122,6 +123,7 @@ void TracerManager::stopManagingTracer(Tracer *tracer) {
 	for (int i = 0; i < tracers.size(); ++i) {
 		if (tracer == tracers[i]) {
 			index = i;
+			break;
 		}
 	}
 

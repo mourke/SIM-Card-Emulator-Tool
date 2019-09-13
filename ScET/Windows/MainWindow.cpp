@@ -27,17 +27,20 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.segmentedControl->addSegment(tr("Protocol Layer"));
 	ui.segmentedControl->addSegment(tr("Application Layer"));
 
+	QObject::connect(ui.segmentedControl, &SegmentedControl::selectedSegmentIndexChanged, this, [this](segmented_index_t selectedSegmentIndex) {
+		this->updateCurrentPageWidget();
+	});
+
 	about = new AboutDialog(this);
 
 	TracerManager &manager = TracerManager::sharedManager();
 
-	// TODO: remove this once libUSB implements hotplugging for windows
 	auto tracer = manager.findTracer();
 
 	if (tracer.has_value()) {
 		tracerConnected(tracer.value());
 	}
-	///////////////////////////////////////////////////////////////////
+	updateCurrentPageWidget();
 
 	QObject::connect(&manager, SIGNAL(tracerConnected(Tracer *)), this, SLOT(tracerConnected(Tracer *)));
 	QObject::connect(&manager, SIGNAL(tracerDisconnected(Tracer *)), this, SLOT(tracerDisconnected(Tracer *)));
@@ -271,15 +274,13 @@ void MainWindow::reset() {
 void MainWindow::tracerConnected(Tracer *tracer) {
 	this->tracer = std::make_optional(tracer);
 	ui.startButton->setEnabled(true);
+	updateCurrentPageWidget();
 }
 
 void MainWindow::tracerDisconnected(Tracer *tracer) {
 	this->tracer.reset();
 	ui.startButton->setDisabled(true);
-	if (tracer->isSniffing()) {
-		QMessageBox messageBox;
-		messageBox.critical(this, tr("Sniffer Disconnected"), tr("The Sniffer was disconnected during a trace session. It is advised that the trace be stopped before unplugging the SIM card Sniffer."));
-	}
+	updateCurrentPageWidget();
 }
 
 void MainWindow::tracerStartedSniffing(Tracer *tracer) {
@@ -290,6 +291,10 @@ void MainWindow::tracerStartedSniffing(Tracer *tracer) {
 void MainWindow::tracerStoppedSniffing(Tracer *tracer, libusb_transfer_status errorCode) {
 	ui.startButton->setEnabled(tracer->isConnected());
 	ui.stopButton->setDisabled(true);
+	if (errorCode == LIBUSB_TRANSFER_STALL || errorCode == LIBUSB_TRANSFER_NO_DEVICE) {
+		QMessageBox messageBox;
+		messageBox.critical(this, tr("Sniffer Disconnected"), tr("The Sniffer was disconnected during a trace session. It is advised that the trace be stopped before unplugging the SIM card Sniffer."));
+	}
 }
 
 void MainWindow::traceStartedMidSession(Tracer *tracer) {
@@ -361,4 +366,12 @@ void MainWindow::changeEvent(QEvent *event) {
 bool MainWindow::shouldMoveWindow() {
 	QWidget *action = QApplication::widgetAt(QCursor::pos());
 	return action == ui.titleBar || action == this;
+}
+
+void MainWindow::updateCurrentPageWidget() {
+	if (tracer.has_value()) {
+		ui.segmentedControl->selectedSegmentIndex() == 0 ? ui.stackedWidget->setCurrentWidget(ui.protocolPage) : ui.stackedWidget->setCurrentWidget(ui.applicationPage);
+	} else {
+		ui.stackedWidget->setCurrentWidget(ui.noDevicePage);
+	}
 }

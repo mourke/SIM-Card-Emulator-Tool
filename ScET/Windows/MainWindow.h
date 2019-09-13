@@ -73,6 +73,7 @@ private:
 	void changeEvent(QEvent *event) override;
 
 	bool shouldMoveWindow() override;
+	void updateCurrentPageWidget();
 };
 
 #endif // MAIN_WINDOW_H
