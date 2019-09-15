@@ -2,8 +2,8 @@
 #include <libusb.h>
 #include "SIMTraceUSB.h"
 #include <iostream>
-#include "APDUSplitter.h"
 #include "APDUCommand.h"
+#include "APDUSplitter.h"
 #include <QString>
 #include <QApplication>
 
@@ -12,9 +12,30 @@
 static const unsigned int BULK_TRANSFER_TIMEOUT = 100000;
 
 Tracer::Tracer(libusb_device *device, libusb_context *context) : QObject(nullptr), device(device), context(context) {
+	splitter = new APDUSplitter([this](APDUCommand command, std::chrono::steady_clock::time_point end) {
+		auto start = firstAPDUTime.value();
+
+		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+		unsigned long long milliseconds = microseconds / 1000;
+		microseconds = microseconds - (milliseconds * 1000);
+		unsigned long long seconds = milliseconds / 1000;
+		milliseconds = milliseconds - (seconds * 1000);
+		unsigned long long minutes = seconds / 60;
+		seconds = seconds - (minutes * 60);
+		unsigned long long hours = minutes / 60;
+		minutes = minutes - (hours * 60);
+
+		QString output = QString::asprintf("APDU: (%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
+		output += command.string();
+
+		QMetaObject::invokeMethod(QApplication::instance(), [this, output, command]() {
+			emit apduCommandReceived(output, command);
+		});
+	});
 }
 
 Tracer::~Tracer() {
+	delete splitter;
 	libusb_unref_device(device); // TracerManager has increased the reference count of the device and we need to decrement it
 }
 
@@ -43,7 +64,7 @@ libusb_error Tracer::startSniffing() {
 
 	libusb_free_config_descriptor(configDescriptor);
 
-	createSplitter();
+	splitter->reset();
 
 	transfer = libusb_alloc_transfer(0);
 	libusb_fill_bulk_transfer(transfer, handle, SIMTRACE_IN_BULK, buffer, sizeof(buffer), [](libusb_transfer *transfer) {
@@ -77,41 +98,14 @@ libusb_error Tracer::startSniffing() {
 	return (libusb_error)error;
 }
 
-void Tracer::createSplitter() {
-	this->splitter = new APDUSplitter([this](APDUCommand command, std::chrono::steady_clock::time_point end) {
-		auto start = firstAPDUTime.value();
-
-		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		unsigned long long milliseconds = microseconds / 1000;
-		microseconds = microseconds - (milliseconds * 1000);
-		unsigned long long seconds = milliseconds / 1000;
-		milliseconds = milliseconds - (seconds * 1000);
-		unsigned long long minutes = seconds / 60;
-		seconds = seconds - (minutes * 60);
-		unsigned long long hours = minutes / 60;
-		minutes = minutes - (hours * 60);
-
-		QString output = QString::asprintf("APDU: (%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
-		output += command.string();
-
-		QMetaObject::invokeMethod(QApplication::instance(), [this, output, command]() {
-			emit apduCommandReceived(output, command);
-		});
-	});
-}
-
-void Tracer::deleteSplitter() {
-	delete splitter;
-}
-
-void Tracer::processInput(uint8_t *buffer, int bufferSize) {
+void Tracer::processInput(const uint8_t *buffer, const int bufferSize) {
 	SIMTraceHeader header;
 	memcpy(&header, buffer, sizeof(SIMTraceHeader));
 
 	switch (header.command) {
 	case SIMTraceCommand::Data: {
 		if (bufferSize > header.totalBufferSize) { // multiple traces have been mangled together, we must separate them
-			uint8_t *demangledBuffer = buffer + header.totalBufferSize;
+			const uint8_t *demangledBuffer = buffer + header.totalBufferSize;
 			size_t demangledBufferSize = bufferSize - header.totalBufferSize;
 			processInput(buffer, bufferSize - demangledBufferSize); // process the original trace and then the demangled one
 			return processInput(demangledBuffer, demangledBufferSize); // recursively call this in case there are more than two traces mangled together
@@ -129,7 +123,7 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 		}
 
 		size_t headerSize = sizeof(header);
-		uint8_t *payload = buffer + headerSize; // point to the first element of the data
+		const uint8_t *payload = buffer + headerSize; // point to the first element of the data
 		int payloadSize = bufferSize - headerSize;
 
 		QString simTraceCommand = QString::asprintf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", header.command, header.flags, header.reset[0], header.reset[1], header.sequenceNumber & 0x00FF, (header.sequenceNumber & 0xFF00) >> 8, header.offset & 0x00FF, (header.offset & 0xFF00) >> 8, header.totalBufferSize & 0x00FF, (header.totalBufferSize & 0xFF00) >> 8);
@@ -153,9 +147,8 @@ void Tracer::processInput(uint8_t *buffer, int bufferSize) {
 
 		if (header.flags & SIMTraceFlag::AnswerToReset) {
 			QString string;
-			uint8_t *data = payload;
 			for (int i = 0; i < payloadSize; ++i) {
-				string += QString::asprintf("%02x ", *data++);
+				string += QString::asprintf("%02x ", payload[i]);
 			}
 
 			QString atr = QString::asprintf("ATR:  (00:00:00:000:000): ") + string.toUpper();
@@ -185,7 +178,6 @@ void Tracer::finishedSniffing() {
 	libusb_free_transfer(transfer);
 	libusb_release_interface(handle, interface);
 	libusb_close(handle);
-	deleteSplitter();
 	firstAPDUTime.reset();
 	emit stoppedSniffing(status);
 }

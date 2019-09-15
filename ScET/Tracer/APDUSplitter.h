@@ -36,7 +36,12 @@ public:
 	  * @param buffer		A pointer to the first element of the buffer.
 	  * @param bufferSize	The size of the buffer.
 	  */
-	void splitInput(uint8_t *buffer, unsigned int bufferSize);
+	void splitInput(const uint8_t *buffer, const unsigned int bufferSize);
+
+	/**
+	  * Resets the splitter back to the start. i.e. next expected state will be CLA
+	  */
+	void reset();
 
 private:
 	enum State {
@@ -66,11 +71,9 @@ private:
 	Callback m_callback;
 	APDUCommand command;
 	State state = Class;
-	APDUCommand::Type commandType = APDUCommand::Type::Command;
 	unsigned int dataRemaining = 0;
 	std::optional <std::chrono::steady_clock::time_point> start;
 
-	void reset();
 	void incrementState();
 	void insertByte(uint8_t character);
 };

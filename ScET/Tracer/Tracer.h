@@ -10,8 +10,8 @@ struct libusb_device;
 struct libusb_device_handle;
 struct libusb_transfer;
 class libusb_context;
-class APDUSplitter;
 class APDUCommand;
+class APDUSplitter;
 enum libusb_transfer_status;
 enum libusb_error;
 
@@ -87,6 +87,8 @@ public:
 	 * @retval	`true` if the tracer is connected to the system.
 	 */
 	bool isConnected() const;
+
+	~Tracer();
 private:
 	/**
 	 * Starts sniffing SIM requests on the current tracer.
@@ -95,17 +97,13 @@ private:
 	 */
 	libusb_error startSniffing();
 
-	void createSplitter();
-	void deleteSplitter();
-
 	/** Stops sniffing requests. */
 	void stopSniffing();
 
 	Tracer(libusb_device *device = nullptr, libusb_context *context = nullptr);
-	Tracer(QObject *parent) = delete;
-	~Tracer();
+	Tracer(QObject *parent) = delete; 
 	libusb_device *device;
-	libusb_context *context; // will be freed by manager
+	libusb_context *context;
 	libusb_device_handle *handle;
 	libusb_transfer *transfer;
 	uint8_t interface = 0; // the interface that the handle has claimed
@@ -115,7 +113,7 @@ private:
 	uint8_t buffer[16 * 265];
 
 	void finishedSniffing();
-	void processInput(uint8_t *buffer, int bufferSize);
+	void processInput(const uint8_t *buffer, const int bufferSize);
 	
 	friend class TracerManager;
 	friend class MainWindow;

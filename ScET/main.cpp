@@ -2,6 +2,7 @@
 #include "Windows/MainWindow.h"
 #include <windows.h>
 #include <WinUser.h>
+#include "Version.h"
 
 
 int main(int argc, char *argv[]) {
@@ -13,10 +14,10 @@ int main(int argc, char *argv[]) {
 		exit(0);
 	}
 
-	SingleApplication::setOrganizationName("CardCentric");
-	SingleApplication::setOrganizationDomain("com.cardcentric");
-	SingleApplication::setApplicationName("ScET");
-	SingleApplication::setApplicationVersion("0.1.0-1");
+	SingleApplication::setOrganizationName(VER_COMPANYNAME_STR);
+	SingleApplication::setOrganizationDomain(VER_COMPANYDOMAIN_STR);
+	SingleApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
+	SingleApplication::setApplicationVersion(VER_FILEVERSION_STR);
 	
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();

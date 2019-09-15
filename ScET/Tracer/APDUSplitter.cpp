@@ -66,17 +66,12 @@ void APDUSplitter::insertByte(uint8_t character) {
 
 void APDUSplitter::reset() {
 	state = State::Class;
-	if (this->command.firstStatusByte() == 0x61) { // next APDU command will be a response
-		commandType = APDUCommand::Type::Response;
-	} else {
-		commandType = APDUCommand::Type::Command;
-	}
 	this->command.m_data.clear();
 	start.reset();
 }
 
-void APDUSplitter::splitInput(uint8_t *buffer, unsigned int bufferSize) {
-	while (bufferSize--) {
-		insertByte(*buffer++);
+void APDUSplitter::splitInput(const uint8_t *buffer, const unsigned int bufferSize) {
+	for (int i = 0; i < bufferSize; ++i) {
+		insertByte(buffer[i]);
 	}
 }

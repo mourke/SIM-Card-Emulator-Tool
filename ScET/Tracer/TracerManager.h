@@ -145,6 +145,32 @@ public:
 	 */
 	void stopSniffing(Tracer *tracer);
 
+	/**
+	 * Manages a tracer object.
+	 *
+	 * @Note	TracerManager now controls this pointer and will
+	 * manage its lifetime. Callback requests are also managed.
+	 *
+	 * @param tracer	The tracer that is to be managed.
+	 */
+	void manageTracer(Tracer *tracer);
+
+	/**
+	 * Stops managing a tracer.
+	 *
+	 * @Note	The tracer will be deleted after this. It is very 
+	 * important that after this method is called the pointer is not
+	 * used ever again. If the tracer is not managed by this manager
+	 * an exception will be raised.
+	 *
+	 * @param tracer	The tracer to be deleted.
+	 */
+	void stopManagingTracer(Tracer *tracer);
+
+	/**
+	 * @retval	`true` if the tracer is being managed, `false` otherwise.
+	 */
+	bool isManagingTracer(Tracer *tracer);
 private:
 	TracerManager();
 	TracerManager(QObject *parent) = delete;
@@ -154,10 +180,6 @@ private:
 	libusb_hotplug_callback_handle hotplugHandle;
 	std::thread libUSBEventsThread;
 	bool handlingEvents;
-
-	void manageTracer(Tracer *tracer);
-	void stopManagingTracer(Tracer *tracer);
-	bool isManagingTracer(Tracer *tracer);
 
 	Q_DISABLE_COPY(TracerManager)
 };

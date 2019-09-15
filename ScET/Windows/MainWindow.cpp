@@ -101,11 +101,9 @@ void MainWindow::checkForUpdates(UpdateManager::CheckFrequency frequency) {
 
 		if (messageBox.clickedButton() == okButton) {
 			return UpdateManager::UpdateAction::DoNothing;
-		}
-		else if (messageBox.clickedButton() == skipButton) {
+		} else if (messageBox.clickedButton() == skipButton) {
 			return UpdateManager::UpdateAction::Skip;
-		}
-		else {
+		} else {
 			return UpdateManager::UpdateAction::Update;
 		}
 	});
@@ -188,30 +186,23 @@ void MainWindow::openButtonClicked() {
 void MainWindow::openFile(const QString &fileName) {
 	if (!clearButtonClicked()) return; // user cancelled request
 	try {
+		stopButtonClicked();
 		auto data = FileManager::sharedManager().openFile(fileName);
 		auto bufferLength = data.size();
 
-		if (bufferLength == 0) return; // file empty
+		if (bufferLength == 0) return; // file empty, do nothing
 
-		auto buffer = &data[0];
-		Tracer fakeTracer;
-		fakeTracer.createSplitter();
+		auto buffer = &data[0]; // convert to c buffer
 
-		QObject::connect(&fakeTracer, &Tracer::apduCommandReceived, this, [this, &fakeTracer](const QString &output, const APDUCommand &command) {
-			apduCommandRecieved(&fakeTracer, output, command);
-		});
+		if (!tracer.has_value()) {
+			Tracer *tracer = new Tracer(); // simulate a tracer to process the input
+			TracerManager::sharedManager().manageTracer(tracer);
+			tracer->processInput(buffer, bufferLength);
+			TracerManager::sharedManager().stopManagingTracer(tracer);
+		} else {
+			tracer.value()->processInput(buffer, bufferLength);
+		}
 
-		QObject::connect(&fakeTracer, &Tracer::atrCommandReceived, this, [this, &fakeTracer](const QString &output) {
-			atrCommandReceived(&fakeTracer, output);
-		});
-
-		QObject::connect(&fakeTracer, &Tracer::simTraceCommandReceived, this, [this, &fakeTracer](const QString &input) {
-			simTraceCommandReceived(&fakeTracer, input);
-		});
-
-		fakeTracer.processInput(buffer, bufferLength);
-		fakeTracer.deleteSplitter();
-		QObject::disconnect(&fakeTracer);
 		moveCursorToStart();
 		updateCurrentPageWidget();
 	}
@@ -257,8 +248,7 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 		std::optional<APDUCommand> command = std::get<1>(tuple);
 		if (command.has_value()) {
 			if (command.value().fileType() & filter) updateTextBrowser(output, command.value());
-		}
-		else { // ATR
+		} else { // ATR
 			textBrowser()->setTextColor(Qt::black);
 			textBrowser()->insertPlainText(output + "\n");
 		}
