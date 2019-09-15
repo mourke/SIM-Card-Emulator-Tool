@@ -228,6 +228,9 @@
     <ClInclude Include="FileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\ScET.ico" />
