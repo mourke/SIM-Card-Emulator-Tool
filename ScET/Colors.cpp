@@ -10,6 +10,10 @@ QColor accentColor() {
 	return QColor(color.R, color.G, color.B, color.A);
 }
 
+QColor brandColor() {
+	return QColor(206, 59, 40);
+}
+
 QColor textViewLineBackgroundColor() {
 	return QColor(243, 246, 250);
 }

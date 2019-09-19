@@ -23,6 +23,7 @@ class Segment : public QAbstractButton {
 	Q_PROPERTY(QColor highlightedTextColor READ highlightedTextColor WRITE setHighlightedTextColor)
 	Q_PROPERTY(QColor pressedTextColor READ pressedTextColor WRITE setPressedTextColor)
 	Q_PROPERTY(QColor selectedTextColor READ selectedTextColor WRITE setSelectedTextColor)
+	Q_PROPERTY(QColor selectedIndicatorColor READ selectedIndicatorColor WRITE setSelectedIndicatorColor)
 
 	Q_PROPERTY(QFont textFont READ textFont WRITE  setTextFont)
 
@@ -108,6 +109,14 @@ public:
 	 */
 	QColor selectedTextColor() const { return m_selectedTextColor; }
 
+	/**
+	 * The color of the segment when the mouse has been clicked
+	 * over the segment. This defaults to the user's accent colour
+	 * on windows and a blue gradient on macOS.
+	 *
+	 * @retval	The color of the selected text.
+	 */
+	QColor selectedIndicatorColor() const { return m_selectedIndicatorColor; }
 
 	/**
 	 * Sets the default text color of the of the button.
@@ -136,6 +145,13 @@ public:
 	 * @param color	The new color
 	 */
 	void setSelectedTextColor(const QColor &color) { m_selectedTextColor = color; }
+
+	/**
+	 * Sets the selected indicator color of the button.
+	 *
+	 * @param color	The new color
+	 */
+	void setSelectedIndicatorColor(const QColor &color) { m_selectedIndicatorColor = color; }
 
 	/**
 	 * The font of the text. This defaults to "Segoe UI" 
@@ -194,6 +210,7 @@ private:
 	QFont m_textFont = QFont("Segoe UI", 11);
 	QColor m_textColor = QColor(0, 0, 0, 145);
 	QColor m_highlightedTextColor, m_pressedTextColor, m_selectedTextColor = Qt::black;
+	QColor m_selectedIndicatorColor;
 	const int SELECTED_INDICATOR_HEIGHT = 2;
 #endif
 

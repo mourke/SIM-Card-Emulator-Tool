@@ -1,7 +1,7 @@
-#ifndef TOOLBARBUTTON_H
-#define	TOOLBARBUTTON_H
+#ifndef TOOL_BAR_BUTTON_H
+#define	TOOL_BAR_BUTTON_H
 
-#include <QPushButton>
+#include <QToolButton>
 
 /** A Tool Bar buttons class.
  * 
@@ -12,7 +12,7 @@
  * background until hovered over.
  *
  */
-class ToolBarButton : public QPushButton {
+class ToolBarButton : public QToolButton {
 	Q_OBJECT
 
 public:

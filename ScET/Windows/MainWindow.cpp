@@ -12,6 +12,7 @@
 #include <SingleApplication.h>
 #include "UpdateManager.h"
 #include "AboutDialog.h"
+#include "Segment.h"
 
 
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
@@ -23,8 +24,12 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 		ui.maximizeButton->setType(TitleBarButton::Type::Restore);
 	}
 
-	ui.segmentedControl->addSegment(tr("Protocol Layer"));
-	ui.segmentedControl->addSegment(tr("Application Layer"));
+	ui.segmentedControl->addSegment(tr("protocol layer"));
+	ui.segmentedControl->addSegment(tr("application layer"));
+
+	for (Segment *segment : ui.segmentedControl->segments()) {
+		segment->setSelectedIndicatorColor(brandColor());
+	}
 
 	QObject::connect(ui.segmentedControl, &SegmentedControl::selectedSegmentIndexChanged, this, [this](segmented_index_t selectedSegmentIndex) {
 		this->updateCurrentPageWidget();

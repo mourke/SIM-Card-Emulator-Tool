@@ -11,6 +11,13 @@ class QColor;
 QColor accentColor();
 
 /**
+ * The colour of the Card Centric Ltd. brand.
+ *
+ * @retval A redish colour.
+ */
+QColor brandColor();
+
+/**
  * The background color for every second line in the text view.
  *
  * @retval	A greyey color.

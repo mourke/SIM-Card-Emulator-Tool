@@ -2,7 +2,7 @@
 #include <QtWidgets>
 #include "Colors.h"
 
-Segment::Segment(QWidget *parent) : QAbstractButton(parent) {
+Segment::Segment(QWidget *parent) : QAbstractButton(parent), m_selectedIndicatorColor(accentColor()) {
 	setCheckable(true);
 	QObject::connect(this, SIGNAL(toggled(bool)), this, SLOT(setSelected(bool)));
 }
@@ -47,7 +47,7 @@ void Segment::paintEvent(QPaintEvent *paintEvent) {
 #if defined(Q_OS_MAC)
 		fillColor = accentColor();
 #elif defined(Q_OS_WIN)
-		painter.fillRect(0, height() - SELECTED_INDICATOR_HEIGHT, width(), SELECTED_INDICATOR_HEIGHT, accentColor());
+		painter.fillRect(0, height() - SELECTED_INDICATOR_HEIGHT, width(), SELECTED_INDICATOR_HEIGHT, m_selectedIndicatorColor);
 #endif
 	} else if (isHighlighted()) {
 #ifdef Q_OS_MAC
