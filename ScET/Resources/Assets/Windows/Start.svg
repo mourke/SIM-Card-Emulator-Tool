@@ -3,9 +3,10 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
 <style type="text/css">
-	.st0{enable-background:new    ;}
+	.st0{fill:#FA4343;}
+	.st1{fill:#272235;}
 </style>
-<g class="st0">
-	<path d="M4,1l10,7L4,15V1z M5,2.9v10.2L12.3,8L5,2.9z"/>
-</g>
+<path class="st0" d="M8,0C3.6,0,0,3.6,0,8s3.6,8,8,8s8-3.6,8-8S12.4,0,8,0z M8,14.7c-3.7,0-6.7-3-6.7-6.7s3-6.7,6.7-6.7
+	s6.7,3,6.7,6.7S11.7,14.7,8,14.7z"/>
+<polygon class="st1" points="9,9.9 6.3,11.5 6.3,8.4 6.3,5.4 9,6.9 11.6,8.4 "/>
 </svg>
