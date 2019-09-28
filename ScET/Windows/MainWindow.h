@@ -30,7 +30,8 @@ public:
 		STK = 1 << 0,
 		FileIO = 1 << 1,
 		Authentication = 1 << 2,
-		All = STK | FileIO | Authentication
+		Unknown = 1 << 3,
+		All = STK | FileIO | Authentication | Unknown
 	};
 
 	Q_ENUM(APDUFilter)

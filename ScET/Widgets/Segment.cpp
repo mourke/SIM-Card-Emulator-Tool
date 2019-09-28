@@ -69,7 +69,7 @@ void Segment::paintEvent(QPaintEvent *paintEvent) {
 #ifdef Q_OS_MAC
 	painter.fillPath(path.simplified(), fillColor);
 #endif
-	painter.setFont(m_textFont);
+	painter.setFont(font());
 
 	if (!text().isEmpty()) {
 		painter.setPen(textColor);
@@ -96,6 +96,6 @@ void Segment::leaveEvent(QEvent *event) {
 
 void Segment::sizeToFit() {
 	static const int spacing = 12;
-	QFontMetrics metrics(m_textFont);
+	QFontMetrics metrics(font());
 	setMinimumSize(metrics.width(text()), metrics.height() + spacing + SELECTED_INDICATOR_HEIGHT);
 }

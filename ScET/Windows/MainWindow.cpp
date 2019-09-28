@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 
 	for (Segment *segment : ui.segmentedControl->segments()) {
 		segment->setSelectedIndicatorColor(brandColor());
+		segment->sizeToFit();
 	}
 
 	QObject::connect(ui.segmentedControl, &SegmentedControl::selectedSegmentIndexChanged, this, [this](segmented_index_t selectedSegmentIndex) {
@@ -252,7 +253,7 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 		QString output = std::get<0>(tuple);
 		std::optional<APDUCommand> command = std::get<1>(tuple);
 		if (command.has_value()) {
-			if (command.value().fileType() & filter) updateTextBrowser(output, command.value());
+			if (command.value().type() & filter) updateTextBrowser(output, command.value());
 		} else { // ATR
 			textBrowser()->setTextColor(Qt::black);
 			textBrowser()->insertPlainText(output + "\n");
@@ -302,7 +303,7 @@ void MainWindow::traceStartedMidSession(Tracer *tracer) {
 
 void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &command) {
 	commands.append(std::make_tuple(output, command));
-	if (command.fileType() & filter) updateTextBrowser(output, command); // only display if current filter allows
+	if (command.type() & filter) updateTextBrowser(output, command); // only display if current filter allows
 }
 
 void MainWindow::atrCommandReceived(Tracer *tracer, const QString &output) {
@@ -324,7 +325,7 @@ void MainWindow::updateTextBrowser(const QString &output, const APDUCommand &com
 	textBrowser()->setTextColor(headerColor());
 	textBrowser()->insertPlainText(output.mid(offset, 15));
 	offset += 15; // header and space after
-	textBrowser()->setTextColor(command.type() == APDUCommand::Type::Command ? dataColor() : responseColor());
+	textBrowser()->setTextColor(command.instructionCode() == APDUCommand::InstructionCode::GetResponse ? responseColor() : dataColor());
 	textBrowser()->insertPlainText(output.mid(offset, command.data().size() * 3));
 	offset += command.data().size() * 3; // data (two hexadecimal characters per data) and spacings between and after each character
 	textBrowser()->setTextColor(statusCodeColor());

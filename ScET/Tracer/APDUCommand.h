@@ -16,30 +16,48 @@ class APDUCommand {
 
 public:
 
-	enum FileType : uint8_t {
+	enum Type : uint8_t {
 		SIMToolkit = 1 << 0,
 		IO = 1 << 1,
-		Authentication = 1 << 2
+		Authentication = 1 << 2,
+		Unknown = 1 << 3
 	};
 
-	enum Type : uint8_t {
-		Command,
-		Response = 0xFF
+	enum InstructionCode : uint8_t {
+		// File Management Commands
+		Select = 0xA4,
+		Status = 0xF2,
+		ReadBinary = 0xB0,
+		UpdateBinary = 0xD6,
+		ReadRecord = 0xB2,
+		UpdateRecord = 0xDC,
+		Seek = 0xA2,
+		Increase = 0x32,
+		Invalidate = 0x04,
+		Rehabilitate = 0x44,
+		GetResponse = 0xC0,
+		VerifyCHV = 0x20,
+		ChangeCHV = 0x24,
+		DisableCHV = 0x26,
+		EnableCHV = 0x28,
+		UnblockCHV = 0x2C,
+
+		// SIM Toolkit Commands
+		TerminalProfile = 0x10,
+		Envelope = 0xC2,
+		Fetch = 0x12,
+		TerminalResponse = 0x14,
+
+		// Authentication Commands
+		RunGSMAlgorithm = 0x88
 	};
 
 
-	/** The type of the APDU command.
+	/** The type of the command.
 	  *
-	  * @retval	Command or Response.
+	  * @retval	FileIO, STK/CAT, Authentication or Unknown.
 	  */
-	Type type() const;
-
-
-	/** The filetype of the data the command points to.
-	  *
-	  * @retval	FileIO, STK/CAT or Authentication.
-	  */
-	FileType fileType() const { return m_fileType; }
+	Type type() const { return m_type; }
 
 	/** Class of instruction.
 	  * 
@@ -51,7 +69,7 @@ public:
 	  *
 	  * @retval	INS.
 	  */
-	uint8_t instructionCode() const { return m_instructionCode; }
+	InstructionCode instructionCode() const { return static_cast<InstructionCode>(m_instructionCode); }
 
 	/** Instruction parameter 1.
 	  *
@@ -100,7 +118,7 @@ public:
 private:
 	void setInstructionCode(const uint8_t instructionCode);
 
-	FileType m_fileType = IO;
+	Type m_type = Unknown;
 	uint8_t m_instructionClass = 0;
 	uint8_t m_instructionCode = 0;
 	uint8_t m_parameters[2];

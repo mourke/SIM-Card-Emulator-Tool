@@ -9,14 +9,18 @@
         <file alias="Stop">Assets/Windows/Stop.svg</file>
         <file alias="Open">Assets/Windows/Open.svg</file>
         <file alias="Clear">Assets/Windows/Clear.svg</file>
-        <file alias="Logo">Assets/Card Centric Logo.svg</file>
         <file alias="USB">Assets/Windows/USB.svg</file>
         <file alias="App Logo">Assets/App Logo.svg</file>
+        <file alias="Company Logo Large">Assets/Card Centric Logo Large.svg</file>
+        <file alias="Company Logo Small">Assets/Card Centric Logo Small.svg</file>
     </qresource>
     <qresource prefix="/macOS">
         <file>Assets/macOS/Save.svg</file>
         <file>Assets/macOS/Start.svg</file>
         <file>Assets/macOS/Stop.svg</file>
         <file>Assets/macOS/Open.svg</file>
+    </qresource>
+    <qresource prefix="/Fonts">
+        <file alias="Avenir">Assets/Fonts/Avenir.ttc</file>
     </qresource>
 </RCC>

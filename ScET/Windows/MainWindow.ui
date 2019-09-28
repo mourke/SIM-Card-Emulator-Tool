@@ -71,6 +71,14 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <family>MS Shell Dlg 2</family>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
      border: none;
@@ -262,15 +270,15 @@
           </property>
           <item>
            <widget class="QLabel" name="companyLogo">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Windows/Logo&quot; width=&quot;200&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <property name="pixmap">
+             <pixmap resource="../Resources/ScET.qrc">:/Windows/Company Logo Small</pixmap>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="appLogo">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Windows/App Logo&quot; width=&quot;100&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <property name="pixmap">
+             <pixmap resource="../Resources/ScET.qrc">:/Windows/App Logo</pixmap>
             </property>
            </widget>
           </item>
@@ -306,6 +314,11 @@
            <width>48</width>
            <height>48</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
          </property>
          <property name="toolTip">
           <string>Start</string>
@@ -351,6 +364,11 @@
            <height>48</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
          <property name="toolTip">
           <string>Stop</string>
          </property>
@@ -389,7 +407,13 @@
         </spacer>
        </item>
        <item alignment="Qt::AlignBottom">
-        <widget class="SegmentedControl" name="segmentedControl" native="true"/>
+        <widget class="SegmentedControl" name="segmentedControl" native="true">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_2">
@@ -417,6 +441,11 @@
            <width>48</width>
            <height>48</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
          </property>
          <property name="toolTip">
           <string>Clear</string>
@@ -456,6 +485,11 @@
            <height>48</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
          <property name="toolTip">
           <string>Save</string>
          </property>
@@ -491,8 +525,13 @@
          <property name="minimumSize">
           <size>
            <width>48</width>
-           <height>48</height>
+           <height>44</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
          </property>
          <property name="toolTip">
           <string>Open</string>
@@ -506,8 +545,8 @@
          </property>
          <property name="iconSize">
           <size>
-           <width>28</width>
-           <height>28</height>
+           <width>30</width>
+           <height>30</height>
           </size>
          </property>
          <property name="toolButtonStyle">
@@ -571,6 +610,8 @@
            <font>
             <family>Courier New</family>
             <pointsize>11</pointsize>
+            <weight>50</weight>
+            <bold>false</bold>
            </font>
           </property>
           <property name="mouseTracking">
@@ -638,11 +679,11 @@
             <widget class="QLabel" name="titleLabel">
              <property name="font">
               <font>
-               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
               </font>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/Windows/USB&quot;/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:13pt; font-weight:500;&quot;&gt;Connect sniffer&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/Windows/USB&quot;/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Connect sniffer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -650,8 +691,9 @@
             <widget class="QLabel" name="subtitleLabel">
              <property name="font">
               <font>
-               <family>Segoe UI</family>
-               <pointsize>10</pointsize>
+               <pointsize>11</pointsize>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="styleSheet">
@@ -768,8 +810,7 @@
         <widget class="QCheckBox" name="SIMToolkitCheckBox">
          <property name="font">
           <font>
-           <family>Segoe UI</family>
-           <pointsize>10</pointsize>
+           <pointsize>13</pointsize>
           </font>
          </property>
          <property name="text">
@@ -800,8 +841,7 @@
         <widget class="QCheckBox" name="fileIOCheckBox">
          <property name="font">
           <font>
-           <family>Segoe UI</family>
-           <pointsize>10</pointsize>
+           <pointsize>13</pointsize>
           </font>
          </property>
          <property name="text">
@@ -829,10 +869,7 @@
         <widget class="QCheckBox" name="authenticationCheckBox">
          <property name="font">
           <font>
-           <family>Segoe UI</family>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <bold>false</bold>
+           <pointsize>13</pointsize>
           </font>
          </property>
          <property name="text">

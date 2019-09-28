@@ -3,9 +3,15 @@
 #include <windows.h>
 #include <WinUser.h>
 #include "Version.h"
+#include <QFontDatabase>
 
 
 int main(int argc, char *argv[]) {
+#ifdef Q_OS_WIN
+	SetProcessDPIAware(); // must be called before the main event loop
+#endif
+
+	SingleApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
 	SingleApplication application(argc, argv, true, SingleApplication::Mode::SecondaryNotification);
 
 	if (application.isSecondary()) {
@@ -18,6 +24,10 @@ int main(int argc, char *argv[]) {
 	SingleApplication::setOrganizationDomain(VER_COMPANYDOMAIN_STR);
 	SingleApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
 	SingleApplication::setApplicationVersion(VER_FILEVERSION_STR);
+
+	QFontDatabase::addApplicationFont(":/Fonts/Avenir");
+
+	SingleApplication::setFont(QFont("Avenir", 8, QFont::Black));
 	
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();

@@ -61,6 +61,7 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &va
 	} else if (value.type() == QVariant::Type::String) {
 		QString text = value.toString();
 		segment->setText(text);
+		segment->setFont(font());
 	}
 
 	segment->sizeToFit();

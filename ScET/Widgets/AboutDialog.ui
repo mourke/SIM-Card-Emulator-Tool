@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
-    <height>301</height>
+    <width>312</width>
+    <height>258</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,11 +31,8 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="text">
-      <string/>
-     </property>
      <property name="pixmap">
-      <pixmap resource="../Resources/ScET.qrc">:/Windows/Logo</pixmap>
+      <pixmap resource="../Resources/ScET.qrc">:/Windows/Company Logo Large</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -52,7 +49,9 @@
      </property>
      <property name="font">
       <font>
-       <family>Segoe UI</family>
+       <family>MS Shell Dlg 2</family>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="text">
@@ -70,7 +69,9 @@
      </property>
      <property name="font">
       <font>
-       <family>Segoe UI</family>
+       <family>MS Shell Dlg 2</family>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="text">
@@ -86,6 +87,13 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
      <property name="text">
       <string>© 2019 Card Centric Limited. All rights reserved.</string>
      </property>
@@ -93,6 +101,13 @@
    </item>
    <item>
     <widget class="QLabel" name="appDescription">
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
      <property name="text">
       <string>
 ScET is a tool that records the live behaviour of a SIM card when connected to the local network within any handset device available in the market today. All SIM card communication, in the form of APDU commands are traced and logged by this tool.</string>
@@ -106,7 +121,9 @@ ScET is a tool that records the live behaviour of a SIM card when connected to t
     <widget class="QLabel" name="supportEmail">
      <property name="font">
       <font>
-       <family>Segoe UI Semibold</family>
+       <family>MS Shell Dlg 2</family>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -121,7 +138,9 @@ ScET is a tool that records the live behaviour of a SIM card when connected to t
     <widget class="QLabel" name="website">
      <property name="font">
       <font>
-       <family>Segoe UI Semibold</family>
+       <family>MS Shell Dlg 2</family>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">

@@ -14,19 +14,39 @@ QString APDUCommand::string() const {
 	return string.toUpper();
 }
 
-APDUCommand::Type APDUCommand::type() const {
-	return m_instructionCode == 0xC0 ? Response : Command;
-}
-
 void APDUCommand::setInstructionCode(const uint8_t instructionCode) {
 	m_instructionCode = instructionCode;
-	if (type() == Command) { // Response will have the same filetype as the command
-		if (instructionCode == 0x88 || instructionCode == 0x82) {
-			m_fileType = Authentication;
-		} else if ((instructionCode >> 4) == 1) { // of the form 1X
-			m_fileType = SIMToolkit;
-		} else {
-			m_fileType = IO;
+	if (instructionCode != GetResponse) { // Response will have the same filetype as the command
+		switch (instructionCode) {
+		case RunGSMAlgorithm:
+			m_type = Authentication;
+			break;
+		case TerminalProfile:
+		case Envelope:
+		case Fetch:
+		case TerminalResponse:
+			m_type = SIMToolkit;
+			break;
+		case Select:
+		case Status:
+		case ReadBinary:
+		case UpdateBinary:
+		case ReadRecord:
+		case UpdateRecord:
+		case Seek:
+		case Increase:
+		case Invalidate:
+		case Rehabilitate:
+		case GetResponse:
+		case VerifyCHV:
+		case ChangeCHV:
+		case DisableCHV:
+		case EnableCHV:
+		case UnblockCHV:
+			m_type = IO;
+			break;
+		default:
+			m_type = Unknown;
 		}
 	}
 }

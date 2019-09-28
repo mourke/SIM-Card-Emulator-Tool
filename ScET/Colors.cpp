@@ -11,7 +11,7 @@ QColor accentColor() {
 }
 
 QColor brandColor() {
-	return QColor(206, 59, 40);
+	return QColor(250, 67, 67);
 }
 
 QColor textViewLineBackgroundColor() {

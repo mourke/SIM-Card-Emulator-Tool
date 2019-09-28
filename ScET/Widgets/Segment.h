@@ -25,8 +25,6 @@ class Segment : public QAbstractButton {
 	Q_PROPERTY(QColor selectedTextColor READ selectedTextColor WRITE setSelectedTextColor)
 	Q_PROPERTY(QColor selectedIndicatorColor READ selectedIndicatorColor WRITE setSelectedIndicatorColor)
 
-	Q_PROPERTY(QFont textFont READ textFont WRITE  setTextFont)
-
 public:
 	Segment(QWidget *parent);
 	~Segment();
@@ -154,21 +152,6 @@ public:
 	void setSelectedIndicatorColor(const QColor &color) { m_selectedIndicatorColor = color; }
 
 	/**
-	 * The font of the text. This defaults to "Segoe UI" 
-	 * size 11 pt on Windows and "San Francisco" on macOS.
-	 *
-	 * @retval	The font of the text.
-	 */
-	QFont textFont() const { return m_textFont; }
-
-	/**
-	 * Sets the font of the text.
-	 *
-	 * @param textFont	The new font.
-	 */
-	void setTextFont(const QFont &textFont) { m_textFont = textFont; }
-
-	/**
 	 * Updates the minimum size of the button taking into
 	 * account the current text and font. This method needs
 	 * to be called manually every time the text or font is 
@@ -202,12 +185,10 @@ private:
 	bool highlighted = false;
 
 #if defined(Q_OS_MAC)
-	QFont m_textFont = QFont(".AppleSystemUIFont", 11);
 	QColor m_selectedTextColor = Qt::white;
 	QColor m_highlightedTextColor, m_pressedTextColor, m_textColor = Qt::black;
 	const int CORNER_RADIUS = 3;
 #elif defined(Q_OS_WIN) 
-	QFont m_textFont = QFont("Segoe UI", 11);
 	QColor m_textColor = QColor(0, 0, 0, 145);
 	QColor m_highlightedTextColor, m_pressedTextColor, m_selectedTextColor = Qt::black;
 	QColor m_selectedIndicatorColor;
