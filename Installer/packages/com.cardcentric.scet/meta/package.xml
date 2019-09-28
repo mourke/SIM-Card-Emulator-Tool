@@ -3,7 +3,7 @@
     <DisplayName>ScET</DisplayName>
     <Description>SIM Card Emulator Tool</Description>
     <Version>0.1.1-1</Version>
-    <ReleaseDate>2019-09-20</ReleaseDate>
+    <ReleaseDate>2019-09-28</ReleaseDate>
 	<Name>com.cardcentric.scet</Name>
     <Licenses>
         <License name="GNU General Public License v3.0" file="LICENSE.txt" />
