@@ -109,8 +109,7 @@
       </font>
      </property>
      <property name="text">
-      <string>
-ScET is a tool that records the live behaviour of a SIM card when connected to the local network within any handset device available in the market today. All SIM card communication, in the form of APDU commands are traced and logged by this tool.</string>
+      <string>ScET is a tool that records the live behaviour of a SIM card when connected to a network using any end user device. All SIM card communication, in the form of APDU commands are tracked and logged by this tool.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
