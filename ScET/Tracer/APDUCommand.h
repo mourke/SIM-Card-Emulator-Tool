@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <cstdint>
+#include <optional>
+#include <QMap>
 
 class QString;
 
@@ -47,6 +49,7 @@ public:
 		Envelope = 0xC2,
 		Fetch = 0x12,
 		TerminalResponse = 0x14,
+		ManageChannel = 0x70,
 
 		// Authentication Commands
 		RunGSMAlgorithm = 0x88
@@ -114,9 +117,18 @@ public:
 	  *
 	  * @retval	CLA INS P1 P2 Lc Data (SW1 SW2).
 	  */
-	QString string() const;
+	QString protocolString() const;
+
+	/** A higher level interpretation of the data.
+	  *
+	  * @retval	A textual representation of the raw 
+	  *			protocol string split into key-value pairs, if available.
+	  */
+	const std::optional<QMap<QString, QString>> & applicationMap() const { return m_applicationMap; }
 private:
 	void setInstructionCode(const uint8_t instructionCode);
+	QString getStatusWordString();
+	void updateApplicationMap();
 
 	Type m_type = Unknown;
 	uint8_t m_instructionClass = 0;
@@ -124,6 +136,7 @@ private:
 	uint8_t m_parameters[2];
 	std::vector<uint8_t> m_data;
 	uint8_t m_status[2];
+	std::optional<QMap<QString, QString>> m_applicationMap;
 
 	friend class APDUSplitter;
 };

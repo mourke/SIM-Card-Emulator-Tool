@@ -26,7 +26,7 @@ Tracer::Tracer(libusb_device *device, libusb_context *context) : QObject(nullptr
 		minutes = minutes - (hours * 60);
 
 		QString output = QString::asprintf("APDU: (%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
-		output += command.string();
+		output += command.protocolString();
 
 		QMetaObject::invokeMethod(QApplication::instance(), [this, output, command]() {
 			emit apduCommandReceived(output, command);
