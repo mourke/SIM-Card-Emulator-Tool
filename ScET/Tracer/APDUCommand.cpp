@@ -1,6 +1,5 @@
 #include "APDUCommand.h"
 #include <QString>
-#include <cmath>
 
 enum STKTextEncoding : uint8_t {
 	SevenBit,
@@ -36,6 +35,22 @@ enum STKTag : uint8_t {
 	FileList, 
 	LocationInformation, 
 	IMEI
+};
+
+enum ResponseTag : uint8_t {
+	FCPTemplate = 0x62,
+	FileSize = 0x80,
+	TotalFileSize,
+	FileDescriptor,
+	FileID,
+	DFName,
+	SFI = 0x88,
+	LCSI = 0x8A,
+	ReferencedSA,
+	CompactSA,
+	ExpandedSA = 0xAB,
+	ProprietaryInformation = 0xA5,
+	PINStatusTemplateDO = 0xC6
 };
 
 enum STKDevice : uint8_t {
@@ -97,6 +112,39 @@ enum STKCommand : uint8_t {
 	EncapsulatedSessionControl, 
 	EndOfProactiveSession = 0x81
 };
+
+QString responseTagString(ResponseTag tag) {
+	switch (tag) {
+	case FCPTemplate:
+		return "FCP Template";
+	case FileSize:
+		return "File Size";
+	case TotalFileSize:
+		return "Total File Size";
+	case FileDescriptor:
+		return "File Descriptor";
+	case FileID:
+		return "File ID";
+	case DFName:
+		return "DF Name";
+	case SFI:
+		return "Short File Identifier";
+	case LCSI:
+		return "Life Cycle Status Information";
+	case ReferencedSA:
+		return "Referenced Security Attributes";
+	case CompactSA:
+		return "Compact Security Attributes";
+	case ExpandedSA:
+		return "Expanded Security Attributes";
+	case ProprietaryInformation:
+		return "Proprietary Information";
+	case PINStatusTemplateDO:
+		return "PIN Status Template DO";
+	default:
+		return "Unknown Tag";
+	}
+}
 
 QString stkToneString(uint8_t tone) {
 	switch (tone) {
@@ -475,9 +523,9 @@ QString stkStatusString(uint8_t code) {
 	case 0x13:
 		return "Help information required by the user";
 	case 0x14:
-		return "reserved for GSM / 3G";
+		return "USSD or SS transaction terminated by the user";
 	case 0x20:
-		return "terminal currently unable to process command";
+		return "Terminal currently unable to process command";
 	case 0x21: 
 		return "Network currently unable to process command";
 	case 0x22: 
@@ -501,13 +549,13 @@ QString stkStatusString(uint8_t code) {
 	case 0x33: 
 		return "Command number not known by terminal";
 	case 0x34: 
-		return "reserved for GSM / 3G";
+		return "SS Return Error";
 	case 0x35: 
-		return "reserved for GSM / 3G";
+		return "SMS RP-ERROR";
 	case 0x36: 
 		return "Error, required values are missing";
 	case 0x37: 
-		return "reserved for GSM / 3G";
+		return "USSD Return Error";
 	case 0x38: 
 		return "MultipleCard commands error";
 	case 0x39: 
@@ -523,6 +571,130 @@ QString stkStatusString(uint8_t code) {
 	default:
 		return "Unknown status code";
 	}
+}
+
+QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
+	switch (status) {
+	case 0x20:
+		switch (code) {
+		case 0x1:
+			return "Screen is busy";
+		case 0x2:
+			return "Terminal currently busy on call";
+		case 0x3:
+			return "ME currently busy on SS transaction";
+		case 0x4:
+			return "No service";
+		case 0x5:
+			return "Access control class bar";
+		case 0x6:
+			return "Radio resource not granted";
+		case 0x7:
+			return "Not in speech call";
+		case 0x8:
+			return "ME currently busy on USSD transaction";
+		case 0x9:
+			return "Terminal currently busy on SEND DTMF command";
+		case 0xA:
+			return "No NAA active";
+		default:
+			break;
+		}
+	case 0x26:
+		switch (code) {
+		case 0x1:
+			return "Bearer unavailable";
+		case 0x2:
+			return "Browser unavailable";
+		case 0x3:
+			return "Terminal unable to read the provisioning data";
+		case 0x4:
+			return "Default URL unavailable";
+		default:
+			break;
+		}
+	case 0x38:
+		switch (code) {
+		case 0x1:
+			return "Card reader removed or not present";
+		case 0x2:
+			return "Card removed or not present";
+		case 0x3:
+			return "Card reader busy";
+		case 0x4:
+			return "Card powered off";
+		case 0x5:
+			return "C-APDU format error";
+		case 0x6:
+			return "Mute card";
+		case 0x7:
+			return "Transmission error";
+		case 0x8:
+			return "Protocol not supported";
+		case 0x9:
+			return "Specified reader not valid";
+		default:
+			break;
+		}
+	case 0x39:
+		switch (code) {
+		case 1:
+			return "Action not allowed";
+		case 2:
+			return "The type of request has changed";
+		default:
+			break;
+		}
+	case 0x3A:
+		switch (code) {
+		case 0x0:
+			return "No specific cause can be given";
+		case 0x1:
+			return "No channel available";
+		case 0x2:
+			return "Channel closed";
+		case 0x3:
+			return "Channel identifier not valid";
+		case 0x4:
+			return "Requested buffer size not available";
+		case 0x5:
+			return "Security error (unsuccessful authentication)";
+		case 0x6:
+			return "Requested UICC/terminal interface transport level not available";
+		case 0x7:
+			return "Remote device is not reachable (not present, not physically connected, switched off, etc.)";
+		case 0x8:
+			return "Service error (service not available on remote device)";
+		case 0x9:
+			return "Service identifier unknown";
+		case 0x10:
+			return "Port not available (applicable for OPEN CHANNEL related to UICC Server Mode) and Terminal Server Mode";
+		case 0x11:
+			return "Launch parameters missing or incorrect (applicable for OPEN CHANNEL or SEND DATA related to Terminal Server Mode)";
+		case 0x12:
+			return "Application launch failed (applicable for SEND DATA related to Terminal Server Mode)";
+		default:
+			break;
+		}
+	case 0x3C:
+		switch (code) {
+		case 1:
+			return "Frame identifier is not valid";
+		case 2:
+			return "Number of frames beyond the terminal's capabilities";
+		case 3:
+			return " No Frame defined";
+		case 4:
+			return "Requested size not supported";
+		case 5:
+			return "Default Active Frame is not valid";
+		default:
+			break;
+		}
+	default:
+		break;
+	}
+	return "No specific cause can be given";
 }
 
 QString stkCommandString(STKCommand command) {
@@ -809,10 +981,10 @@ QString APDUCommand::getStatusWordString() {
 		QString string = "Command not allowed.";
 		switch (secondStatusByte()) {
 		case 0x81:
-			string += "	Command incompatible with file structure.";
+			string += " Command incompatible with file structure.";
 			break;
 		case 0x82:
-			string += "	Security status not satisfied.";
+			string += " Security status not satisfied.";
 			break;
 		case 0x83:
 			string += " Authentication method blocked.";
@@ -1045,7 +1217,104 @@ void APDUCommand::updateApplicationMap() {
 		break;
 	}
 	case GetResponse:
-
+		if (m_data.empty()) break;
+		if (m_data[0] != FCPTemplate) break;
+		int index = 2; // discard first two bytes
+		while (index < m_data.size()) {
+			ResponseTag responseTag = static_cast<ResponseTag>(m_data[index++]);
+			uint8_t payloadLength = m_data[index++];
+			switch (responseTag) {
+			case FileDescriptor: {
+				QString details;
+				int data = m_data[index++];
+				int fileAccessibilityMask = 0xC0; // 11000000
+				switch (data & fileAccessibilityMask) {
+				case 0:
+					details += "Non-shareable file";
+					break;
+				case 0x40:
+					details += "Shareable file";
+					break;
+				default:
+					break; // RFU
+				}
+				int fileTypeMask = 0x38; // 10111000
+				switch (data & fileTypeMask) {
+				case 0:
+					details += "\nWorking EF";
+					break;
+				case 8:
+					details += "\nInternal EF";
+					break;
+				case 0x38:
+					details += "\nDF or ADF";
+				default:
+					break; // RFU
+				}
+				int efStructureMask = 0x87; // 10000111
+				switch (data & efStructureMask) {
+				case 0:
+					details += "\nNo information given";
+					break;
+				case 1:
+					details += "\nTransparent structure";
+					break;
+				case 2:
+					details += "\nLinear fixed structure";
+				case 6:
+					details += "\nCyclic structure";
+				default:
+					break; // RFU
+				}
+				map.insert(responseTagString(responseTag), details);
+				break;
+			}
+			case DFName: {
+				QString details;
+				for (int i = 0; i < payloadLength; ++i) { QString::asprintf("%c", m_data[index++]); }
+				map.insert(responseTagString(responseTag), details);
+				break;
+			}
+			case LCSI: {
+				QString details;
+				int status = m_data[index++];
+				switch (status) {
+				case 0:
+					details = "No information given";
+					break;
+				case 1:
+					details = "Creation state";
+					break;
+				case 3:
+					details = "Initialization state";
+					break;
+				case 4:
+				case 6:
+					details = "Operational state - deactivated";
+					break;
+				case 5:
+				case 7:
+					details = "Operational state - activated";
+					break;
+				case 10:
+				case 11:
+				case 12:
+				case 13:
+					details = "Termination state";
+					break;
+				default:
+					break; // RFU
+				}
+				map.insert(responseTagString(responseTag), details);
+				break;
+			}
+			default:
+				QString details;
+				for (int i = 0; i < payloadLength; ++i) { QString::asprintf("%02x", m_data[index++]); }
+				map.insert(responseTagString(responseTag), details);
+				break;
+			}
+		}
 		break;
 	case RunGSMAlgorithm:
 	case UnblockCHV:
@@ -1169,9 +1438,6 @@ void APDUCommand::updateApplicationMap() {
 			case 25:
 				facilities = { "Event: CSG Cell Selection (if class \"q\" is supported)\n", "Event: Contactless state request (if class \"r\" is supported)\n" };
 				break;
-			case 26:
-				// RFU
-				continue;
 			case 27:
 				facilities = { "Terminal alignment left\n", "Terminal alignment centre\n", "Terminal alignment right\n", "Terminal font size normal\n", "Terminal font size large\n", "Terminal font size small\n" };
 				break;
@@ -1195,7 +1461,7 @@ void APDUCommand::updateApplicationMap() {
 				continue;
 			}
 			for (int i = 0; i < numberOfBits; ++i) {
-				bool bit = byte & (int)std::pow(2, i);
+				bool bit = byte & (1 << i);
 				bit ? (supportedFacilities += facilities[i]) : (unsupportedFacilities += facilities[i]);
 			}
 		}
@@ -1215,8 +1481,9 @@ void APDUCommand::updateApplicationMap() {
 			case CommandDetails: {
 				QString details;
 				details += QString::asprintf("Sequence Number: %d\n", m_data[index++]);
-				details += "Type: " + stkCommandString(static_cast<STKCommand>(m_data[index++])) + "\n";
-				details += QString::asprintf("Qualifier: %d", m_data[index++]);
+				auto command = static_cast<STKCommand>(m_data[index++]);
+				details += "Type: " + stkCommandString(command) + "\n";
+				details += "Qualifier: " + stkCommandQualifierString(command, m_data[index++]);
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
@@ -1228,7 +1495,11 @@ void APDUCommand::updateApplicationMap() {
 				break;
 			}
 			case Result: {
-				QString result = stkStatusString(m_data[index++]);
+				uint8_t status = m_data[index++];
+				QString result = stkStatusString(status);
+				if (payloadLength > 1) {
+					result += "\n" + stkAdditionalStatusString(status, m_data[index++]);
+				}
 				map.insert(stkTagString(stkTag), result);
 				break;
 			}
@@ -1245,17 +1516,60 @@ void APDUCommand::updateApplicationMap() {
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
-			case Address:
-			case CapabilityConfigurationParameters:
-			case CalledPartySubaddress:
-			case ShortString:
-			case SMSTPDU:
-			case CellBroadcastPage:
+			case Address: {
+				QString details, type, identification;
+				int data = m_data[index++];
+				switch ((data & 0x70) >> 4) { // 01110000
+				case 0:
+					type = "Unknown";
+					break;
+				case 1:
+					type = "International Number";
+					break;
+				case 2:
+					type = "National Number";
+					break;
+				case 3:
+					type = "Network Specific Number";
+					break;
+				default:
+					break; // RFU
+				}
+
+				switch (data & 0xF) { // 00001111
+				case 0:
+					identification = "Unknown";
+					break;
+				case 1:
+					identification = "ISDN / telephony numbering plan";
+					break;
+				case 3:
+					identification = "Data numbering plan";
+					break;
+				case 4:
+					identification = "Telex numbering plan";
+					break;
+				case 9:
+					identification = "Private numbering plan";
+					break;
+				case 0xF:
+					identification = "Reserved for extension";
+					break;
+				default:
+					break; // RFU
+				}
+				details += "Number Type: " + type + "\n";
+				details += "Numbering Plan Identification: " + identification + "\n";
+				details += "Dialing Number String: ";
+				for (int i = 1; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
+				map.insert(stkTagString(stkTag), details);
+				break;
+			}
 			case TextString: {
 				QString details;
 				details += "Encoding: " + stkTextEncodingString(static_cast<STKTextEncoding>(m_data[index++])) + "\n";
 				details += "String: ";
-				for (int i = 0; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
+				for (int i = 1; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
@@ -1266,25 +1580,44 @@ void APDUCommand::updateApplicationMap() {
 				QString details;
 				details += QString::asprintf("Item ID: %02x\n", m_data[index++]);
 				details += "String: ";
-				for (int i = 0; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
+				for (int i = 1; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
-			case ItemIdentifier:
-				map.insert(stkTagString(stkTag), QString::asprintf("%02x", m_data[index++]));
-				break;
 			case ResponseLength:
 				map.insert(stkTagString(stkTag), QString::asprintf("Between %d and %d characters", m_data[index++], m_data[index++]));
 				break;
-			case FileList: 
-//			{
-//				QString details;
-//				details += QString::asprintf("Number of files: %d\n", m_data[index++]);
-//				break;
-//			}
-			case LocationInformation:
-			case IMEI:
+			case FileList: {
+				QString details;
+				details += QString::asprintf("Number of files: %d\n", m_data[index++]);
+				for (int i = 1; i < payloadLength; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				break;
+			}
+			case LocationInformation: {
+				QString details;
+				details += "Mobile Country & Network Codes: ";
+				for (int i = 0; i < 3; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				details += "\nLocation Area Code: ";
+				for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				details += "\nCell Identity Value: ";
+				for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				if (payloadLength > 7) {
+					details += "\nExtended Cell Identity Value: ";
+					for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				}
+				map.insert(stkTagString(stkTag), details);
+				break;
+			}
+			case IMEI: {
+				QString details;
+				for (int i = 0; i < payloadLength; ++i) { details += QString::asprintf("%d", m_data[index++]); }
+				map.insert(stkTagString(stkTag), details);
+				break;
+			}
 			default:
+				QString details;
+				for (int i = 0; i < payloadLength; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 		}
