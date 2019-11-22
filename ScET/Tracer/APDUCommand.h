@@ -74,6 +74,12 @@ public:
 	  */
 	InstructionCode instructionCode() const { return static_cast<InstructionCode>(m_instructionCode); }
 
+	/** Instruction code.
+	  *
+	  * @retval	INS as a human-readable string.
+	  */
+	QString instructionCodeString() const;
+
 	/** Instruction parameter 1.
 	  *
 	  * @retval	P1.

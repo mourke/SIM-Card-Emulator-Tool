@@ -113,6 +113,57 @@ enum STKCommand : uint8_t {
 	EndOfProactiveSession = 0x81
 };
 
+QString APDUCommand::instructionCodeString() const {
+	switch (m_instructionCode) {
+	case RunGSMAlgorithm:
+		return "Run GSM Algorithm";
+	case TerminalProfile:
+		return "Terminal Profile";
+	case Envelope:
+		return "Envelope";
+	case Fetch:
+		return "Fetch";
+	case TerminalResponse:
+		return "Terminal Response";
+	case ManageChannel:
+		return "Manage Channel";
+	case Select:
+		return "Select";
+	case Status:
+		return "Status";
+	case ReadBinary:
+		return "Read Binary";
+	case UpdateBinary:
+		return "Update Binary";
+	case ReadRecord:
+		return "Read Record";
+	case UpdateRecord:
+		return "Update Record";
+	case Seek:
+		return "Seek";
+	case Increase:
+		return "Increase";
+	case Invalidate:
+		return "Invalidate";
+	case Rehabilitate:
+		return "Rehabilitate";
+	case GetResponse:
+		return "Get Response";
+	case VerifyCHV:
+		return "Verify CHV";
+	case ChangeCHV:
+		return "ChangeCHV";
+	case DisableCHV:
+		return "Disable CHV";
+	case EnableCHV:
+		return "Enable CHV";
+	case UnblockCHV:
+		return "Unblock CHV";
+	default:
+		return "Unknown";
+	}
+}
+
 QString responseTagString(ResponseTag tag) {
 	switch (tag) {
 	case FCPTemplate:
@@ -463,7 +514,7 @@ QString stkCommandQualifierString(STKCommand command, uint8_t qualifier) {
 	default:
 		break; // RFU
 	}
-	return QString::asprintf("%02x", qualifier);
+	return QString::asprintf("%02X", qualifier);
 }
 
 QString stkTextEncodingString(STKTextEncoding encoding) {
@@ -898,15 +949,15 @@ QString stkTagString(STKTag tag) {
 }
 
 QString APDUCommand::protocolString() const {
-	QString string = QString::asprintf("%02x %02x %02x %02x %02x", m_instructionClass, m_instructionCode, firstParameter(), secondParameter(), dataLength());
+	QString string = QString::asprintf("%02X %02X %02X %02X %02X", m_instructionClass, m_instructionCode, firstParameter(), secondParameter(), dataLength());
 	
 	for (uint8_t character : m_data) {
-		string += QString::asprintf(" %02x", character);
+		string += QString::asprintf(" %02X", character);
 	}
 
-	string += QString::asprintf(" (%02x %02x)", firstStatusByte(), secondStatusByte());
+	string += QString::asprintf(" (%02X %02X)", firstStatusByte(), secondStatusByte());
 
-	return string.toUpper();
+	return string;
 }
 
 QString APDUCommand::getStatusWordString() {
@@ -915,9 +966,9 @@ QString APDUCommand::getStatusWordString() {
 	case 0x90:
 		return "Command executed successfully.";
 	case 0x91:
-		return QString::asprintf("Command executed successfully. Information available from proactive SIM; %02x bytes available.", secondStatusByte());
+		return QString::asprintf("Command executed successfully. Information available from proactive SIM; %02X bytes available.", secondStatusByte());
 	case 0x61:
-		return QString::asprintf("Command successful. %02x bytes of data available.", secondStatusByte());
+		return QString::asprintf("Command successful. %02X bytes of data available.", secondStatusByte());
 	// Warning processings
 	case 0x64:
 	case 0x62: {
@@ -1045,7 +1096,7 @@ QString APDUCommand::getStatusWordString() {
 	case 0x6B:
 		return "Wrong parameter(s) P1-P2.";
 	case 0x6C:
-		return QString::asprintf("Wrong length Le. Exact length: %02x.", secondStatusByte());
+		return QString::asprintf("Wrong length Le. Exact length: %02X.", secondStatusByte());
 	case 0x6D:
 		return "Instruction code not supported or invalid.";
 	case 0x6E:
@@ -1062,7 +1113,7 @@ void APDUCommand::updateApplicationMap() {
 
 	QString data;
 	for (uint8_t character : m_data) {
-		data += QString::asprintf("%02x", character);
+		data += QString::asprintf("%02X", character);
 	}
 
 	switch (m_instructionCode) {
@@ -1160,14 +1211,14 @@ void APDUCommand::updateApplicationMap() {
 		break;
 	case ReadBinary:
 	case UpdateBinary:
-		map.insert("Offset High", QString::asprintf("%02x", firstParameter()));
-		map.insert("Offset Low", QString::asprintf("%02x", secondParameter()));
+		map.insert("Offset High", QString::asprintf("%02X", firstParameter()));
+		map.insert("Offset Low", QString::asprintf("%02X", secondParameter()));
 		map.insert(m_instructionCode == UpdateBinary ? "Updated Data" : "Data Read", data);
 		break;
 	case ReadRecord: 
 	case Seek:
 	case UpdateRecord: {
-		map.insert("Record Number", QString::asprintf("%02x", firstParameter()));
+		map.insert("Record Number", QString::asprintf("%02X", firstParameter()));
 
 		QString mode;
 		int efModeMask = 0xF8; // 11111000
@@ -1204,10 +1255,10 @@ void APDUCommand::updateApplicationMap() {
 			record = isRead ? "Data Read" : "Data Update";
 			break;
 		case 5:
-			record = QString::asprintf("Read all records from %02x up to the last", firstParameter());
+			record = QString::asprintf("Read all records from %02X up to the last", firstParameter());
 			break;
 		case 6:
-			record = QString::asprintf("Read all records from the last up to %02x", firstParameter());
+			record = QString::asprintf("Read all records from the last up to %02X", firstParameter());
 			break;
 		case 7:
 			// RFU
@@ -1216,7 +1267,7 @@ void APDUCommand::updateApplicationMap() {
 		map.insert(m_instructionCode == Seek ? "Search Pattern" : record, data);
 		break;
 	}
-	case GetResponse:
+	case GetResponse: {
 		if (m_data.empty()) break;
 		if (m_data[0] != FCPTemplate) break;
 		int index = 2; // discard first two bytes
@@ -1227,6 +1278,7 @@ void APDUCommand::updateApplicationMap() {
 			case FileDescriptor: {
 				QString details;
 				int data = m_data[index++];
+				payloadLength--;
 				int fileAccessibilityMask = 0xC0; // 11000000
 				switch (data & fileAccessibilityMask) {
 				case 0:
@@ -1271,13 +1323,14 @@ void APDUCommand::updateApplicationMap() {
 			}
 			case DFName: {
 				QString details;
-				for (int i = 0; i < payloadLength; ++i) { QString::asprintf("%c", m_data[index++]); }
+				while (payloadLength-- > 0) { details += QString::asprintf("%c", m_data[index++]); }
 				map.insert(responseTagString(responseTag), details);
 				break;
 			}
 			case LCSI: {
 				QString details;
 				int status = m_data[index++];
+				payloadLength--;
 				switch (status) {
 				case 0:
 					details = "No information given";
@@ -1310,12 +1363,14 @@ void APDUCommand::updateApplicationMap() {
 			}
 			default:
 				QString details;
-				for (int i = 0; i < payloadLength; ++i) { QString::asprintf("%02x", m_data[index++]); }
+				while (payloadLength-- > 0) { details += QString::asprintf("%02X", m_data[index++]); }
 				map.insert(responseTagString(responseTag), details);
 				break;
 			}
+			index += payloadLength; // in case there was anything we didn't use.
 		}
 		break;
+	}
 	case RunGSMAlgorithm:
 	case UnblockCHV:
 	case VerifyCHV:
@@ -1324,7 +1379,7 @@ void APDUCommand::updateApplicationMap() {
 		QString type = (secondParameter() & typeMask) == 0 ? "Global reference data number" : "Specific reference data number";
 
 		int dataMask = 0x1F; // 00011111
-		QString data = QString::asprintf("%02x", secondParameter() & dataMask);
+		QString data = QString::asprintf("%02X", secondParameter() & dataMask);
 
 		map.insert(type, data);
 		break;
@@ -1335,7 +1390,7 @@ void APDUCommand::updateApplicationMap() {
 		switch (firstParameter()) {
 		case 0:
 			operation = "Open Channel";
-			channel = QString::asprintf("%02x", secondParameter());
+			channel = QString::asprintf("%02X", secondParameter());
 			break;
 		case 0x80:
 			operation = "Close Channel";
@@ -1353,116 +1408,117 @@ void APDUCommand::updateApplicationMap() {
 		QString unsupportedFacilities;
 		for (int i = 0; i < m_data.size(); ++i) {
 			uint8_t byte = m_data[i];
-			const int numberOfBits = 8 * sizeof(byte);
-			std::vector<QString> facilities(numberOfBits);
+			std::vector<QString> facilities;
 			switch (i) {
 			case 0:
-				facilities = { "Profile Download\n", "SMS-PP data download\n", "Cell Broadcast data download\n", "Menu selection\n", "SMS-PP data download\n", "Timer expiration\n", "USSD string data object support in Call Control by USIM\n", "Call Control by NAA\n" };
+				facilities = { "Profile Download", "SMS-PP data download", "Cell Broadcast data download", "Menu selection", "SMS-PP data download", "Timer expiration", "USSD string data object support in Call Control by USIM", "Call Control by NAA" };
 				break;
 			case 1:
-				facilities = { "Command result\n", "Call Control by NAA\n", "Call Control by NAA\n", "MO short message control support\n", "Call Control by NAA\n", "UCS2 Entry\n", "UCS2 Display\n", "Display Text\n" };
+				facilities = { "Command result", "Call Control by NAA", "Call Control by NAA", "MO short message control support", "Call Control by NAA", "UCS2 Entry", "UCS2 Display", "Display Text" };
 				break;
 			case 2:
-				facilities = { "Proactive UICC: DISPLAY TEXT\n", "Proactive UICC: GET INKEY\n", "Proactive UICC: GET INPUT\n", "Proactive UICC: MORE TIME\n", "Proactive UICC: PLAY TONE\n", "Proactive UICC: POLL INTERVAL\n", "Proactive UICC: POLLING OFF\n", "Proactive UICC: REFRESH\n" };
+				facilities = { "Proactive UICC: DISPLAY TEXT", "Proactive UICC: GET INKEY", "Proactive UICC: GET INPUT", "Proactive UICC: MORE TIME", "Proactive UICC: PLAY TONE", "Proactive UICC: POLL INTERVAL", "Proactive UICC: POLLING OFF", "Proactive UICC: REFRESH" };
 				break;
 			case 3:
-				facilities = { "Proactive UICC: SELECT ITEM\n", "Proactive UICC: SEND SHORT MESSAGE with 3GPP-SMS-TPDU\n", "Proactive UICC: SEND SS\n", "Proactive UICC: SEND USSD\n", "Proactive UICC: SET UP CALL\n", "Proactive UICC: SET UP MENU\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (MCC, MNC, LAC, Cell ID & IMEI)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (NMR) \n" };
+				facilities = { "Proactive UICC: SELECT ITEM", "Proactive UICC: SEND SHORT MESSAGE with 3GPP-SMS-TPDU", "Proactive UICC: SEND SS", "Proactive UICC: SEND USSD", "Proactive UICC: SET UP CALL", "Proactive UICC: SET UP MENU", "Proactive UICC: PROVIDE LOCAL INFORMATION (MCC, MNC, LAC, Cell ID & IMEI)", "Proactive UICC: PROVIDE LOCAL INFORMATION (NMR) " };
 				break;
 			case 4:
-				facilities = { "Proactive UICC: SET UP EVENT LIST\n", "Event: MT call\n", "Event: Call connected\n", "Event: Call disconnected\n", "Event: Location status\n", "Event: User activity\n", "Event: Idle screen available\n", "Event: Card reader status \n" };
+				facilities = { "Proactive UICC: SET UP EVENT LIST", "Event: MT call", "Event: Call connected", "Event: Call disconnected", "Event: Location status", "Event: User activity", "Event: Idle screen available", "Event: Card reader status " };
 				break;
 			case 5:
-				facilities = { "Event: Language selection\n", "Event: Browser Termination (i.e. class \"ac\" is supported)\n", "Event: Data available\n", "Event: Channel status\n", "Event: Access Technology Change\n", "Event: Display parameters changed\n", "Event: Local Connection\n", "Event: Network Search Mode Change\n" };
+				facilities = { "Event: Language selection", "Event: Browser Termination (i.e. class \"ac\" is supported)", "Event: Data available", "Event: Channel status", "Event: Access Technology Change", "Event: Display parameters changed", "Event: Local Connection", "Event: Network Search Mode Change" };
 				break;
 			case 6:
-				facilities = { "Proactive UICC: POWER ON CARD\n", "Proactive UICC: POWER OFF CARD\n", "Proactive UICC: PERFORM CARD APDU\n", "Proactive UICC: GET READER STATUS (Card reader status)\n", "Proactive UICC: GET READER STATUS (Card reader identifier)\n" };
+				facilities = { "Proactive UICC: POWER ON CARD", "Proactive UICC: POWER OFF CARD", "Proactive UICC: PERFORM CARD APDU", "Proactive UICC: GET READER STATUS (Card reader status)", "Proactive UICC: GET READER STATUS (Card reader identifier)" };
 				break;
 			case 7:
-				facilities = { "Proactive UICC: TIMER MANAGEMENT (start, stop)\n", "Proactive UICC: TIMER MANAGEMENT (get current value)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (date, time and time zone)\n", "GET INKEY\n", "SET UP IDLE MODE TEXT\n", "RUN AT COMMAND (i.e. class \"b\" is supported)\n", "SETUP CALL\n", "Call Control by NAA\n" };
+				facilities = { "Proactive UICC: TIMER MANAGEMENT (start, stop)", "Proactive UICC: TIMER MANAGEMENT (get current value)", "Proactive UICC: PROVIDE LOCAL INFORMATION (date, time and time zone)", "GET INKEY", "SET UP IDLE MODE TEXT", "RUN AT COMMAND (i.e. class \"b\" is supported)", "SETUP CALL", "Call Control by NAA" };
 				break;
 			case 8:
-				facilities = { "DISPLAY TEXT\n", "SEND DTMF command\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (NMR)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (language)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION, Timing Advance\n", "Proactive UICC: LANGUAGE NOTIFICATION\n", "Proactive UICC: LAUNCH BROWSER (i.e. class \"ab\" is supported)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (Access Technology)\n" };
+				facilities = { "DISPLAY TEXT", "SEND DTMF command", "Proactive UICC: PROVIDE LOCAL INFORMATION (NMR)", "Proactive UICC: PROVIDE LOCAL INFORMATION (language)", "Proactive UICC: PROVIDE LOCAL INFORMATION, Timing Advance", "Proactive UICC: LANGUAGE NOTIFICATION", "Proactive UICC: LAUNCH BROWSER (i.e. class \"ab\" is supported)", "Proactive UICC: PROVIDE LOCAL INFORMATION (Access Technology)" };
 				break;
 			case 9:
-				facilities = { "Soft keys support for SELECT ITEM\n", "Soft Keys support for SET UP MENU\n" };
+				facilities = { "Soft keys support for SELECT ITEM", "Soft Keys support for SET UP MENU" };
 				break;
 			case 10:
 				map.insert("Maximum number of soft keys available", QString::asprintf("%d", byte));
 				continue;
 			case 11:
-				facilities = { "Proactive UICC: OPEN CHANNEL\n", "Proactive UICC: CLOSE CHANNEL\n", "Proactive UICC: RECEIVE DATA\n", "Proactive UICC: SEND DATA\n", "Proactive UICC: GET CHANNEL STATUS\n", "Proactive UICC: SERVICE SEARCH\n", "Proactive UICC: GET SERVICE INFORMATION\n", "Proactive UICC: DECLARE SERVICE\n" };
+				facilities = { "Proactive UICC: OPEN CHANNEL", "Proactive UICC: CLOSE CHANNEL", "Proactive UICC: RECEIVE DATA", "Proactive UICC: SEND DATA", "Proactive UICC: GET CHANNEL STATUS", "Proactive UICC: SERVICE SEARCH", "Proactive UICC: GET SERVICE INFORMATION", "Proactive UICC: DECLARE SERVICE" };
 				break;
 			case 12:
-				facilities = { "CSD\n", "GPRS\n", "Bluetooth\n", "IrDA\n", "RS232\n" };
+				facilities = { "CSD", "GPRS", "Bluetooth", "IrDA", "RS232" };
 				map.insert("Number of channels supported by terminal", QString::asprintf("%d", byte >> 5));
 				break;
 			case 13:
-				facilities = { "", "", "", "", "", "Display capability (i.e. class \"ND\" is indicated)\n", "Keypad capability (i.e. class \"NK\" is indicated)\n", "Screen Sizing Parameters\n" };
+				facilities = { "", "", "", "", "", "Display capability (i.e. class \"ND\" is indicated)", "Keypad capability (i.e. class \"NK\" is indicated)", "Screen Sizing Parameters" };
 				map.insert("Number of characters supported down the terminal display", QString::asprintf("%d", byte & 0x1F)); // 00011111
 				break;
 			case 14:
-				facilities = { "", "", "", "", "", "", "", "Variable size fonts\n" };
+				facilities = { "", "", "", "", "", "", "", "Variable size fonts" };
 				map.insert("Number of characters supported across the terminal display", QString::asprintf("%d", byte & 0x7F)); // 01111111
 				break;
 			case 15:
-				facilities = { "Display resizability\n", "Text Wrapping\n", "Text Scrolling\n", "Text Attributes\n" };
+				facilities = { "Display resizability", "Text Wrapping", "Text Scrolling", "Text Attributes" };
 				map.insert("Width reduction when in a menu", QString::asprintf("%d", byte >> 5));
 				break;
 			case 16:
-				facilities = { "TCP, UICC in client mode, remote connection\n", "UDP, UICC in client mode, remote connection\n", "TCP, UICC in server mode\n", "TCP, UICC in client mode, local connection (i.e. class \"k\" is supported)\n", "UDP, UICC in client mode, local connection (i.e. class \"k\" is supported)\n", "Direct communication channel (i.e. class \"k\" is supported)\n", "E-UTRAN\n", "HSDPA\n" };
+				facilities = { "TCP, UICC in client mode, remote connection", "UDP, UICC in client mode, remote connection", "TCP, UICC in server mode", "TCP, UICC in client mode, local connection (i.e. class \"k\" is supported)", "UDP, UICC in client mode, local connection (i.e. class \"k\" is supported)", "Direct communication channel (i.e. class \"k\" is supported)", "E-UTRAN", "HSDPA" };
 				break;
 			case 17:
-				facilities = { "Proactive UICC: DISPLAY TEXT (Variable Time out)\n", "Proactive UICC: GET INKEY (help is supported while waiting for immediate response or variable timeout)\n", "USB (Bearer Independent protocol supported bearers, class \"e\")\n", "Proactive UICC: GET INKEY (Variable Timeout)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (ESN)\n", "Call control on GPRS\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (IMEISV)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (Search Mode change)\n" };
+				facilities = { "Proactive UICC: DISPLAY TEXT (Variable Time out)", "Proactive UICC: GET INKEY (help is supported while waiting for immediate response or variable timeout)", "USB (Bearer Independent protocol supported bearers, class \"e\")", "Proactive UICC: GET INKEY (Variable Timeout)", "Proactive UICC: PROVIDE LOCAL INFORMATION (ESN)", "Call control on GPRS", "Proactive UICC: PROVIDE LOCAL INFORMATION (IMEISV)", "Proactive UICC: PROVIDE LOCAL INFORMATION (Search Mode change)" };
 				break;
 			case 18:
 				map.insert("Protocol Version support", QString::asprintf("%d", byte & 0xF)); // 00001111
 				continue;
 			case 19:
-				facilities = { "SEND CDMA SMS\n", "CDMA SMS-PP data download\n", "CDMA SMS BROADCAST data download\n", "CDMA USSD support\n", "CDMA MO SMS Control support\n" };
+				facilities = { "SEND CDMA SMS", "CDMA SMS-PP data download", "CDMA SMS BROADCAST data download", "CDMA USSD support", "CDMA MO SMS Control support" };
 				break;
 			case 20:
-				facilities = { "WML\n", "XHTML\n", "HTML\n", "CHTML\n" };
+				facilities = { "WML", "XHTML", "HTML", "CHTML" };
 				break;
 			case 21:
-				facilities = { "Support of UTRAN PS with extended parameters\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (battery state), (i.e. class \"g\" is supported)\n", "Proactive UICC: PLAY TONE (Melody tones and Themed tones supported)\n", "Multi-media Calls in SET UP CALL (if class \"h\" supported)\n", "Toolkit-initiated GBA\n", "Proactive UICC: RETRIEVE MULTIMEDIA MESSAGE (if class \"j\" is supported)\n", "Proactive UICC: SUBMIT MULTIMEDIA MESSAGE (if class \"j\" is supported)\n", "Proactive UICC: DISPLAY MULTIMEDIA MESSAGE (if class \"j\" is supported) \n" };
+				facilities = { "Support of UTRAN PS with extended parameters", "Proactive UICC: PROVIDE LOCAL INFORMATION (battery state), (i.e. class \"g\" is supported)", "Proactive UICC: PLAY TONE (Melody tones and Themed tones supported)", "Multi-media Calls in SET UP CALL (if class \"h\" supported)", "Toolkit-initiated GBA", "Proactive UICC: RETRIEVE MULTIMEDIA MESSAGE (if class \"j\" is supported)", "Proactive UICC: SUBMIT MULTIMEDIA MESSAGE (if class \"j\" is supported)", "Proactive UICC: DISPLAY MULTIMEDIA MESSAGE (if class \"j\" is supported) " };
 				break;
 			case 22:
-				facilities = { "Proactive UICC: SET FRAMES (i.e. class \"i\" is supported)\n", "Proactive UICC: GET FRAMES STATUS (i.e. class \"i\" is supported)\n", "MMS notification download (if class \"j\" is supported)\n", "Alpha Identifier in REFRESH command\n", "Geographical Location Reporting (if class \"n\" is supported)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (MEID)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (NMR(UTRAN/E-UTRAN))\n", "USSD Data download and application mode\n" };
+				facilities = { "Proactive UICC: SET FRAMES (i.e. class \"i\" is supported)", "Proactive UICC: GET FRAMES STATUS (i.e. class \"i\" is supported)", "MMS notification download (if class \"j\" is supported)", "Alpha Identifier in REFRESH command", "Geographical Location Reporting (if class \"n\" is supported)", "Proactive UICC: PROVIDE LOCAL INFORMATION (MEID)", "Proactive UICC: PROVIDE LOCAL INFORMATION (NMR(UTRAN/E-UTRAN))", "USSD Data download and application mode" };
 				break;
 			case 23:
 				map.insert("Maximum number of frames supported (including frames created in existing frames)", QString::asprintf("%d", byte & 0xF)); // 00001111
 				continue;
 			case 24:
-				facilities = { "Event: Browsing status (i.e. class \"ac\" is supported)\n", "Event: MMS Transfer status (if class \"j\" is supported)\n", "Event: Frame Information changed (i.e. class \"i\" is supported)\n", "Event: I-WLAN Access status (if class \"e\" is supported)\n", "Event Network Rejection\n", "Event: HCI connectivity event (i.e. class \"m\" is supported)\n", "E-UTRAN support in Event Network Rejection\n", "Multiple access technologies supported in Event Access Technology Change and PROVIDE LOCAL INFORMATION \n" };
+				facilities = { "Event: Browsing status (i.e. class \"ac\" is supported)", "Event: MMS Transfer status (if class \"j\" is supported)", "Event: Frame Information changed (i.e. class \"i\" is supported)", "Event: I-WLAN Access status (if class \"e\" is supported)", "Event Network Rejection", "Event: HCI connectivity event (i.e. class \"m\" is supported)", "E-UTRAN support in Event Network Rejection", "Multiple access technologies supported in Event Access Technology Change and PROVIDE LOCAL INFORMATION " };
 				break;
 			case 25:
-				facilities = { "Event: CSG Cell Selection (if class \"q\" is supported)\n", "Event: Contactless state request (if class \"r\" is supported)\n" };
+				facilities = { "Event: CSG Cell Selection (if class \"q\" is supported)", "Event: Contactless state request (if class \"r\" is supported)" };
 				break;
 			case 27:
-				facilities = { "Terminal alignment left\n", "Terminal alignment centre\n", "Terminal alignment right\n", "Terminal font size normal\n", "Terminal font size large\n", "Terminal font size small\n" };
+				facilities = { "Terminal alignment left", "Terminal alignment centre", "Terminal alignment right", "Terminal font size normal", "Terminal font size large", "Terminal font size small" };
 				break;
 			case 28:
-				facilities = { "Terminal style normal\n", "Terminal style bold\n", "Terminal style italic\n", "Terminal style underlined\n", "Terminal style strikethrough\n", "Terminal style text foreground colour\n", "Terminal style text background colour\n" };
+				facilities = { "Terminal style normal", "Terminal style bold", "Terminal style italic", "Terminal style underlined", "Terminal style strikethrough", "Terminal style text foreground colour", "Terminal style text background colour" };
 				break;
 			case 29:
-				facilities = { "I-WLAN bearer support (if class \"e\" is supported)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (WSID of the current I-WLAN connection)\n", "TERMINAL APPLICATIONS (i.e. class \"k\" is supported)\n", "Steering of Roaming REFRESH support\n", "Proactive UICC: ACTIVATE (i.e. class \"l\" is supported)\n", "Proactive UICC: GEOGRAPHICAL LOCATION REQUEST (if class \"n\" is supported)\n", "Proactive UICC: PROVIDE LOCAL INFORMATION (Broadcast Network Information) (i.e. class \"o\" is supported)\n", "Steering of Roaming for I-WLAN REFRESH support\n" };
+				facilities = { "I-WLAN bearer support (if class \"e\" is supported)", "Proactive UICC: PROVIDE LOCAL INFORMATION (WSID of the current I-WLAN connection)", "TERMINAL APPLICATIONS (i.e. class \"k\" is supported)", "Steering of Roaming REFRESH support", "Proactive UICC: ACTIVATE (i.e. class \"l\" is supported)", "Proactive UICC: GEOGRAPHICAL LOCATION REQUEST (if class \"n\" is supported)", "Proactive UICC: PROVIDE LOCAL INFORMATION (Broadcast Network Information) (i.e. class \"o\" is supported)", "Steering of Roaming for I-WLAN REFRESH support" };
 				break;
 			case 30:
-				facilities = { "Proactive UICC: Contactless State Changed (if class \"r\" is supported)\n", "CSG cell discovery (if class \"q\" is supported)\n", "Confirmation parameters supported for OPEN CHANNEL in Terminal Server Mode (if classes \"e\" and \"k\" are supported)\n", "Communication Control for IMS Support of CAT over the modem interface (if class \"s\" is supported)\n", "Incoming IMS Data event (if classes \"e\" and \"t\" are supported)\n", "IMS Registration event (if classes \"e\" and \"t\" are supported)\n", "Proactive UICC : Profile Container, Envelope Container, COMMAND CONTAINER and ENCAPSULATED SESSION CONTROL(if class \"u\" is supported)\n" };
+				facilities = { "Proactive UICC: Contactless State Changed (if class \"r\" is supported)", "CSG cell discovery (if class \"q\" is supported)", "Confirmation parameters supported for OPEN CHANNEL in Terminal Server Mode (if classes \"e\" and \"k\" are supported)", "Communication Control for IMS Support of CAT over the modem interface (if class \"s\" is supported)", "Incoming IMS Data event (if classes \"e\" and \"t\" are supported)", "IMS Registration event (if classes \"e\" and \"t\" are supported)", "Proactive UICC : Profile Container, Envelope Container, COMMAND CONTAINER and ENCAPSULATED SESSION CONTROL(if class \"u\" is supported)" };
 				break;
 			case 31:
-				facilities = { "Support of IMS as a bearer for BIP (if classes \"e\" and \"t\" are supported)\n", "Support of PROVIDE LOCATION INFORMATION, H(e)NB IP address (if class \"v\" is supported)\n", "Support of PROVIDE LOCATION INFORMATION, H(e)NB surrounding macrocells (if class \"w\" is supported)\n", "Launch parameters supported for OPEN CHANNEL in Terminal Server Mode\n", "Direct communication channel for OPEN CHANNEL in Terminal Server Mode\n", "Proactive UICC: Security for Profile Container, Envelope Container, COMMAND CONTAINER and ENCAPSULATED SESSION CONTROL (if classes \"u\" and \"x\" are supported)\n", "CAT service list for eCAT client\n", "Refresh enforcement policy\n" };
+				facilities = { "Support of IMS as a bearer for BIP (if classes \"e\" and \"t\" are supported)", "Support of PROVIDE LOCATION INFORMATION, H(e)NB IP address (if class \"v\" is supported)", "Support of PROVIDE LOCATION INFORMATION, H(e)NB surrounding macrocells (if class \"w\" is supported)", "Launch parameters supported for OPEN CHANNEL in Terminal Server Mode", "Direct communication channel for OPEN CHANNEL in Terminal Server Mode", "Proactive UICC: Security for Profile Container, Envelope Container, COMMAND CONTAINER and ENCAPSULATED SESSION CONTROL (if classes \"u\" and \"x\" are supported)", "CAT service list for eCAT client", "Refresh enforcement policy" };
 				break;
 			case 32:
-				facilities = { "DNS server address request for OPEN CHANNEL related to packet data service bearer (if classes \"e\" and \"aa\" are supported)\n", "Support of Network Access Name reuse indication for CLOSE CHANNEL related to packet data service bearer (if classes \"e\" and \"z\" are supported)\n", "Event: Poll Interval(i.e. class \"ad\" is supported)\n" };
+				facilities = { "DNS server address request for OPEN CHANNEL related to packet data service bearer (if classes \"e\" and \"aa\" are supported)", "Support of Network Access Name reuse indication for CLOSE CHANNEL related to packet data service bearer (if classes \"e\" and \"z\" are supported)", "Event: Poll Interval(i.e. class \"ad\" is supported)" };
 				break;
 			default:
 				// RFU
 				continue;
 			}
-			for (int i = 0; i < numberOfBits; ++i) {
+			for (int i = 0; i < facilities.size(); ++i) {
 				bool bit = byte & (1 << i);
-				bit ? (supportedFacilities += facilities[i]) : (unsupportedFacilities += facilities[i]);
+				QString facility = facilities[i];
+				if (facility.isEmpty()) continue;
+				bit ? (supportedFacilities += (supportedFacilities.isEmpty() ? "" : "\n") + facility) : (unsupportedFacilities += (unsupportedFacilities.isEmpty() ? "" : "\n") + facility);
 			}
 		}
 		map.insert("CAT facilities supported by the terminal", supportedFacilities);
@@ -1481,24 +1537,31 @@ void APDUCommand::updateApplicationMap() {
 			case CommandDetails: {
 				QString details;
 				details += QString::asprintf("Sequence Number: %d\n", m_data[index++]);
+				payloadLength--;
 				auto command = static_cast<STKCommand>(m_data[index++]);
+				payloadLength--;
 				details += "Type: " + stkCommandString(command) + "\n";
 				details += "Qualifier: " + stkCommandQualifierString(command, m_data[index++]);
+				payloadLength--;
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case DeviceIdentities: {
 				QString details;
 				details += "Source: " + stkDeviceString(static_cast<STKDevice>(m_data[index++])) + "\n";
+				payloadLength--;
 				details += "Destination: " + stkDeviceString(static_cast<STKDevice>(m_data[index++]));
+				payloadLength--;
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case Result: {
 				uint8_t status = m_data[index++];
+				payloadLength--;
 				QString result = stkStatusString(status);
 				if (payloadLength > 1) {
 					result += "\n" + stkAdditionalStatusString(status, m_data[index++]);
+					payloadLength--;
 				}
 				map.insert(stkTagString(stkTag), result);
 				break;
@@ -1506,19 +1569,22 @@ void APDUCommand::updateApplicationMap() {
 			case Duration: {
 				QString details;
 				details += "Time Unit: " + stkDurationUnitString(static_cast<STKDurationUnit>(m_data[index++])) + "\n";
+				payloadLength--;
 				details += QString::asprintf("Time Interval: %d", m_data[index++]);
+				payloadLength--;
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case AlphaIdentifier: {
 				QString details;
-				for (int i = 0; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
+				while (payloadLength-- > 0) { details += static_cast<char>(m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case Address: {
 				QString details, type, identification;
 				int data = m_data[index++];
+				payloadLength--;
 				switch ((data & 0x70) >> 4) { // 01110000
 				case 0:
 					type = "Unknown";
@@ -1561,65 +1627,71 @@ void APDUCommand::updateApplicationMap() {
 				details += "Number Type: " + type + "\n";
 				details += "Numbering Plan Identification: " + identification + "\n";
 				details += "Dialing Number String: ";
-				for (int i = 1; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
+				while (payloadLength-- > 0) { details += static_cast<char>(m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case TextString: {
 				QString details;
 				details += "Encoding: " + stkTextEncodingString(static_cast<STKTextEncoding>(m_data[index++])) + "\n";
+				payloadLength--;
 				details += "String: ";
-				for (int i = 1; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
+				while (payloadLength-- > 0) { details += static_cast<char>(m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case Tone:
 				map.insert(stkTagString(stkTag), stkToneString(m_data[index++]));
+				payloadLength--;
 				break;
 			case Item: {
 				QString details;
-				details += QString::asprintf("Item ID: %02x\n", m_data[index++]);
+				details += QString::asprintf("Item ID: %02X\n", m_data[index++]);
+				payloadLength--;
 				details += "String: ";
-				for (int i = 1; i < payloadLength; ++i) { details += static_cast<char>(m_data[index++]); }
+				while (payloadLength-- > 0) { details += static_cast<char>(m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case ResponseLength:
 				map.insert(stkTagString(stkTag), QString::asprintf("Between %d and %d characters", m_data[index++], m_data[index++]));
+				payloadLength -= 2;
 				break;
 			case FileList: {
 				QString details;
 				details += QString::asprintf("Number of files: %d\n", m_data[index++]);
-				for (int i = 1; i < payloadLength; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				payloadLength--;
+				while (payloadLength-- > 0) { details += QString::asprintf("%02X", m_data[index++]); }
 				break;
 			}
 			case LocationInformation: {
 				QString details;
 				details += "Mobile Country & Network Codes: ";
-				for (int i = 0; i < 3; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				for (int i = 0; i < 3; ++i) { details += QString::asprintf("%02X", m_data[index++]); payloadLength--; }
 				details += "\nLocation Area Code: ";
-				for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02X", m_data[index++]); payloadLength--; }
 				details += "\nCell Identity Value: ";
-				for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
-				if (payloadLength > 7) {
+				for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02X", m_data[index++]); payloadLength--; }
+				if (payloadLength > 0) {
 					details += "\nExtended Cell Identity Value: ";
-					for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+					for (int i = 0; i < 2; ++i) { details += QString::asprintf("%02X", m_data[index++]); payloadLength--; }
 				}
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			case IMEI: {
 				QString details;
-				for (int i = 0; i < payloadLength; ++i) { details += QString::asprintf("%d", m_data[index++]); }
+				while (payloadLength-- > 0) { details += QString::asprintf("%d", m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
 			default:
 				QString details;
-				for (int i = 0; i < payloadLength; ++i) { details += QString::asprintf("%02x", m_data[index++]); }
+				while (payloadLength-- > 0) { details += QString::asprintf("%02X", m_data[index++]); }
 				map.insert(stkTagString(stkTag), details);
 				break;
 			}
+			index += payloadLength; // in case there was anything we didn't use.
 		}
 		break;
 	}
@@ -1669,6 +1741,4 @@ void APDUCommand::setInstructionCode(const uint8_t instructionCode) {
 			m_type = Unknown;
 		}
 	}
-	updateApplicationMap();
 }
-

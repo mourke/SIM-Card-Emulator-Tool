@@ -13,6 +13,7 @@
 #include "UpdateManager.h"
 #include "AboutDialog.h"
 #include "Segment.h"
+#include "APDUListWidgetItem.h"
 
 
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
@@ -81,6 +82,9 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 		contextMenu->exec(this->textBrowser()->mapToGlobal(position));
 		delete contextMenu;
 	});
+
+	QObject::connect(listWidget(), SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(listWidgetItemClicked(QListWidgetItem *)));
+	QObject::connect(textBrowser(), SIGNAL(selectionChanged()), this, SLOT(textBrowserTextSelected()));
 }
 
 void MainWindow::applicationReceivedArguments(QStringList arguments) {
@@ -248,12 +252,16 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 	}
 
 	textBrowser()->clear();
+	listWidget()->clear();
 
 	for (auto tuple : commands) {
 		QString output = std::get<0>(tuple);
-		std::optional<APDUCommand> command = std::get<1>(tuple);
+		auto command = std::get<1>(tuple);
 		if (command.has_value()) {
-			if (command.value().type() & filter) updateTextBrowser(output, command.value());
+			if (command.value()->type() & filter) {
+				updateTextBrowser(output, command.value());
+				addItemToListView(listWidget()->count(), command.value());
+			}
 		} else { // ATR
 			textBrowser()->setTextColor(Qt::black);
 			textBrowser()->insertPlainText(output + "\n");
@@ -265,6 +273,13 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 
 void MainWindow::reset() {
 	textBrowser()->clear();
+	listWidget()->clear();
+	for (auto tuple : commands) {
+		auto command = std::get<1>(tuple);
+		if (command.has_value()) {
+			delete command.value();
+		}
+	}
 	commands.clear();
 	simTraceCommands.clear();
 	updateCurrentPageWidget();
@@ -301,9 +316,13 @@ void MainWindow::traceStartedMidSession(Tracer *tracer) {
 	messageBox.warning(this, tr("Trace Started Mid Session"), tr("The SIM card about to be sniffed has already been making requests for which ScET has not been listening. You may find yourself at an arbitrary point in the trace which may result in unexpected values."));
 }
 
-void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &command) {
-	commands.append(std::make_tuple(output, command));
-	if (command.type() & filter) updateTextBrowser(output, command); // only display if current filter allows
+void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &c) {
+	const APDUCommand *command = new APDUCommand(c);
+	commands.append(std::make_tuple(output, std::make_optional(command)));
+	if (command->type() & filter) { // only display if current filter allows
+		updateTextBrowser(output, command);
+		addItemToListView(listWidget()->count(), command);
+	}
 }
 
 void MainWindow::atrCommandReceived(Tracer *tracer, const QString &output) {
@@ -317,20 +336,74 @@ void MainWindow::simTraceCommandReceived(Tracer *tracer, const QString &input) {
 	simTraceCommands.append(input + "\n");
 }
 
-void MainWindow::updateTextBrowser(const QString &output, const APDUCommand &command) {
-	moveCursorToEnd();
-	int offset = 26; // apdu and timestamp
+void MainWindow::addItemToListView(int row, const APDUCommand *command) {
+	if (command->applicationMap().has_value()) {
+		APDUListWidgetItem *item = new APDUListWidgetItem(command, listWidget());
+		listWidget()->addItem(item);
+		listWidget()->setItemWidget(item, item->widget());
+	}
+}
+
+void MainWindow::updateTextBrowser(const QString &output, const APDUCommand *command) {
+	moveCursorToEnd(); // append data to end. this is done in case the user highlights anything while this method is being called. when anything is highlighed, it changes the cursor's position to there and that's where the data will be inserted. 
+	int offset, length; // the offset and length of the section of the APDU command in the output string
+	offset = 26; // apdu and timestamp
 	textBrowser()->setTextColor(Qt::black);
 	textBrowser()->insertPlainText(output.left(offset));
 	textBrowser()->setTextColor(headerColor());
-	textBrowser()->insertPlainText(output.mid(offset, 15));
-	offset += 15; // header and space after
-	textBrowser()->setTextColor(command.instructionCode() == APDUCommand::InstructionCode::GetResponse ? responseColor() : dataColor());
-	textBrowser()->insertPlainText(output.mid(offset, command.data().size() * 3));
-	offset += command.data().size() * 3; // data (two hexadecimal characters per data) and spacings between and after each character
+	length = 15; // header (CLA, INS, P1, P2, Lc. Each item 2 digits long. 5 * 2 = 10) and the space before and after each (5).
+	textBrowser()->insertPlainText(output.mid(offset, length));
+	offset += length; // header and space after
+	textBrowser()->setTextColor(command->instructionCode() == APDUCommand::InstructionCode::GetResponse ? responseColor() : dataColor());
+	length = command->data().size() * 3; // data.size * 2 (two digits for every element) and the space before and after each (data.size)
+	textBrowser()->insertPlainText(output.mid(offset, length));
+	offset += length;
 	textBrowser()->setTextColor(statusCodeColor());
-	textBrowser()->insertPlainText(output.mid(offset, 7));
+	length = 7; // status bytes (SW1 and SW2. Each one two digits long. 2 * 2 = 4), the space in between (1) and the two brackets either side (2)
+	textBrowser()->insertPlainText(output.mid(offset, length));
 	textBrowser()->insertPlainText("\n");
+}
+
+void MainWindow::textBrowserTextSelected() {
+	if (ui.stackedWidget->currentWidget() != ui.protocolPage) return;
+	QTextCursor cursor = textBrowser()->textCursor();
+	cursor.select(QTextCursor::BlockUnderCursor); // select the whole command even if it spans multiple lines
+	QString line = cursor.selectedText().trimmed();
+	if (line.isEmpty()) return;
+	qDebug() << line << endl;
+	for (auto tuple : commands) {
+		QString output = std::get<0>(tuple);
+		if (line == output) {
+			auto command = std::get<1>(tuple);
+			for (int i = 0; i < listWidget()->count(); ++i) {
+				APDUListWidgetItem *item = static_cast<APDUListWidgetItem *>(listWidget()->item(i));
+				if (item->command() == command) {
+					listWidget()->setItemSelected(item, true);
+					break;
+				}
+			}
+			break;
+		}
+	}
+}
+
+void MainWindow::listWidgetItemClicked(QListWidgetItem *listWidgetItem) {
+	APDUListWidgetItem *item = static_cast<APDUListWidgetItem *>(listWidgetItem);
+	qDebug() << "Visual item rect: " << listWidget()->visualItemRect(item) << " and item widget rect: " << item->widget()->geometry();
+	listWidget()->doItemsLayout();
+	qDebug() << "Visual item rect: " << listWidget()->visualItemRect(item) << " and item widget rect: " << item->widget()->geometry();
+	QTextCursor cursor(textBrowser()->document());
+	for (auto tuple : commands) {
+		auto command = std::get<1>(tuple);
+		if (command.has_value() && (command.value() == item->command())) {
+			break;
+		} else {
+			cursor.movePosition(QTextCursor::NextBlock);
+		}
+	}
+	
+	cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);	
+	textBrowser()->setTextCursor(cursor);
 }
 
 void MainWindow::moveCursorToEnd() {
@@ -369,7 +442,15 @@ bool MainWindow::shouldMoveWindow() {
 
 void MainWindow::updateCurrentPageWidget() {
 	if (tracer.has_value() || !textBrowser()->toPlainText().isEmpty()) {
-		ui.segmentedControl->selectedSegmentIndex() == 0 ? ui.stackedWidget->setCurrentWidget(ui.protocolPage) : ui.stackedWidget->setCurrentWidget(ui.applicationPage);
+		if (ui.segmentedControl->selectedSegmentIndex() == 0) {
+			ui.stackedWidget->setCurrentWidget(ui.protocolPage);
+		} else {
+			ui.stackedWidget->setCurrentWidget(ui.applicationPage);
+			auto selectedItems = listWidget()->selectedItems();
+			if (!selectedItems.isEmpty()) {
+				listWidget()->scrollToItem(selectedItems.front(), QAbstractItemView::PositionAtTop);
+			}
+		}
 	} else {
 		ui.stackedWidget->setCurrentWidget(ui.noDevicePage);
 	}

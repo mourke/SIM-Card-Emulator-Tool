@@ -16,6 +16,7 @@ class MainWindow : public FramelessMainWindow {
 	Q_OBJECT
 
 		Q_PROPERTY(QTextBrowser textBrowser READ textBrowser)
+		Q_PROPERTY(QListWidget listWidget READ listWidget)
 		Q_PROPERTY(QWidget titleBar READ titleBar)
 		Q_PROPERTY(QWidget mainToolBar READ mainToolBar)
 
@@ -23,6 +24,7 @@ public:
 	MainWindow(QWidget *parent = Q_NULLPTR);
 
 	QTextBrowser * textBrowser() const { return ui.textBrowser; }
+	QListWidget * listWidget() const { return ui.listWidget; }
 	QWidget * mainToolBar() const { return ui.mainToolBar; }
 	QWidget * titleBar() const { return ui.titleBar; }
 
@@ -54,16 +56,20 @@ private slots:
 	void simTraceCommandReceived(Tracer *tracer, const QString &input);
 	void tracerConnected(Tracer *tracer);
 	void tracerDisconnected(Tracer *tracer);
+
+	void listWidgetItemClicked(QListWidgetItem *item);
+	void textBrowserTextSelected();
 private:
 	Ui::MainWindow ui;
 	APDUFilter filter = All;
 	AboutDialog *about;
 	std::optional<Tracer *> tracer;
-	QVector<std::tuple<QString, std::optional<APDUCommand>>> commands;
+	QVector<std::tuple<QString, std::optional<const APDUCommand *>>> commands;
 	QString simTraceCommands;
 
 	void reset();
-	void updateTextBrowser(const QString &output, const APDUCommand &command);
+	void updateTextBrowser(const QString &output, const APDUCommand *command);
+	void addItemToListView(int row, const APDUCommand *command);
 	void moveCursorToStart();
 	void moveCursorToEnd();
 	void openFile(const QString &fileName);

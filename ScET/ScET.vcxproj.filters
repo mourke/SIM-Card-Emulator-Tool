@@ -89,6 +89,9 @@
     <ClCompile Include="Windows\FramelessMainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\APDUListWidgetItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Windows\MainWindow.h">
@@ -229,6 +232,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\APDUListWidgetItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

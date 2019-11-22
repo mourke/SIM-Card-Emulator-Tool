@@ -585,7 +585,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="protocolPage">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -744,8 +744,39 @@
         </property>
         <item>
          <widget class="QListWidget" name="listWidget">
+          <property name="styleSheet">
+           <string notr="true">QListWidget::item {
+	margin-right: 5px;
+	margin-left: 5px;
+	background: rgb(255, 255, 255) 
+}
+QListView {
+    background: rgb(211, 211, 211) 
+}</string>
+          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
+          <property name="verticalScrollMode">
+           <enum>QAbstractItemView::ScrollPerPixel</enum>
+          </property>
+          <property name="horizontalScrollMode">
+           <enum>QAbstractItemView::ScrollPerPixel</enum>
+          </property>
+          <property name="resizeMode">
+           <enum>QListView::Adjust</enum>
+          </property>
+          <property name="layoutMode">
+           <enum>QListView::Batched</enum>
+          </property>
+          <property name="spacing">
+           <number>5</number>
+          </property>
+          <property name="batchSize">
+           <number>20</number>
           </property>
          </widget>
         </item>

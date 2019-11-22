@@ -57,6 +57,7 @@ void APDUSplitter::insertByte(uint8_t character) {
 		break;
 	case State::StatusByte2:
 		this->command.m_status[1] = character;
+		this->command.updateApplicationMap();
 		std::invoke(m_callback, command, start.value());
 		reset();
 		break;
