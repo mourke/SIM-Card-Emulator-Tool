@@ -35,15 +35,13 @@ std::vector<uint8_t> FileManager::openFile(const QString &fileName) {
 				QChar second = input[i + 1].toLower();
 				if (first.isDigit()) {
 					hex = first.digitValue() * 16;
-				}
-				else {
+				} else {
 					hex += (first.toLatin1() - 'a' + 10) * 16;
 				}
 
 				if (second.isDigit()) {
 					hex += second.digitValue();
-				}
-				else {
+				} else {
 					hex += second.toLatin1() - 'a' + 10;
 				}
 				data.push_back(hex);

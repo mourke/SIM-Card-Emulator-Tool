@@ -110,11 +110,11 @@ void Tracer::processInput(const uint8_t *buffer, const int bufferSize) {
 			processInput(buffer, bufferSize - demangledBufferSize); // process the original trace and then the demangled one
 			return processInput(demangledBuffer, demangledBufferSize); // recursively call this in case there are more than two traces mangled together
 		} else if (bufferSize < header.totalBufferSize) { // something went wrong abort the trace
-			break;
+			throw std::exception("Corrupted buffer size.");
 		}
 
 		if (header.flags & SIMTraceFlag::PPSFiDi) {
-			printf("PPS(Fi=%u/Di=%u) \n", header.reset[0], header.reset[1]);
+			printf("PPS(Fi=%u/Di=%u)\n", header.reset[0], header.reset[1]);
 		}
 
 		if (header.flags & SIMTraceFlag::WaitTimeExpired) {
