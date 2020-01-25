@@ -1,5 +1,4 @@
 #include "APDUCommand.h"
-#include <QString>
 
 enum STKTextEncoding : uint8_t {
 	SevenBit,
@@ -1109,7 +1108,7 @@ QString APDUCommand::getStatusWordString() {
 }
 
 void APDUCommand::updateApplicationMap() {
-	QMap<QString, QString> map;
+	QMap<QString, QVariant> map;
 
 	QString data;
 	for (uint8_t character : m_data) {
@@ -1300,6 +1299,7 @@ void APDUCommand::updateApplicationMap() {
 					break;
 				case 0x38:
 					details += "\nDF or ADF";
+					break;
 				default:
 					break; // RFU
 				}
@@ -1313,8 +1313,10 @@ void APDUCommand::updateApplicationMap() {
 					break;
 				case 2:
 					details += "\nLinear fixed structure";
+					break;
 				case 6:
 					details += "\nCyclic structure";
+					break;
 				default:
 					break; // RFU
 				}
@@ -1739,6 +1741,7 @@ void APDUCommand::setInstructionCode(const uint8_t instructionCode) {
 			break;
 		default:
 			m_type = Unknown;
+			break;
 		}
 	}
 }

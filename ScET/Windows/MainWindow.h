@@ -11,12 +11,14 @@ class Tracer;
 class APDUCommand;
 class AboutDialog;
 enum libusb_transfer_status;
+class QStandardItemModel;
+class QItemSelection;
 
 class MainWindow : public FramelessMainWindow {
 	Q_OBJECT
-
+		
 		Q_PROPERTY(QTextBrowser textBrowser READ textBrowser)
-		Q_PROPERTY(QListWidget listWidget READ listWidget)
+		Q_PROPERTY(QListView listView READ listView)
 		Q_PROPERTY(QWidget titleBar READ titleBar)
 		Q_PROPERTY(QWidget mainToolBar READ mainToolBar)
 
@@ -24,7 +26,7 @@ public:
 	MainWindow(QWidget *parent = Q_NULLPTR);
 
 	QTextBrowser * textBrowser() const { return ui.textBrowser; }
-	QListWidget * listWidget() const { return ui.listWidget; }
+	QListView * listView() const { return ui.listView; }
 	QWidget * mainToolBar() const { return ui.mainToolBar; }
 	QWidget * titleBar() const { return ui.titleBar; }
 
@@ -57,7 +59,7 @@ private slots:
 	void tracerConnected(Tracer *tracer);
 	void tracerDisconnected(Tracer *tracer);
 
-	void listWidgetItemClicked(QListWidgetItem *item);
+	void listViewItemClicked(const QItemSelection &item);
 	void textBrowserTextSelected();
 private:
 	Ui::MainWindow ui;
@@ -66,10 +68,10 @@ private:
 	std::optional<Tracer *> tracer;
 	QVector<std::tuple<QString, std::optional<const APDUCommand *>>> commands;
 	QString simTraceCommands;
+	QStandardItemModel *listViewModel;
 
 	void reset();
 	void updateTextBrowser(const QString &output, const APDUCommand *command);
-	void addItemToListView(int row, const APDUCommand *command);
 	void moveCursorToStart();
 	void moveCursorToEnd();
 	void openFile(const QString &fileName);

@@ -13,7 +13,9 @@
 #include "UpdateManager.h"
 #include "AboutDialog.h"
 #include "Segment.h"
-#include "APDUListWidgetItem.h"
+#include "ApplicationLayerDelegate.h"
+#include <QStandardItemModel>
+#include <QVariant>
 
 
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
@@ -38,11 +40,9 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	});
 
 	ui.stackedWidget->setBackgroundRole(QPalette::ColorRole::Light);
-
 	about = new AboutDialog(this);
 
 	TracerManager &manager = TracerManager::sharedManager();
-
 	auto tracer = manager.findTracer();
 
 	if (tracer.has_value()) {
@@ -83,7 +83,10 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 		delete contextMenu;
 	});
 
-	QObject::connect(listWidget(), SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(listWidgetItemClicked(QListWidgetItem *)));
+	listView()->setItemDelegate(new ApplicationLayerDelegate(this));
+	listViewModel = new QStandardItemModel();
+	listView()->setModel(listViewModel);
+	QObject::connect(listView()->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(listViewItemClicked(const QItemSelection &)));
 	QObject::connect(textBrowser(), SIGNAL(selectionChanged()), this, SLOT(textBrowserTextSelected()));
 }
 
@@ -252,15 +255,17 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 	}
 
 	textBrowser()->clear();
-	listWidget()->clear();
 
-	for (auto tuple : commands) {
+	for (int i = 0; i < commands.size(); ++i) {
+		auto tuple = commands.at(i);
 		QString output = std::get<0>(tuple);
 		auto command = std::get<1>(tuple);
 		if (command.has_value()) {
 			if (command.value()->type() & filter) {
 				updateTextBrowser(output, command.value());
-				addItemToListView(listWidget()->count(), command.value());
+				listView()->setRowHidden(i, false);
+			} else {
+				listView()->setRowHidden(i, true);
 			}
 		} else { // ATR
 			textBrowser()->setTextColor(Qt::black);
@@ -273,7 +278,9 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 
 void MainWindow::reset() {
 	textBrowser()->clear();
-	listWidget()->clear();
+	listViewModel->clear();
+
+
 	for (auto tuple : commands) {
 		auto command = std::get<1>(tuple);
 		if (command.has_value()) {
@@ -319,9 +326,19 @@ void MainWindow::traceStartedMidSession(Tracer *tracer) {
 void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, const APDUCommand &c) {
 	const APDUCommand *command = new APDUCommand(c);
 	commands.append(std::make_tuple(output, std::make_optional(command)));
+
+	if (command->applicationMap().has_value()) {
+		QStandardItem *item = new QStandardItem();
+		item->setText(command->instructionCodeString());
+		item->setData(command->applicationMap().value());
+		listViewModel->appendRow(item);
+		if (!(command->type() & filter)) {
+			listView()->setRowHidden(listViewModel->rowCount(), true);
+		}
+	}
+
 	if (command->type() & filter) { // only display if current filter allows
 		updateTextBrowser(output, command);
-		addItemToListView(listWidget()->count(), command);
 	}
 }
 
@@ -334,14 +351,6 @@ void MainWindow::atrCommandReceived(Tracer *tracer, const QString &output) {
 
 void MainWindow::simTraceCommandReceived(Tracer *tracer, const QString &input) {
 	simTraceCommands.append(input + "\n");
-}
-
-void MainWindow::addItemToListView(int row, const APDUCommand *command) {
-	if (command->applicationMap().has_value()) {
-		APDUListWidgetItem *item = new APDUListWidgetItem(command, listWidget());
-		listWidget()->addItem(item);
-		listWidget()->setItemWidget(item, item->widget());
-	}
 }
 
 void MainWindow::updateTextBrowser(const QString &output, const APDUCommand *command) {
@@ -370,35 +379,34 @@ void MainWindow::textBrowserTextSelected() {
 	cursor.select(QTextCursor::BlockUnderCursor); // select the whole command even if it spans multiple lines
 	QString line = cursor.selectedText().trimmed();
 	if (line.isEmpty()) return;
-	qDebug() << line << endl;
+	int index = 0;
 	for (auto tuple : commands) {
 		QString output = std::get<0>(tuple);
+		auto command = std::get<1>(tuple);
+		if (!(command.has_value() && command.value()->applicationMap().has_value())) { continue; }
 		if (line == output) {
-			auto command = std::get<1>(tuple);
-			for (int i = 0; i < listWidget()->count(); ++i) {
-				APDUListWidgetItem *item = static_cast<APDUListWidgetItem *>(listWidget()->item(i));
-				if (item->command() == command) {
-					listWidget()->setItemSelected(item, true);
-					break;
-				}
-			}
+			listView()->setCurrentIndex(listViewModel->index(index, 0));
 			break;
 		}
+		index++;
 	}
 }
 
-void MainWindow::listWidgetItemClicked(QListWidgetItem *listWidgetItem) {
-	APDUListWidgetItem *item = static_cast<APDUListWidgetItem *>(listWidgetItem);
-	qDebug() << "Visual item rect: " << listWidget()->visualItemRect(item) << " and item widget rect: " << item->widget()->geometry();
-	listWidget()->doItemsLayout();
-	qDebug() << "Visual item rect: " << listWidget()->visualItemRect(item) << " and item widget rect: " << item->widget()->geometry();
+void MainWindow::listViewItemClicked(const QItemSelection &item) {
+	auto indexes = item.indexes();
+	if (indexes.isEmpty()) return;
+	QModelIndex currentIndex = indexes.first();
+	int index = 0;
 	QTextCursor cursor(textBrowser()->document());
 	for (auto tuple : commands) {
 		auto command = std::get<1>(tuple);
-		if (command.has_value() && (command.value() == item->command())) {
+		if (command.has_value() && 
+			(command.value()->applicationMap().has_value()) &&
+			(index == currentIndex.row())) {
 			break;
 		} else {
 			cursor.movePosition(QTextCursor::NextBlock);
+			index++;
 		}
 	}
 	
@@ -446,10 +454,8 @@ void MainWindow::updateCurrentPageWidget() {
 			ui.stackedWidget->setCurrentWidget(ui.protocolPage);
 		} else {
 			ui.stackedWidget->setCurrentWidget(ui.applicationPage);
-			auto selectedItems = listWidget()->selectedItems();
-			if (!selectedItems.isEmpty()) {
-				listWidget()->scrollToItem(selectedItems.front(), QAbstractItemView::PositionAtTop);
-			}
+			auto currentIndex = listView()->currentIndex();
+			listView()->scrollTo(currentIndex, QAbstractItemView::PositionAtTop);
 		}
 	} else {
 		ui.stackedWidget->setCurrentWidget(ui.noDevicePage);

@@ -743,27 +743,13 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QListWidget" name="listWidget">
+         <widget class="QListView" name="listView">
           <property name="styleSheet">
-           <string notr="true">QListWidget::item {
-	margin-right: 5px;
-	margin-left: 5px;
-	background: rgb(255, 255, 255) 
-}
-QListView {
+           <string notr="true">QListView {
     background: rgb(211, 211, 211) 
 }</string>
           </property>
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QAbstractScrollArea::AdjustToContents</enum>
-          </property>
           <property name="verticalScrollMode">
-           <enum>QAbstractItemView::ScrollPerPixel</enum>
-          </property>
-          <property name="horizontalScrollMode">
            <enum>QAbstractItemView::ScrollPerPixel</enum>
           </property>
           <property name="resizeMode">
@@ -956,6 +942,7 @@ QListView {
  </customwidgets>
  <resources>
   <include location="../Resources/ScET.qrc"/>
+  <include location="../../../../../.designer/Resources/ScET.qrc"/>
  </resources>
  <connections>
   <connection>

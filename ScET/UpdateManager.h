@@ -19,7 +19,7 @@ public:
 	 *	- Daily:          Version check performedonce a day.
 	 *	- Weekly:         Version check performed once a week.
 	 */
-	enum CheckFrequency {
+	enum class CheckFrequency {
 		Immediately,
 		Daily,
 		Weekly = 7
@@ -32,7 +32,7 @@ public:
 	 *	- DoNothing:	Do nothing and keep reminding the user of this version.
 	 *	- Update:		Close the application and begin the update.
 	 */
-	enum UpdateAction {
+	enum class UpdateAction {
 		Skip,
 		DoNothing,
 		Update
@@ -60,7 +60,7 @@ public:
 	 * @param	callback	The function called when updates have been checked.
 	 */
 	void checkVersion(CheckFrequency frequency, std::optional<Callback> callback = std::nullopt) {
-		if (frequency == CheckFrequency::Immediately || frequency <= daysSinceLastVersionCheckDate()) {
+		if (frequency == CheckFrequency::Immediately || static_cast<int>(frequency) <= daysSinceLastVersionCheckDate()) {
 			checkForUpdates(callback);
 		} else if (callback.has_value()) {
 			std::invoke(callback.value(), std::nullopt);

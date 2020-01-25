@@ -5,8 +5,7 @@
 #include <cstdint>
 #include <optional>
 #include <QMap>
-
-class QString;
+#include <QVariant>
 
 /** A wrapper around ISO 7816-4 APDU commands.
   *
@@ -130,7 +129,7 @@ public:
 	  * @retval	A textual representation of the raw 
 	  *			protocol string split into key-value pairs, if available.
 	  */
-	const std::optional<QMap<QString, QString>> & applicationMap() const { return m_applicationMap; }
+	const std::optional<QMap<QString, QVariant>> & applicationMap() const { return m_applicationMap; }
 private:
 	void setInstructionCode(const uint8_t instructionCode);
 	QString getStatusWordString();
@@ -142,7 +141,7 @@ private:
 	uint8_t m_parameters[2];
 	std::vector<uint8_t> m_data;
 	uint8_t m_status[2];
-	std::optional<QMap<QString, QString>> m_applicationMap;
+	std::optional<QMap<QString, QVariant>> m_applicationMap;
 
 	friend class APDUSplitter;
 };
