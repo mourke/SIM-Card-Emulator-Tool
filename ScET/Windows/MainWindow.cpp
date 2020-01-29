@@ -172,15 +172,25 @@ void MainWindow::stopButtonClicked() {
 void MainWindow::saveButtonClicked() {
 	const QString fileName = QFileDialog::getSaveFileName(this,
 		tr("Save SIM Tracing Session"), "",
-		tr("HTML Document (*.html);;SIM Tracing Session (*.sts)"));
+		tr("HTML Document (*.html);;SIM Tracing Session (*.sts);;ETSI Test Script (*.ldr)"));
 
 	if (!fileName.isEmpty()) {
 		const QString extension = QFileInfo(fileName).suffix();
-		const QString contents = extension == "html" ? textBrowser()->toHtml() : simTraceCommands;
+		QString contents;
+
+		if (extension == "html") {
+			contents = textBrowser()->toHtml();
+		} else if (extension == "sts") {
+			contents = simTraceCommands;
+		} else if (extension == "ldr") {
+			contents = commandsToLDR();
+		} else {
+			assert(false); // RFU
+		}
+		
 		try {
 			FileManager::sharedManager().saveFile(fileName, contents);
-		}
-		catch (const std::exception &exception) {
+		} catch (const std::exception &exception) {
 			QMessageBox::information(this, tr("Unable to save file"), exception.what());
 		}
 	}
@@ -216,12 +226,82 @@ void MainWindow::openFile(const QString &fileName) {
 			tracer.value()->processInput(buffer, bufferLength);
 		}
 
-		moveCursorToStart();
+		textBrowserInsertAtStart();
 		updateCurrentPageWidget();
 	}
 	catch (const std::exception &exception) {
 		QMessageBox::information(this, tr("Unable to open file"), exception.what());
 	}
+}
+
+QString MainWindow::commandsToLDR() {
+	QString ldr;
+
+	auto appendString = [&ldr](QString string) {
+		static const int maxCharacterPerLine = 16;
+		int charactersPerLine = 0;
+		for (auto substring : string.split(" ", QString::SplitBehavior::SkipEmptyParts)) {
+			if (charactersPerLine == maxCharacterPerLine ||
+				substring.contains("(") ||
+				substring.contains("[")) {
+				ldr += " \\\n\t";
+				charactersPerLine = 0;
+			} else {
+				ldr += " ";
+			}
+			ldr += substring;
+			charactersPerLine++;
+		}
+	};
+
+	for (int i = 0; i < commands.size(); ++i) {
+		auto tuple = commands.at(i);
+		auto command = std::get<1>(tuple);
+		if (command.has_value()) {
+			auto c = command.value();
+			if (c->instructionCode() == APDUCommand::InstructionCode::TerminalProfile) {
+				ldr += "INI\t";
+				QString string;
+				for (uint8_t character : c->data()) {
+					string += QString::asprintf(" %02X", character);
+				}
+				appendString(string);
+			} else {
+				ldr += "CMD\t";
+				if (i + 1 < commands.size()) {
+					auto nextCommand = std::get<1>(commands.at(i + 1));
+					if (nextCommand.has_value()) {
+						auto nc = nextCommand.value();
+						if (nc->instructionCode() == APDUCommand::InstructionCode::GetResponse) {
+							QString string = "[";
+							for (int i = 0; i < nc->data().size(); ++i) {
+								uint8_t character = nc->data()[i];
+								string += QString::asprintf("%02X", character);
+								if (i + 1 == nc->data().size()) {
+									string += "] (";
+								} else {
+									string += " ";
+								}
+							}
+							
+							auto parts = c->protocolString().split("(");
+							parts.insert(1, string);
+							appendString(parts.join(""));
+							++i; // skip next one
+							goto trailer;
+						}
+					}
+				}
+				appendString(c->protocolString());
+			}
+		} else { // ATR
+			ldr += "RST";
+		}
+	trailer:
+		ldr += "\n\n";
+	}
+
+	return ldr;
 }
 
 bool MainWindow::clearButtonClicked() {
@@ -232,7 +312,7 @@ bool MainWindow::clearButtonClicked() {
 
 	if (reply == QMessageBox::Discard) {
 		stopButtonClicked();
-		reset();
+		clearCurrentTrace();
 		return true;
 	}
 
@@ -273,13 +353,12 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 		}
 	}
 
-	moveCursorToStart();
+	textBrowserInsertAtStart(); // Scroll to top
 }
 
-void MainWindow::reset() {
+void MainWindow::clearCurrentTrace() {
 	textBrowser()->clear();
 	listViewModel->clear();
-
 
 	for (auto tuple : commands) {
 		auto command = std::get<1>(tuple);
@@ -287,6 +366,7 @@ void MainWindow::reset() {
 			delete command.value();
 		}
 	}
+
 	commands.clear();
 	simTraceCommands.clear();
 	updateCurrentPageWidget();
@@ -344,7 +424,7 @@ void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, cons
 
 void MainWindow::atrCommandReceived(Tracer *tracer, const QString &output) {
 	commands.append(std::make_tuple(output, std::nullopt));
-	moveCursorToEnd();
+	textBrowserInsertAtEnd();
 	textBrowser()->setTextColor(Qt::black);
 	textBrowser()->insertPlainText(output + "\n");
 }
@@ -354,7 +434,7 @@ void MainWindow::simTraceCommandReceived(Tracer *tracer, const QString &input) {
 }
 
 void MainWindow::updateTextBrowser(const QString &output, const APDUCommand *command) {
-	moveCursorToEnd(); // append data to end. this is done in case the user highlights anything while this method is being called. when anything is highlighed, it changes the cursor's position to there and that's where the data will be inserted. 
+	textBrowserInsertAtEnd(); // append data to end. this is done in case the user highlights anything while this method is being called. when anything is highlighed, it changes the cursor's position to there and that's where the data will be inserted. 
 	int offset, length; // the offset and length of the section of the APDU command in the output string
 	offset = 26; // apdu and timestamp
 	textBrowser()->setTextColor(Qt::black);
@@ -414,13 +494,13 @@ void MainWindow::listViewItemClicked(const QItemSelection &item) {
 	textBrowser()->setTextCursor(cursor);
 }
 
-void MainWindow::moveCursorToEnd() {
+void MainWindow::textBrowserInsertAtEnd() {
 	auto textCursor = textBrowser()->textCursor();
 	textCursor.movePosition(QTextCursor::End);
 	textBrowser()->setTextCursor(textCursor);
 }
 
-void MainWindow::moveCursorToStart() {
+void MainWindow::textBrowserInsertAtStart() {
 	auto textCursor = textBrowser()->textCursor();
 	textCursor.movePosition(QTextCursor::Start);
 	textBrowser()->setTextCursor(textCursor);

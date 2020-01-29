@@ -41,6 +41,7 @@ public:
 	Q_ENUM(APDUFilter)
 
 private slots:
+	// MARK: - UI signals
 	void startButtonClicked();
 	void stopButtonClicked();
 	void openButtonClicked();
@@ -49,7 +50,10 @@ private slots:
 	void showSettingsContextMenu();
 	void checkboxStateChanged(int rawValue);
 	void showMaxRestore();
+	void listViewItemClicked(const QItemSelection &item);
+	void textBrowserTextSelected();
 
+	// MARK: - Tracer signals
 	void tracerStartedSniffing(Tracer *tracer);
 	void tracerStoppedSniffing(Tracer *tracer, libusb_transfer_status errorCode);
 	void traceStartedMidSession(Tracer *tracer);
@@ -58,9 +62,7 @@ private slots:
 	void simTraceCommandReceived(Tracer *tracer, const QString &input);
 	void tracerConnected(Tracer *tracer);
 	void tracerDisconnected(Tracer *tracer);
-
-	void listViewItemClicked(const QItemSelection &item);
-	void textBrowserTextSelected();
+	
 private:
 	Ui::MainWindow ui;
 	APDUFilter filter = All;
@@ -70,10 +72,10 @@ private:
 	QString simTraceCommands;
 	QStandardItemModel *listViewModel;
 
-	void reset();
+	void clearCurrentTrace();
 	void updateTextBrowser(const QString &output, const APDUCommand *command);
-	void moveCursorToStart();
-	void moveCursorToEnd();
+	void textBrowserInsertAtStart();
+	void textBrowserInsertAtEnd();
 	void openFile(const QString &fileName);
 	void applicationReceivedArguments(QStringList arguments);
 	void checkForUpdates(UpdateManager::CheckFrequency frequency);
@@ -81,6 +83,7 @@ private:
 
 	bool shouldMoveWindow() override;
 	void updateCurrentPageWidget();
+	QString commandsToLDR();
 };
 
 #endif // MAIN_WINDOW_H

@@ -102,7 +102,7 @@ signals:
 	 * Emitted when the tracer communicates with the computer.
 	 *
 	 * @param tracer	The tracer that has sent the input.
-	 * @param input	The raw hexadecimal input from the tracer.
+	 * @param input		The raw hexadecimal input from the tracer.
 	 */
 	void simTraceCommandReceived(Tracer *tracer, const QString &input);
 
