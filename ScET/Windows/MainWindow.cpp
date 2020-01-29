@@ -411,6 +411,7 @@ void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, cons
 		QStandardItem *item = new QStandardItem();
 		item->setText(command->instructionCodeString());
 		item->setData(command->applicationMap().value());
+		item->setEditable(false);
 		listViewModel->appendRow(item);
 		if (!(command->type() & filter)) {
 			listView()->setRowHidden(listViewModel->rowCount(), true);
@@ -473,6 +474,7 @@ void MainWindow::textBrowserTextSelected() {
 }
 
 void MainWindow::listViewItemClicked(const QItemSelection &item) {
+	if (ui.stackedWidget->currentWidget() != ui.applicationPage) return; // stop infinite loop when programatic selected of list view item occurs
 	auto indexes = item.indexes();
 	if (indexes.isEmpty()) return;
 	QModelIndex currentIndex = indexes.first();
@@ -481,13 +483,13 @@ void MainWindow::listViewItemClicked(const QItemSelection &item) {
 	for (auto tuple : commands) {
 		auto command = std::get<1>(tuple);
 		if (command.has_value() && 
-			(command.value()->applicationMap().has_value()) &&
-			(index == currentIndex.row())) {
-			break;
-		} else {
-			cursor.movePosition(QTextCursor::NextBlock);
+			(command.value()->applicationMap().has_value())) {
+			if ((index == currentIndex.row())) {
+				break;
+			}
 			index++;
 		}
+		cursor.movePosition(QTextCursor::NextBlock);
 	}
 	
 	cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);	

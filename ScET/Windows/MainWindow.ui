@@ -750,7 +750,7 @@
 }</string>
           </property>
           <property name="verticalScrollMode">
-           <enum>QAbstractItemView::ScrollPerPixel</enum>
+           <enum>QAbstractItemView::ScrollPerItem</enum>
           </property>
           <property name="resizeMode">
            <enum>QListView::Adjust</enum>
@@ -942,7 +942,6 @@
  </customwidgets>
  <resources>
   <include location="../Resources/ScET.qrc"/>
-  <include location="../../../../../.designer/Resources/ScET.qrc"/>
  </resources>
  <connections>
   <connection>
