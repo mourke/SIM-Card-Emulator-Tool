@@ -271,14 +271,14 @@
           <item>
            <widget class="QLabel" name="companyLogo">
             <property name="pixmap">
-             <pixmap resource="../Resources/ScET.qrc">:/Windows/Company Logo Small</pixmap>
+             <pixmap resource="../Resources/ScET.qrc">:/Company Logo Small</pixmap>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="appLogo">
             <property name="pixmap">
-             <pixmap resource="../Resources/ScET.qrc">:/Windows/App Logo</pixmap>
+             <pixmap resource="../Resources/ScET.qrc">:/App Logo</pixmap>
             </property>
            </widget>
           </item>
@@ -363,7 +363,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/ScET.qrc">
-           <normaloff>:/Windows/Start</normaloff>:/Windows/Start</iconset>
+           <normaloff>:/Start</normaloff>:/Start</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -412,7 +412,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/ScET.qrc">
-           <normaloff>:/Windows/Stop</normaloff>:/Windows/Stop</iconset>
+           <normaloff>:/Stop</normaloff>:/Stop</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -455,7 +455,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/ScET.qrc">
-           <normaloff>:/Windows/Open</normaloff>:/Windows/Open</iconset>
+           <normaloff>:/Open</normaloff>:/Open</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -498,7 +498,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/ScET.qrc">
-           <normaloff>:/Windows/Save</normaloff>:/Windows/Save</iconset>
+           <normaloff>:/Save</normaloff>:/Save</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -541,7 +541,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/ScET.qrc">
-           <normaloff>:/Windows/Clear</normaloff>:/Windows/Clear</iconset>
+           <normaloff>:/Clear</normaloff>:/Clear</iconset>
          </property>
          <property name="iconSize">
           <size>

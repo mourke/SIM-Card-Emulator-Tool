@@ -32,7 +32,7 @@
       </sizepolicy>
      </property>
      <property name="pixmap">
-      <pixmap resource="../Resources/ScET.qrc">:/Windows/Company Logo Large</pixmap>
+      <pixmap resource="../Resources/ScET.qrc">:/Company Logo Large</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

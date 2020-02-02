@@ -1,26 +1,23 @@
 <RCC>
     <qresource prefix="/Windows">
-        <file alias="Close">Assets/Windows/Close.svg</file>
-        <file alias="Maximize">Assets/Windows/Maximize.svg</file>
         <file alias="Minimize">Assets/Windows/Minimize.svg</file>
         <file alias="Restore">Assets/Windows/Restore.svg</file>
-        <file alias="Save">Assets/Windows/Save.svg</file>
-        <file alias="Start">Assets/Windows/Start.svg</file>
-        <file alias="Stop">Assets/Windows/Stop.svg</file>
-        <file alias="Open">Assets/Windows/Open.svg</file>
-        <file alias="Clear">Assets/Windows/Clear.svg</file>
-        <file alias="USB">Assets/Windows/USB.svg</file>
+        <file alias="Close">Assets/Windows/Close.svg</file>
+        <file alias="Maximize">Assets/Windows/Maximize.svg</file>
+    </qresource>
+    <qresource prefix="/macOS"/>
+    <qresource prefix="/Fonts">
+        <file alias="Avenir">Assets/Fonts/Avenir.ttc</file>
+    </qresource>
+    <qresource prefix="/">
         <file alias="App Logo">Assets/App Logo.svg</file>
         <file alias="Company Logo Large">Assets/Card Centric Logo Large.svg</file>
         <file alias="Company Logo Small">Assets/Card Centric Logo Small.svg</file>
-    </qresource>
-    <qresource prefix="/macOS">
-        <file>Assets/macOS/Save.svg</file>
-        <file>Assets/macOS/Start.svg</file>
-        <file>Assets/macOS/Stop.svg</file>
-        <file>Assets/macOS/Open.svg</file>
-    </qresource>
-    <qresource prefix="/Fonts">
-        <file alias="Avenir">Assets/Fonts/Avenir.ttc</file>
+        <file alias="Clear">Assets/Clear.svg</file>
+        <file alias="Open">Assets/Open.svg</file>
+        <file alias="Save">Assets/Save.svg</file>
+        <file alias="Start">Assets/Start.svg</file>
+        <file alias="Stop">Assets/Stop.svg</file>
+        <file alias="USB">Assets/USB.svg</file>
     </qresource>
 </RCC>
