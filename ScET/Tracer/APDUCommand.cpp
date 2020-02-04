@@ -164,7 +164,7 @@ QString APDUCommand::instructionCodeString() const {
 }
 
 QString responseTagString(ResponseTag tag) {
-	switch (tag) {
+    switch (static_cast<int>(tag)) {
 	case FCPTemplate:
 		return "FCP Template";
 	case FileSize:
@@ -523,9 +523,7 @@ QString stkTextEncodingString(STKTextEncoding encoding) {
 	case EightBit:
 		return "GSM default alphabet 8 bits";
 	case SixteenBit:
-		return "16 bits UCS2 alphabet";
-	default:
-		return "Unknown encoding";
+        return "16 bits UCS2 alphabet";
 	}
 }
 
@@ -536,9 +534,7 @@ QString stkDurationUnitString(STKDurationUnit duration) {
 	case Seconds:
 		return "Seconds";
 	case TenthsOfSecond:
-		return "Tenths of second";
-	default:
-		return "Unknown duration";
+        return "Tenths of second";
 	}
 }
 
@@ -650,6 +646,7 @@ QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
 		default:
 			break;
 		}
+        break;
 	case 0x26:
 		switch (code) {
 		case 0x1:
@@ -663,6 +660,7 @@ QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
 		default:
 			break;
 		}
+        break;
 	case 0x38:
 		switch (code) {
 		case 0x1:
@@ -686,6 +684,7 @@ QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
 		default:
 			break;
 		}
+        break;
 	case 0x39:
 		switch (code) {
 		case 1:
@@ -695,6 +694,7 @@ QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
 		default:
 			break;
 		}
+        break;
 	case 0x3A:
 		switch (code) {
 		case 0x0:
@@ -726,6 +726,7 @@ QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
 		default:
 			break;
 		}
+        break;
 	case 0x3C:
 		switch (code) {
 		case 1:
@@ -741,6 +742,7 @@ QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
 		default:
 			break;
 		}
+        break;
 	default:
 		break;
 	}
@@ -748,7 +750,7 @@ QString stkAdditionalStatusString(uint8_t status, uint8_t code) {
 }
 
 QString stkCommandString(STKCommand command) {
-	switch (command) {
+    switch (static_cast<int>(command)) {
 	case Refresh:
 		return "Refresh";
 	case MoreTime:
@@ -845,7 +847,7 @@ QString stkCommandString(STKCommand command) {
 }
 
 QString stkDeviceString(STKDevice device) {
-	switch (device) {
+    switch (static_cast<int>(device)) {
 	case Keypad:
 		return "Keypad";
 	case Display:
@@ -899,7 +901,7 @@ QString stkDeviceString(STKDevice device) {
 }
 
 QString stkTagString(STKTag tag) {
-	switch (tag) {
+    switch (static_cast<int>(tag)) {
 	case Proactive:
 		return "Proactive";
 	case ComprehensionRequired:
@@ -1269,7 +1271,7 @@ void APDUCommand::updateApplicationMap() {
 	case GetResponse: {
 		if (m_data.empty()) break;
 		if (m_data[0] != FCPTemplate) break;
-		int index = 2; // discard first two bytes
+        unsigned long int index = 2; // discard first two bytes
 		while (index < m_data.size()) {
 			ResponseTag responseTag = static_cast<ResponseTag>(m_data[index++]);
 			uint8_t payloadLength = m_data[index++];
@@ -1408,7 +1410,7 @@ void APDUCommand::updateApplicationMap() {
 	case TerminalProfile: {
 		QString supportedFacilities;
 		QString unsupportedFacilities;
-		for (int i = 0; i < m_data.size(); ++i) {
+        for (unsigned long int i = 0; i < m_data.size(); ++i) {
 			uint8_t byte = m_data[i];
 			std::vector<QString> facilities;
 			switch (i) {
@@ -1516,7 +1518,7 @@ void APDUCommand::updateApplicationMap() {
 				// RFU
 				continue;
 			}
-			for (int i = 0; i < facilities.size(); ++i) {
+            for (unsigned long int i = 0; i < facilities.size(); ++i) {
 				bool bit = byte & (1 << i);
 				QString facility = facilities[i];
 				if (facility.isEmpty()) continue;
@@ -1531,7 +1533,7 @@ void APDUCommand::updateApplicationMap() {
 	case TerminalResponse:
 	case Fetch: {
 		if (m_data.empty()) break;
-		int index = 2; // discard first two bytes as they basically tell us nothing
+        unsigned long int index = 2; // discard first two bytes as they basically tell us nothing
 		while (index < m_data.size()) {
 			STKTag stkTag = static_cast<STKTag>(m_data[index++] & ~ComprehensionRequired);
 			uint8_t payloadLength = m_data[index++];
@@ -1656,7 +1658,8 @@ void APDUCommand::updateApplicationMap() {
 				break;
 			}
 			case ResponseLength:
-				map.insert(stkTagString(stkTag), QString::asprintf("Between %d and %d characters", m_data[index++], m_data[index++]));
+                map.insert(stkTagString(stkTag), QString::asprintf("Between %d and %d characters", m_data[index], m_data[index + 1]));
+                index += 2;
 				payloadLength -= 2;
 				break;
 			case FileList: {

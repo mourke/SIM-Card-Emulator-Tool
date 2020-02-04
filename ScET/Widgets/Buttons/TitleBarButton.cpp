@@ -62,8 +62,3 @@ bool TitleBarButton::event(QEvent *event) {
 }
 
 
-TitleBarButton::~TitleBarButton() {
-
-}
-
-

@@ -1,9 +1,12 @@
-#include <SingleApplication.h>
+#include "singleapplication.h"
 #include "Windows/MainWindow.h"
-#include <windows.h>
-#include <WinUser.h>
 #include "Version.h"
 #include <QFontDatabase>
+
+#if defined(Q_OS_WIN)
+#include <windows.h>
+#include <WinUser.h>
+#endif
 
 
 int main(int argc, char *argv[]) {
@@ -15,9 +18,12 @@ int main(int argc, char *argv[]) {
 	SingleApplication application(argc, argv, true, SingleApplication::Mode::SecondaryNotification);
 
 	if (application.isSecondary()) {
+#if defined(Q_OS_WIN)
 		AllowSetForegroundWindow(DWORD(application.primaryPid()));
-		application.sendMessage(application.arguments().join("»").toUtf8());
+#endif
+		application.sendMessage(application.arguments().join("Â»").toUtf8());
 		exit(0);
+
 	}
 
 	SingleApplication::setOrganizationName(VER_COMPANYNAME_STR);
@@ -28,7 +34,7 @@ int main(int argc, char *argv[]) {
 	QFontDatabase::addApplicationFont(":/Fonts/Avenir");
 
 	SingleApplication::setFont(QFont("Avenir", 8, QFont::Black));
-	
+
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();
 

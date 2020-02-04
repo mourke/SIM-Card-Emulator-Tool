@@ -5,12 +5,9 @@
 #include <vector>
 #include <thread>
 #include <QObject>
+#include <libusb.h>
 
 class Tracer;
-class libusb_context;
-enum libusb_transfer_status;
-enum libusb_error;
-typedef int libusb_hotplug_callback_handle;
 class APDUCommand;
 
 /** A manager class for all tracers connected to

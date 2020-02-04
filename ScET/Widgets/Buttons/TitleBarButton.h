@@ -47,8 +47,7 @@ public:
 	void setType(const Type &type);
 
 
-	TitleBarButton(QWidget *parent);
-	~TitleBarButton();
+    TitleBarButton(QWidget *parent);
 
 protected:
 	bool event(QEvent *event) override;

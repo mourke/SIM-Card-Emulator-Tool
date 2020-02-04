@@ -6,7 +6,7 @@ static const unsigned int MAX_RESPONSE_LENGTH = 256;
 
 
 void APDUSplitter::incrementState() {
-	state = State((int)state + 1);
+    state = State(state + 1);
 }
 
 void APDUSplitter::insertByte(uint8_t character) {
@@ -58,7 +58,7 @@ void APDUSplitter::insertByte(uint8_t character) {
 	case State::StatusByte2:
 		this->command.m_status[1] = character;
 		this->command.updateApplicationMap();
-		std::invoke(m_callback, command, start.value());
+        std::invoke(m_callback, command, *start);
 		reset();
 		break;
 	}
@@ -71,8 +71,8 @@ void APDUSplitter::reset() {
 	start.reset();
 }
 
-void APDUSplitter::splitInput(const uint8_t *buffer, const unsigned int bufferSize) {
-	for (int i = 0; i < bufferSize; ++i) {
+void APDUSplitter::splitInput(const uint8_t *buffer, const int bufferSize) {
+    for (int i = 0; i < bufferSize; ++i) {
 		insertByte(buffer[i]);
 	}
 }

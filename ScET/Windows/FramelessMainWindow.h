@@ -13,7 +13,7 @@ public:
 
 private:
 	void closeEvent(QCloseEvent *closeEvent) override;
-	bool eventFilter(QObject *watched, QEvent *event);
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 #ifdef Q_OS_WIN
 	void showEvent(QShowEvent *event) override;

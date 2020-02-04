@@ -1,8 +1,9 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
+#include <libusb.h>
+
 class QString;
-enum libusb_error;
 
 QString libUSBErrorToString(libusb_error);
 

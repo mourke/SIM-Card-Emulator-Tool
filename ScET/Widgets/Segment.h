@@ -26,8 +26,7 @@ class Segment : public QAbstractButton {
 	Q_PROPERTY(QColor selectedIndicatorColor READ selectedIndicatorColor WRITE setSelectedIndicatorColor)
 
 public:
-	Segment(QWidget *parent);
-	~Segment();
+    Segment(QWidget *parent);
 
 	/**
 	 * A boolean value indicating whether or not the button 
@@ -183,6 +182,7 @@ protected:
 
 private:
 	bool highlighted = false;
+    QColor m_selectedIndicatorColor;
 
 #if defined(Q_OS_MAC)
 	QColor m_selectedTextColor = Qt::white;
@@ -191,7 +191,6 @@ private:
 #elif defined(Q_OS_WIN) 
 	QColor m_textColor = QColor(0, 0, 0, 145);
 	QColor m_highlightedTextColor, m_pressedTextColor, m_selectedTextColor = Qt::black;
-	QColor m_selectedIndicatorColor;
 	const int SELECTED_INDICATOR_HEIGHT = 2;
 #endif
 

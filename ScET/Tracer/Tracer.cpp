@@ -6,6 +6,7 @@
 #include "APDUSplitter.h"
 #include <QString>
 #include <QApplication>
+#include <exception>
 
 
 // The max value in milliseconds that the transfer will wait before failing. (100 seconds)
@@ -13,16 +14,16 @@ static const unsigned int BULK_TRANSFER_TIMEOUT = 100000;
 
 Tracer::Tracer(libusb_device *device, libusb_context *context) : QObject(nullptr), device(device), context(context) {
 	splitter = new APDUSplitter([this](APDUCommand command, std::chrono::steady_clock::time_point end) {
-		auto start = firstAPDUTime.value();
+        auto start = *firstAPDUTime;
 
-		unsigned long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-		unsigned long long milliseconds = microseconds / 1000;
+        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        auto milliseconds = microseconds / 1000;
 		microseconds = microseconds - (milliseconds * 1000);
-		unsigned long long seconds = milliseconds / 1000;
+        auto seconds = milliseconds / 1000;
 		milliseconds = milliseconds - (seconds * 1000);
-		unsigned long long minutes = seconds / 60;
+        auto minutes = seconds / 60;
 		seconds = seconds - (minutes * 60);
-		unsigned long long hours = minutes / 60;
+        auto hours = minutes / 60;
 		minutes = minutes - (hours * 60);
 
 		QString output = QString::asprintf("APDU: (%02lld:%02lld:%02lld:%03lld:%03lld): ", hours, minutes, seconds, milliseconds, microseconds);
@@ -43,7 +44,7 @@ libusb_error Tracer::startSniffing() {
 	int error;
 
 	error = libusb_open(device, &handle);
-	if (error != LIBUSB_SUCCESS) return (libusb_error)error;
+    if (error != LIBUSB_SUCCESS) return static_cast<libusb_error>(error);
 	
 	libusb_config_descriptor *configDescriptor;
 	libusb_get_config_descriptor(device, 0, &configDescriptor);
@@ -58,7 +59,7 @@ libusb_error Tracer::startSniffing() {
 		if (interface == configDescriptor->bNumInterfaces) {
 			libusb_free_config_descriptor(configDescriptor);
 			libusb_close(handle);
-			return (libusb_error)error;
+            return static_cast<libusb_error>(error);
 		}
 	}
 
@@ -68,14 +69,16 @@ libusb_error Tracer::startSniffing() {
 
 	transfer = libusb_alloc_transfer(0);
 	libusb_fill_bulk_transfer(transfer, handle, SIMTRACE_IN_BULK, buffer, sizeof(buffer), [](libusb_transfer *transfer) {
-		Tracer *self = (Tracer *)transfer->user_data;
+        Tracer *self = reinterpret_cast<Tracer *>(transfer->user_data);
 
 		switch (transfer->status) {
 		case LIBUSB_TRANSFER_COMPLETED:
 			self->processInput(transfer->buffer, transfer->actual_length);
+            [[fallthrough]];
 		case LIBUSB_TRANSFER_TIMED_OUT: {
 			int error = libusb_submit_transfer(transfer); // submit next transfer
 			if (error == LIBUSB_SUCCESS) break;
+            [[fallthrough]];
 		}
 		default:
 			QMetaObject::invokeMethod(QApplication::instance(), [self]() {
@@ -92,10 +95,10 @@ libusb_error Tracer::startSniffing() {
 	if (error != LIBUSB_SUCCESS) {
 		stopSniffing();
 		finishedSniffing();
-		return (libusb_error)error;
+        return static_cast<libusb_error>(error);
 	}
 	
-	return (libusb_error)error;
+    return static_cast<libusb_error>(error);
 }
 
 void Tracer::processInput(const uint8_t *buffer, const int bufferSize) {
@@ -106,11 +109,11 @@ void Tracer::processInput(const uint8_t *buffer, const int bufferSize) {
 	case SIMTraceCommand::Data: {
 		if (bufferSize > header.totalBufferSize) { // multiple traces have been mangled together, we must separate them
 			const uint8_t *demangledBuffer = buffer + header.totalBufferSize;
-			int demangledBufferSize = bufferSize - (int)header.totalBufferSize;
+            int demangledBufferSize = bufferSize - static_cast<int>(header.totalBufferSize);
 			processInput(buffer, bufferSize - demangledBufferSize); // process the original trace and then the demangled one
 			return processInput(demangledBuffer, demangledBufferSize); // recursively call this in case there are more than two traces mangled together
 		} else if (bufferSize < header.totalBufferSize) { // something went wrong abort the trace
-			throw std::exception("Corrupted buffer size.");
+            throw std::runtime_error("Corrupted buffer size");
 		}
 
 		if (header.flags & SIMTraceFlag::PPSFiDi) {
@@ -122,9 +125,9 @@ void Tracer::processInput(const uint8_t *buffer, const int bufferSize) {
 			break;
 		}
 
-		size_t headerSize = sizeof(header);
+        int headerSize = sizeof(header);
 		const uint8_t *payload = buffer + headerSize; // point to the first element of the data
-		int payloadSize = bufferSize - headerSize;
+        int payloadSize = bufferSize - headerSize;
 
 		QString simTraceCommand = QString::asprintf("%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x", header.command, header.flags, header.reset[0], header.reset[1], header.sequenceNumber & 0x00FF, (header.sequenceNumber & 0xFF00) >> 8, header.offset & 0x00FF, (header.offset & 0xFF00) >> 8, header.totalBufferSize & 0x00FF, (header.totalBufferSize & 0xFF00) >> 8);
 		for (int i = 0; i < payloadSize; ++i) {

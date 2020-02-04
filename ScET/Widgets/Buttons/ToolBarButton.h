@@ -16,8 +16,7 @@ class ToolBarButton : public QToolButton {
 	Q_OBJECT
 
 public:
-	ToolBarButton(QWidget *parent);
-	~ToolBarButton();
+    ToolBarButton(QWidget *parent);
 };
 
 #endif // TOOLBARBUTTON_H

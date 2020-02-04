@@ -1,7 +1,7 @@
 #ifndef APPLICATION_LAYER_DELEGATE
 #define APPLICATION_LAYER_DELEGATE
 
-#include <QStyledItemDelegate >
+#include <QStyledItemDelegate>
 
 class MainWindow;
 
@@ -9,8 +9,7 @@ class ApplicationLayerDelegate : public QStyledItemDelegate {
 	Q_OBJECT
 
 public:
-	ApplicationLayerDelegate(MainWindow *parent);
-	~ApplicationLayerDelegate();
+    ApplicationLayerDelegate(MainWindow *parent);
 
 protected:
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;

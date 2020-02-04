@@ -15,7 +15,7 @@ TracerManager::TracerManager() : QObject(nullptr) {
 	error = libusb_hotplug_register_callback(context, libusb_hotplug_event(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED |
 		LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT), LIBUSB_HOTPLUG_NO_FLAGS, SIMTRACE_VID, SIMTRACE_PID,
 		LIBUSB_HOTPLUG_MATCH_ANY, [](libusb_context *context, libusb_device *device, libusb_hotplug_event event, void *userData) -> int {
-		TracerManager *self = (TracerManager *)userData;
+        TracerManager *self = reinterpret_cast<TracerManager *>(userData);
 
 		if (event == LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED) {
 			libusb_ref_device(device); // stop from being deallocated when labda returns
@@ -46,7 +46,7 @@ TracerManager::TracerManager() : QObject(nullptr) {
 		while (handlingEvents) {
 			int error = libusb_handle_events_completed(context, nullptr);
 			if (error != LIBUSB_SUCCESS) {
-				printf("Failed to handle events: %s", libUSBErrorToString((libusb_error)error).toStdString().c_str());
+                printf("Failed to handle events: %s", libUSBErrorToString(static_cast<libusb_error>(error)).toStdString().c_str());
 			}
 		}
 	});
@@ -64,7 +64,7 @@ TracerManager::~TracerManager() {
 
 std::optional<Tracer *> TracerManager::findTracer() {
 	libusb_device **devices;
-	ssize_t numberOfDevices = libusb_get_device_list(context, &devices);
+    libusb_get_device_list(context, &devices);
 	libusb_device *device;
 
 	int i = 0;
@@ -118,14 +118,19 @@ void TracerManager::stopManagingTracer(Tracer *tracer) {
 		throw std::invalid_argument("The tracer passed in is not managed by this manager.");
 	}
 
-	int index;
+    unsigned long int index;
 
-	for (int i = 0; i < tracers.size(); ++i) {
-		if (tracer == tracers[i]) {
-			index = i;
-			break;
-		}
-	}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsometimes-uninitialized" // we have already made sure that the Manager is managing the tracer so index will always be assigned a value in the for loop
+
+    for (unsigned long int i = 0; i < tracers.size(); ++i) {
+        if (tracer == tracers[i]) {
+            index = i;
+            break;
+        }
+    }
+
+#pragma clang diagnostic pop
 
 	tracers.erase(tracers.begin() + index);
 	QObject::disconnect(tracer);

@@ -18,17 +18,14 @@ enum SIMTraceFlag : uint8_t {
 	PPSFiDi = 0x08
 };
 
-
-#define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) ) // workaround for packed not being supported on GCC. Fix in VS2019
-
-PACK(struct SIMTraceHeader {
+struct __attribute__((__packed__)) SIMTraceHeader {
 	SIMTraceCommand command;
 	SIMTraceFlag flags;
 	uint8_t reset[2];
 	uint16_t sequenceNumber;
 	uint16_t offset; 
 	uint16_t totalBufferSize; // header size + data size
-});
+};
 
 
 // Product ID of the tracer.

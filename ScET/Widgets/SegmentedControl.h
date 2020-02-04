@@ -173,7 +173,7 @@ public slots:
 	 *
 	 * @param segment	The segment to be selected.
 	 */
-	void selectSegment(Segment *segment) { setSelectedSegmentIndex(m_segments.indexOf(segment)); }
+    void selectSegment(Segment *segment) { setSelectedSegmentIndex(static_cast<segmented_index_t>(m_segments.indexOf(segment))); }
 
 	/**
 	 * Sets the selected status of the specified segment. Setting this

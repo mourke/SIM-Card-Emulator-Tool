@@ -5,15 +5,10 @@
 #include <chrono>
 #include <optional>
 #include <QObject>
+#include <libusb.h>
 
-struct libusb_device;
-struct libusb_device_handle;
-struct libusb_transfer;
-class libusb_context;
 class APDUCommand;
 class APDUSplitter;
-enum libusb_transfer_status;
-enum libusb_error;
 
 /** A wrapper class around libusb_device.
   *

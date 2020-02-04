@@ -12,9 +12,6 @@ void Segment::setSelected(const bool &selected) {
 	if (selected) emit this->selected();
 }
 
-Segment::~Segment() {
-}
-
 void Segment::paintEvent(QPaintEvent *paintEvent) {
 	QPainter painter(this);
 
@@ -97,5 +94,9 @@ void Segment::leaveEvent(QEvent *event) {
 void Segment::sizeToFit() {
 	static const int spacing = 12;
 	QFontMetrics metrics(font());
-	setMinimumSize(metrics.width(text()), metrics.height() + spacing + SELECTED_INDICATOR_HEIGHT);
+    int height = metrics.height() + spacing;
+#if defined(Q_OS_WIN)
+    height += SELECTED_INDICATOR_HEIGHT;
+#endif
+    setMinimumSize(metrics.width(text()), height);
 }

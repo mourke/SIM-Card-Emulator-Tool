@@ -1,6 +1,6 @@
 #include "UpdateManager.h"
 #include <QSettings>
-#include <SingleApplication.h>
+#include "singleapplication.h"
 
 
 UpdateManager::UpdateManager() {
@@ -21,9 +21,9 @@ UpdateManager::UpdateManager() {
 	QObject::connect(&checkForUpdatesProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedCheckingForUpdates(int, QProcess::ExitStatus)));
 }
 
-int UpdateManager::daysSinceLastVersionCheckDate() const {
+long long int UpdateManager::daysSinceLastVersionCheckDate() const {
 	if (!lastVersionCheckPerformedOnDate.has_value()) return 0;
-	return QDate::currentDate().daysTo(lastVersionCheckPerformedOnDate.value());
+    return QDate::currentDate().daysTo(*lastVersionCheckPerformedOnDate);
 }
 
 void UpdateManager::setSkipReleaseVersion(const QString &version) {
@@ -44,7 +44,7 @@ void UpdateManager::setLastVersionCheckPerformedOnDate(const QDate &date) {
 
 void UpdateManager::checkForUpdates(std::optional<Callback> callback) {
 	if (checkForUpdatesProcess.state() != QProcess::ProcessState::NotRunning) { // user is already checking for updates
-		if (callback.has_value()) std::invoke(callback.value(), std::nullopt);
+        if (callback.has_value()) std::invoke(*callback, std::nullopt);
 		return;
 	}
 	m_callback = callback;
@@ -53,24 +53,25 @@ void UpdateManager::checkForUpdates(std::optional<Callback> callback) {
 
 void UpdateManager::finishedCheckingForUpdates(int exitCode, QProcess::ExitStatus exitStatus) {
 	if (exitStatus != QProcess::ExitStatus::NormalExit) {
-		if (m_callback.has_value()) std::invoke(m_callback.value(), std::nullopt);
+        if (m_callback.has_value()) std::invoke(*m_callback, std::nullopt);
 		return;
 	}
 
 	setLastVersionCheckPerformedOnDate(QDate::currentDate());
 
-	SingleApplication *application = (SingleApplication *)SingleApplication::instance();
+
+    SingleApplication *application = qobject_cast<SingleApplication *>(SingleApplication::instance());
 	QByteArray data = checkForUpdatesProcess.readAllStandardOutput();
 
 
 	if (data.isEmpty()) { // no updates available
-		if (m_callback.has_value()) std::invoke(m_callback.value(), std::nullopt);
+        if (m_callback.has_value()) std::invoke(*m_callback, std::nullopt);
 		return;
 	}
 
 	QString version(data);
 	version = version.split("version=\"").last().split("\"").first(); // extract version number
-	UpdateAction action = std::invoke(m_callback.value(), version);
+    UpdateAction action = std::invoke(*m_callback, version);
 
 	switch (action) {
 	case UpdateAction::Update: {
@@ -81,6 +82,7 @@ void UpdateManager::finishedCheckingForUpdates(int exitCode, QProcess::ExitStatu
 	}
 	case UpdateAction::Skip:
 		setSkipReleaseVersion(version);
+        [[fallthrough]];
 	case UpdateAction::DoNothing:
 		break;
 	}

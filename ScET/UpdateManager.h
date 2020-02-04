@@ -51,7 +51,7 @@ public:
 	 *
 	 * @retval	The action that should be taken.
 	 */
-	typedef std::function<UpdateAction(std::optional<QString>)> Callback;
+    typedef std::function<UpdateAction(std::optional<QString>)> Callback;
 
 	/** 
 	 * Checks for new releases.
@@ -59,11 +59,11 @@ public:
 	 * @param	frequency	The frequency with which to check.
 	 * @param	callback	The function called when updates have been checked.
 	 */
-	void checkVersion(CheckFrequency frequency, std::optional<Callback> callback = std::nullopt) {
+    void checkVersion(CheckFrequency frequency, std::optional<Callback> callback = std::nullopt) {
 		if (frequency == CheckFrequency::Immediately || static_cast<int>(frequency) <= daysSinceLastVersionCheckDate()) {
 			checkForUpdates(callback);
 		} else if (callback.has_value()) {
-			std::invoke(callback.value(), std::nullopt);
+            std::invoke(*callback, std::nullopt);
 		}
 	}
 private:
@@ -84,7 +84,7 @@ private:
 	 * @retval	The number of days it has been since the application
 	 * has been checked for updates.
 	 */
-	int daysSinceLastVersionCheckDate() const;
+    long long int daysSinceLastVersionCheckDate() const;
 
 	void checkForUpdates(std::optional<Callback> callback);
 	

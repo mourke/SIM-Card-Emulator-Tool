@@ -45,13 +45,12 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QString &tex
 }
 
 void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &value) {
-	if (index < 0) throw std::out_of_range("Cannot add a negative index to an array.");
-	if (index > m_segments.count()) throw std::out_of_range("Segments can only be added one from the end of the array.");
+    if (index > static_cast<segmented_index_t>(m_segments.count())) throw std::out_of_range("Segments can only be added one from the end of the array.");
 	
 	Segment *segment = new Segment(this);
 
 	QObject::connect(segment, &Segment::selected, this, [this, segment] {
-		int index = this->m_segments.indexOf(segment);
+        auto index = static_cast<segmented_index_t>(this->m_segments.indexOf(segment));
 		this->setSelectedSegmentIndex(index);
 	});
 
@@ -66,12 +65,12 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &va
 
 	segment->sizeToFit();
 
-	if (index == m_segments.count()) {
+    if (index == static_cast<segmented_index_t>(m_segments.count())) {
 		m_segments.append(segment);
 		layout()->addWidget(segment);
 	} else {
-		for (int i = m_segments.count(); i > index; --i) {
-			if (i == m_segments.count()) {
+        for (auto i = static_cast<segmented_index_t>(m_segments.count()); i > index; --i) {
+            if (i == static_cast<segmented_index_t>(m_segments.count())) {
 				m_segments.append(segment);
 				continue;
 			}
@@ -94,7 +93,7 @@ void SegmentedControl::removeSegment(segmented_index_t index) {
 void SegmentedControl::removeSegment(Segment *segment) {
 	if (!m_segments.contains(segment)) return;
 
-	segmented_index_t index = m_segments.indexOf(segment);
+    auto index = static_cast<segmented_index_t>(m_segments.indexOf(segment));
 	if (index == m_selectedSegmentIndex) {
 		setSelectedSegmentIndex(0);
 	}
@@ -151,7 +150,7 @@ void SegmentedControl::updateSegmentPositions() {
 }
 
 bool SegmentedControl::isSegmentIndexValid(segmented_index_t index) const {
-	if (index >= 0 && index < m_segments.count()) {
+    if (index < static_cast<segmented_index_t>(m_segments.count())) {
 		return true;
 	} else {
 		throw std::out_of_range("The segment index passed was out of range.");

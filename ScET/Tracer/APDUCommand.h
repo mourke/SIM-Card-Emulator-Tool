@@ -96,7 +96,7 @@ public:
 	  *
 	  * @retval	Lc.
 	  */
-	uint8_t dataLength() const { return (uint8_t)m_data.size(); }
+    uint8_t dataLength() const { return static_cast<uint8_t>(m_data.size()); }
 
 	/** Command processing status.
 	  *

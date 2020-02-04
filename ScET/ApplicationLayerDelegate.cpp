@@ -24,7 +24,7 @@ int draw(std::optional<QPainter *> painter, const QStyleOptionViewItem &option, 
 	int y = option.rect.y() + boldMetrics.height() - 2;
 
 	if (painter.has_value()) {
-		auto p = painter.value();
+        auto p = *painter;
 		p->fillRect(option.rect, Qt::white);
 		p->setPen(headerColor());
 		p->setFont(boldFont);
@@ -48,7 +48,7 @@ int draw(std::optional<QPainter *> painter, const QStyleOptionViewItem &option, 
 		int valueHeight = std::max(keyHeight, metrics.boundingRect(QRect(0, 0, valueWidth, 0), valueFlags, value).height());
 
 		if (painter.has_value()) {
-			auto p = painter.value();
+            auto p = *painter;
 			p->setFont(boldFont);
 			p->drawText(QRect(keyX, y, keyWidth, keyHeight), keyFlags, key);
 			p->setFont(font);
@@ -75,7 +75,4 @@ QSize ApplicationLayerDelegate::sizeHint(const QStyleOptionViewItem &option, con
 	QSize hint = QSize(option.rect.width(), height);
 
 	return hint;
-}
-
-ApplicationLayerDelegate::~ApplicationLayerDelegate() {
 }

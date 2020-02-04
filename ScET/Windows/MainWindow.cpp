@@ -3,13 +3,12 @@
 #include "SegmentedControl.h"
 #include "Tracer/TracerManager.h"
 #include "Buttons/TitleBarButton.h"
-#include <libusb.h>
 #include "Tracer/Tracer.h"
 #include "Tracer/APDUCommand.h"
 #include "Errors.h"
 #include "Colors.h"
 #include "FileManager.h"
-#include <SingleApplication.h>
+#include "singleapplication.h"
 #include "UpdateManager.h"
 #include "AboutDialog.h"
 #include "Segment.h"
@@ -46,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	auto tracer = manager.findTracer();
 
 	if (tracer.has_value()) {
-		tracerConnected(tracer.value());
+        tracerConnected(*tracer);
 	}
 	updateCurrentPageWidget();
 
@@ -59,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	QObject::connect(&manager, SIGNAL(atrCommandReceived(Tracer *, const QString &)), this, SLOT(atrCommandReceived(Tracer *, const QString &)));
 	QObject::connect(&manager, SIGNAL(simTraceCommandReceived(Tracer *, const QString &)), this, SLOT(simTraceCommandReceived(Tracer *, const QString &)));
 
-	SingleApplication *application = (SingleApplication *)SingleApplication::instance();
+    SingleApplication *application = qobject_cast<SingleApplication *>(SingleApplication::instance());
 	QObject::connect(application, &QApplication::applicationStateChanged, [this](Qt::ApplicationState state) {
 		if (state == Qt::ApplicationState::ApplicationActive) {
 			checkForUpdates(UpdateManager::CheckFrequency::Daily);
@@ -99,13 +98,13 @@ void MainWindow::applicationReceivedArguments(QStringList arguments) {
 }
 
 void MainWindow::checkForUpdates(UpdateManager::CheckFrequency frequency) {
-	UpdateManager::sharedManager().checkVersion(frequency, [this](std::optional<QString> version) -> UpdateManager::UpdateAction {
+    UpdateManager::sharedManager().checkVersion(frequency, [](std::optional<QString> version) -> UpdateManager::UpdateAction {
 		if (!version.has_value()) return UpdateManager::UpdateAction::DoNothing;
 
 		QMessageBox messageBox;
 		messageBox.setIcon(QMessageBox::Icon::Information);
 		messageBox.setWindowTitle(tr("Updates Found"));
-		messageBox.setText(QString(tr("Version %1 is now available to download")).arg(version.value()));
+        messageBox.setText(QString(tr("Version %1 is now available to download")).arg(*version));
 		auto okButton = messageBox.addButton(QMessageBox::Ok);
 		auto skipButton = messageBox.addButton(tr("Skip"), QMessageBox::ButtonRole::NoRole);
 		auto updateButton = messageBox.addButton(tr("Update"), QMessageBox::ButtonRole::YesRole);
@@ -116,9 +115,11 @@ void MainWindow::checkForUpdates(UpdateManager::CheckFrequency frequency) {
 			return UpdateManager::UpdateAction::DoNothing;
 		} else if (messageBox.clickedButton() == skipButton) {
 			return UpdateManager::UpdateAction::Skip;
-		} else {
+        } else if (messageBox.clickedButton() == updateButton) {
 			return UpdateManager::UpdateAction::Update;
-		}
+        } else {
+            throw std::exception(); // RFU
+        }
 	});
 }
 
@@ -134,7 +135,7 @@ void MainWindow::showSettingsContextMenu() {
 	connect(&update, &QAction::triggered, this, [this]() {
 		this->checkForUpdates(UpdateManager::CheckFrequency::Immediately);
 	});
-	connect(&support, &QAction::triggered, this, [this]() {
+    connect(&support, &QAction::triggered, this, []() {
 		QDesktopServices::openUrl(QUrl("mailto:support@cardcentric.com"));
 	});
 	connect(&about, &QAction::triggered, this, [this]() {
@@ -155,7 +156,7 @@ void MainWindow::showSettingsContextMenu() {
 void MainWindow::startButtonClicked() {
 	assert(tracer.has_value()); // logic error somewhere if this fails.
 
-	libusb_error error = TracerManager::sharedManager().startSniffing(tracer.value());
+    libusb_error error = TracerManager::sharedManager().startSniffing(*tracer);
 
 	if (error != LIBUSB_SUCCESS) {
 		QMessageBox messageBox;
@@ -164,8 +165,8 @@ void MainWindow::startButtonClicked() {
 }
 
 void MainWindow::stopButtonClicked() {
-	if (tracer.has_value() && tracer.value()->isSniffing()) {
-		TracerManager::sharedManager().stopSniffing(tracer.value());
+    if (tracer.has_value() && (*tracer)->isSniffing()) {
+        TracerManager::sharedManager().stopSniffing(*tracer);
 	}
 }
 
@@ -211,7 +212,7 @@ void MainWindow::openFile(const QString &fileName) {
 	try {
 		stopButtonClicked();
 		auto data = FileManager::sharedManager().openFile(fileName);
-		auto bufferLength = data.size();
+        auto bufferLength = static_cast<int>(data.size());
 
 		if (bufferLength == 0) return; // file empty, do nothing
 
@@ -223,7 +224,7 @@ void MainWindow::openFile(const QString &fileName) {
 			tracer->processInput(buffer, bufferLength);
 			TracerManager::sharedManager().stopManagingTracer(tracer);
 		} else {
-			tracer.value()->processInput(buffer, bufferLength);
+            (*tracer)->processInput(buffer, bufferLength);
 		}
 
 		textBrowserInsertAtStart();
@@ -258,7 +259,7 @@ QString MainWindow::commandsToLDR() {
 		auto tuple = commands.at(i);
 		auto command = std::get<1>(tuple);
 		if (command.has_value()) {
-			auto c = command.value();
+            auto c = *command;
 			if (c->instructionCode() == APDUCommand::InstructionCode::TerminalProfile) {
 				ldr += "INI\t";
 				QString string;
@@ -271,10 +272,10 @@ QString MainWindow::commandsToLDR() {
 				if (i + 1 < commands.size()) {
 					auto nextCommand = std::get<1>(commands.at(i + 1));
 					if (nextCommand.has_value()) {
-						auto nc = nextCommand.value();
+                        auto nc = *nextCommand;
 						if (nc->instructionCode() == APDUCommand::InstructionCode::GetResponse) {
 							QString string = "[";
-							for (int i = 0; i < nc->data().size(); ++i) {
+                            for (unsigned long int i = 0; i < nc->data().size(); ++i) {
 								uint8_t character = nc->data()[i];
 								string += QString::asprintf("%02X", character);
 								if (i + 1 == nc->data().size()) {
@@ -341,8 +342,8 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 		QString output = std::get<0>(tuple);
 		auto command = std::get<1>(tuple);
 		if (command.has_value()) {
-			if (command.value()->type() & filter) {
-				updateTextBrowser(output, command.value());
+            if ((*command)->type() & filter) {
+                updateTextBrowser(output,  *command);
 				listView()->setRowHidden(i, false);
 			} else {
 				listView()->setRowHidden(i, true);
@@ -363,7 +364,7 @@ void MainWindow::clearCurrentTrace() {
 	for (auto tuple : commands) {
 		auto command = std::get<1>(tuple);
 		if (command.has_value()) {
-			delete command.value();
+            delete *command;
 		}
 	}
 
@@ -410,7 +411,7 @@ void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, cons
 	if (command->applicationMap().has_value()) {
 		QStandardItem *item = new QStandardItem();
 		item->setText(command->instructionCodeString());
-		item->setData(command->applicationMap().value());
+        item->setData(*command->applicationMap());
 		item->setEditable(false);
 		listViewModel->appendRow(item);
 		if (!(command->type() & filter)) {
@@ -436,7 +437,7 @@ void MainWindow::simTraceCommandReceived(Tracer *tracer, const QString &input) {
 
 void MainWindow::updateTextBrowser(const QString &output, const APDUCommand *command) {
 	textBrowserInsertAtEnd(); // append data to end. this is done in case the user highlights anything while this method is being called. when anything is highlighed, it changes the cursor's position to there and that's where the data will be inserted. 
-	int offset, length; // the offset and length of the section of the APDU command in the output string
+    int offset, length; // the offset and length of the section of the APDU command in the output string
 	offset = 26; // apdu and timestamp
 	textBrowser()->setTextColor(Qt::black);
 	textBrowser()->insertPlainText(output.left(offset));
@@ -445,7 +446,7 @@ void MainWindow::updateTextBrowser(const QString &output, const APDUCommand *com
 	textBrowser()->insertPlainText(output.mid(offset, length));
 	offset += length; // header and space after
 	textBrowser()->setTextColor(command->instructionCode() == APDUCommand::InstructionCode::GetResponse ? responseColor() : dataColor());
-	length = command->data().size() * 3; // data.size * 2 (two digits for every element) and the space before and after each (data.size)
+    length = static_cast<int>(command->data().size()) * 3; // data.size * 2 (two digits for every element) and the space before and after each (data.size)
 	textBrowser()->insertPlainText(output.mid(offset, length));
 	offset += length;
 	textBrowser()->setTextColor(statusCodeColor());
@@ -464,7 +465,7 @@ void MainWindow::textBrowserTextSelected() {
 	for (auto tuple : commands) {
 		QString output = std::get<0>(tuple);
 		auto command = std::get<1>(tuple);
-		if (!(command.has_value() && command.value()->applicationMap().has_value())) { continue; }
+        if (!(command.has_value() && (*command)->applicationMap().has_value())) { continue; }
 		if (line == output) {
 			listView()->setCurrentIndex(listViewModel->index(index, 0));
 			break;
@@ -483,8 +484,8 @@ void MainWindow::listViewItemClicked(const QItemSelection &item) {
 	for (auto tuple : commands) {
 		auto command = std::get<1>(tuple);
 		if (command.has_value() && 
-			(command.value()->applicationMap().has_value())) {
-			if ((index == currentIndex.row())) {
+            ((*command)->applicationMap().has_value())) {
+            if (index == currentIndex.row()) {
 				break;
 			}
 			index++;

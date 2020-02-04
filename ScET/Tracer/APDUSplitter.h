@@ -26,7 +26,7 @@ public:
 	  */
 	typedef std::function<void(APDUCommand, std::chrono::steady_clock::time_point)> Callback;
 
-	APDUSplitter(Callback callback) : m_callback(callback) {};
+    APDUSplitter(Callback callback) : m_callback(callback) {}
 	
 	/** Splits an input buffer recieved from a tracer into an
 	  * APDU command. The callback function will be called 
@@ -36,7 +36,7 @@ public:
 	  * @param buffer		A pointer to the first element of the buffer.
 	  * @param bufferSize	The size of the buffer.
 	  */
-	void splitInput(const uint8_t *buffer, const unsigned int bufferSize);
+    void splitInput(const uint8_t *buffer, const int bufferSize);
 
 	/**
 	  * Resets the splitter back to the start. i.e. next expected state will be CLA

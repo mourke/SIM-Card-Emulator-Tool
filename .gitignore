@@ -23,7 +23,6 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
 
 # Executables
 *.exe
@@ -31,6 +30,7 @@
 *.app
 
 *.DS_Store
+Build/
 x64/
 .vs/
 ScET/x64/

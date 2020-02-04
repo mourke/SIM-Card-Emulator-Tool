@@ -5,12 +5,12 @@
 #include "ui_MainWindow.h"
 #include <optional>
 #include "UpdateManager.h"
+#include <libusb.h>
 
 class QMouseEvent;
 class Tracer;
 class APDUCommand;
 class AboutDialog;
-enum libusb_transfer_status;
 class QStandardItemModel;
 class QItemSelection;
 
