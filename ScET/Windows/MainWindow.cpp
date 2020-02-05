@@ -16,12 +16,14 @@
 #include <QStandardItemModel>
 #include <QVariant>
 
-
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.setupUi(this);
 
+#if defined(Q_OS_WIN)
 	restoreState(); // restore after ui updated
-
+#elif defined(Q_OS_MAC)
+    delete ui.titleBar;
+#endif
 	if (isMaximized()) {
 		ui.maximizeButton->setType(TitleBarButton::Type::Restore);
 	}
@@ -526,10 +528,14 @@ void MainWindow::changeEvent(QEvent *event) {
 	QWidget::changeEvent(event);
 }
 
+#if defined(Q_OS_WIN)
+
 bool MainWindow::shouldMoveWindow() {
 	QWidget *action = QApplication::widgetAt(QCursor::pos());
 	return action == ui.titleBar;
 }
+
+#endif
 
 void MainWindow::updateCurrentPageWidget() {
 	if (tracer.has_value() || !textBrowser()->toPlainText().isEmpty()) {

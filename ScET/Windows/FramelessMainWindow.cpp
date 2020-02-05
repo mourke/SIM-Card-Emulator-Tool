@@ -1,12 +1,10 @@
 #include "FramelessMainWindow.h"
 #include <QtWidgets>
 #include "Colors.h"
-#ifdef Q_OS_WIN
 #include <Windows.h>
 #include <windowsx.h>
 #include <dwmapi.h>
 #pragma comment (lib,"Dwmapi.lib") 
-#endif //Q_OS_WIN
 
 FramelessMainWindow::FramelessMainWindow(QWidget *parent) : QMainWindow(parent) {
 	QApplication::instance()->installEventFilter(this);
@@ -54,8 +52,6 @@ void FramelessMainWindow::closeEvent(QCloseEvent *closeEvent) {
 	saveState();
 }
 
-
-#ifdef Q_OS_WIN
 void FramelessMainWindow::showEvent(QShowEvent *event) {
 	QWidget::showEvent(event);
 	HWND hwnd = (HWND)this->winId();
@@ -250,8 +246,6 @@ void FramelessMainWindow::showFullScreen() {
 	}
 	QMainWindow::showFullScreen();
 }
-
-#endif //Q_OS_WIN
 
 bool FramelessMainWindow::shouldMoveWindow() {
 	QWidget *action = QApplication::widgetAt(QCursor::pos());

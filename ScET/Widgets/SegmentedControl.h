@@ -194,8 +194,7 @@ protected:
 
 private:
 	bool isSegmentIndexValid(segmented_index_t index) const;
-	void insertSegment(segmented_index_t index, const QVariant &value);
-	void updateSegmentPositions();
+    void insertSegment(segmented_index_t index, const QVariant &value);
 };
 
 #endif // SEGMENTEDCONTROL_H

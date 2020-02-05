@@ -11,11 +11,12 @@ class FramelessMainWindow : public QMainWindow {
 public:
 	FramelessMainWindow(QWidget *parent = Q_NULLPTR);
 
+#if defined(Q_OS_WIN)
+
 private:
 	void closeEvent(QCloseEvent *closeEvent) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
 
-#ifdef Q_OS_WIN
 	void showEvent(QShowEvent *event) override;
 	bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
 
@@ -28,14 +29,15 @@ private:
 	void showFullScreen();
 	QMargins insets; // the inset margins caused by the resize mouse grabber
 	QMargins m_contentsMargins;
-	bool rightMousePressedDown = false;
-#endif // Q_OS_WIN
+    bool rightMousePressedDown = false;
 
 protected:
 	void restoreState();
 	void saveState();
 
 	virtual bool shouldMoveWindow();
+
+#endif
 };
 
 #endif // FRAMELESS_MAIN_WINDOW_H

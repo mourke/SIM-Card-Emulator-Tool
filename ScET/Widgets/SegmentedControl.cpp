@@ -80,7 +80,6 @@ void SegmentedControl::insertSegment(segmented_index_t index, const QVariant &va
 		invalidateSize();
 	}
 
-	updateSegmentPositions();
 	segment->setSelected(m_selectedSegmentIndex == index);
 }
 
@@ -101,8 +100,7 @@ void SegmentedControl::removeSegment(Segment *segment) {
 	m_segments.removeOne(segment);
 	layout()->removeWidget(segment);
 	segment->disconnect();
-	delete segment;
-	updateSegmentPositions();
+    delete segment;
 }
 
 void SegmentedControl::removeAllSegments() {
@@ -131,21 +129,6 @@ void SegmentedControl::invalidateSize() {
 
 	for (Segment *segment : m_segments) {
 		layout()->addWidget(segment);
-	}
-}
-
-void SegmentedControl::updateSegmentPositions() {
-	for (int i = 0; i < m_segments.count(); ++i) {
-		Segment *segment = m_segments[i];
-		if (i == 0) {
-			segment->position = Segment::Position::Start;
-		}
-		else if (i == m_segments.count() - 1) {
-			segment->position = Segment::Position::End;
-		}
-		else {
-			segment->position = Segment::Position::Default;
-		}
 	}
 }
 

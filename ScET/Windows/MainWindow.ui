@@ -683,7 +683,7 @@
               </font>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/Windows/USB&quot;/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Connect sniffer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/USB&quot;/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Connect sniffer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>

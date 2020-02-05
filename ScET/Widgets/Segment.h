@@ -183,26 +183,9 @@ protected:
 private:
 	bool highlighted = false;
     QColor m_selectedIndicatorColor;
-
-#if defined(Q_OS_MAC)
-	QColor m_selectedTextColor = Qt::white;
-	QColor m_highlightedTextColor, m_pressedTextColor, m_textColor = Qt::black;
-	const int CORNER_RADIUS = 3;
-#elif defined(Q_OS_WIN) 
 	QColor m_textColor = QColor(0, 0, 0, 145);
 	QColor m_highlightedTextColor, m_pressedTextColor, m_selectedTextColor = Qt::black;
 	const int SELECTED_INDICATOR_HEIGHT = 2;
-#endif
-
-	// The segment needs to know its position relative
-	// to the other segments in the segmented control
-	// to properly draw itself.
-	// Default: Rectangle.
-	// Start:	Rounded rectangle on left side.
-	// End:		Rounded rectangle on right side.
-	enum Position { Start, End, Default };
-
-	Position position = Position::Default;
 
 
 	// these have been replaced with types above and 

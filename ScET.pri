@@ -39,7 +39,6 @@ SOURCES += ApplicationLayerDelegate.cpp \
     Tracer/TracerManager.cpp \
     UpdateManager.cpp \
     Widgets/AboutDialog.cpp \
-    Windows/FramelessMainWindow.cpp \
     Widgets/Segment.cpp \
     Widgets/SegmentedControl.cpp \
     Widgets/Buttons/ToolBarButton.cpp \
@@ -51,5 +50,7 @@ TRANSLATIONS += Resources/Localisation/scet_es.ts \
     Resources/Localisation/scet_fr.ts
 RESOURCES += Resources/ScET.qrc
 
-win32:SOURCES += Colors.cpp
-mac:OBJECTIVE_SOURCES += Colors.mm
+win32:SOURCES += Colors.cpp \
+                 Windows/FramelessMainWindow.cpp
+mac:OBJECTIVE_SOURCES += Colors.mm \
+                         Windows/FramelessMainWindow.mm

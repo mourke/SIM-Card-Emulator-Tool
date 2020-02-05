@@ -17,55 +17,17 @@ void Segment::paintEvent(QPaintEvent *paintEvent) {
 
 	QColor textColor;
 
-#ifdef Q_OS_MAC
-	QColor fillColor;
-	QPainterPath path;
-	path.setFillRule(Qt::WindingFill);
-	
-	if (position == Position::Default) {
-		path.addRect(QRect(0, 0, width(), height()));
-	} else {
-		path.addRoundedRect(QRect(0, 0, width(), height()), CORNER_RADIUS, CORNER_RADIUS);
-		
-		if (position == Position::Start) {
-			path.addRect(QRect(width() - CORNER_RADIUS, 0, CORNER_RADIUS, CORNER_RADIUS)); // Mask top right corner
-			path.addRect(QRect(width() - CORNER_RADIUS, height() - CORNER_RADIUS, CORNER_RADIUS, CORNER_RADIUS)); // Mask bottom right corner
-		} else if (position == Position::End) {
-			path.addRect(QRect(0, 0, CORNER_RADIUS, CORNER_RADIUS)); // Mask top left corner
-			path.addRect(QRect(0, height() - CORNER_RADIUS, CORNER_RADIUS, CORNER_RADIUS)); // Mask bottom left corner
-		}
-	}
-	
-#endif
-	
-
 	if (isSelected()) {
-		textColor = selectedTextColor();
-#if defined(Q_OS_MAC)
-		fillColor = accentColor();
-#elif defined(Q_OS_WIN)
+        textColor = selectedTextColor();
 		painter.fillRect(0, height() - SELECTED_INDICATOR_HEIGHT, width(), SELECTED_INDICATOR_HEIGHT, m_selectedIndicatorColor);
-#endif
 	} else if (isHighlighted()) {
-#ifdef Q_OS_MAC
-		fillColor = Qt::white;
-#endif
 		textColor = highlightedTextColor();
-	} else if (isPressed()) {
-#ifdef Q_OS_MAC
-		fillColor = QColor(0, 0, 0, 80);
-#endif
+    } else if (isPressed()) {
 		textColor = pressedTextColor();
-	} else {
-#ifdef Q_OS_MAC
-		fillColor = Qt::white;
-#endif
+    } else {
 		textColor = this->textColor();
-	}
+    }
 
-#ifdef Q_OS_MAC
-	painter.fillPath(path.simplified(), fillColor);
-#endif
 	painter.setFont(font());
 
 	if (!text().isEmpty()) {
@@ -94,9 +56,6 @@ void Segment::leaveEvent(QEvent *event) {
 void Segment::sizeToFit() {
 	static const int spacing = 12;
 	QFontMetrics metrics(font());
-    int height = metrics.height() + spacing;
-#if defined(Q_OS_WIN)
-    height += SELECTED_INDICATOR_HEIGHT;
-#endif
+    int height = metrics.height() + spacing + SELECTED_INDICATOR_HEIGHT;
     setMinimumSize(metrics.width(text()), height);
 }

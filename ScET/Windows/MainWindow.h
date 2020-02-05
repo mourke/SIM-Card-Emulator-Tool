@@ -15,6 +15,7 @@ class QStandardItemModel;
 class QItemSelection;
 
 class MainWindow : public FramelessMainWindow {
+
 	Q_OBJECT
 		
 		Q_PROPERTY(QTextBrowser textBrowser READ textBrowser)
@@ -81,7 +82,9 @@ private:
 	void checkForUpdates(UpdateManager::CheckFrequency frequency);
 	void changeEvent(QEvent *event) override;
 
+#if defined(Q_OS_WIN)
 	bool shouldMoveWindow() override;
+#endif
 	void updateCurrentPageWidget();
 	QString commandsToLDR();
 };
