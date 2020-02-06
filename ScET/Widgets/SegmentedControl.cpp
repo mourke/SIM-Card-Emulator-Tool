@@ -6,12 +6,7 @@ SegmentedControl::SegmentedControl(QWidget *parent) : QWidget(parent) {
 	QHBoxLayout *layout = new QHBoxLayout();
 
 	layout->setContentsMargins(10, 10, 10, 2);
-
-#if defined(Q_OS_MAC)
-	layout->setSpacing(0);
-#elif defined(Q_OS_WIN)
 	layout->setSpacing(24);
-#endif
 	
 	setLayout(layout);
 }

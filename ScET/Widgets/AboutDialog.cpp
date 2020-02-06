@@ -2,11 +2,8 @@
 #include <QApplication>
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent) {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
-	setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+    setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
 	ui.appVersion->setText(ui.appVersion->text() + " " + QApplication::applicationVersion());
-}
-
-AboutDialog::~AboutDialog() {
 }

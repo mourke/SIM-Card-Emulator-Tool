@@ -19,14 +19,59 @@
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.setupUi(this);
 
+    if (QOperatingSystemVersion::MacOS == QOperatingSystemVersion::currentType()) {
+        QFont font = ui.segmentedControl->font();
+        font.setPointSize(14);
+        ui.segmentedControl->setFont(font);
+    }
+
 #if defined(Q_OS_WIN)
 	restoreState(); // restore after ui updated
+
+    if (isMaximized()) {
+        ui.maximizeButton->setType(TitleBarButton::Type::Restore);
+    }
+
+
 #elif defined(Q_OS_MAC)
     delete ui.titleBar;
+
+    QMenu *fileMenu = menuBar()->addMenu(tr("File"));
+    QMenu *editMenu = menuBar()->addMenu(tr("Edit"));
+    QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
+
+    // TODO: Make sure all of these are implemented
+    QAction *clearAction = editMenu->addAction(tr("Clear Tracing Session"));
+    QAction *selectAllAction = editMenu->addAction(tr("Select All"));
+    QAction *userManualAction = helpMenu->addAction(tr("User Manual"));
+    helpMenu->addSeparator();
+    QAction *contactAction = helpMenu->addAction(tr("Contact Support"));
+    QAction *openAction = fileMenu->addAction(tr("Open Tracing Session"));
+    fileMenu->addSeparator();
+    QAction *saveAction = fileMenu->addAction(tr("Save Tracing Session"));
+    QAction *aboutAction = fileMenu->addAction(tr("About ScET"));
+    QAction *updatesAction = fileMenu->addAction(tr("Check for Updates"));
+
+    updatesAction->setMenuRole(QAction::MenuRole::ApplicationSpecificRole);
+    openAction->setShortcut(QKeySequence::Open);
+    saveAction->setShortcut(QKeySequence::Save);
+    selectAllAction->setShortcut(QKeySequence::SelectAll);
+
+    connect(clearAction, SIGNAL(triggered()), this, SLOT(clearButtonClicked()));
+    connect(openAction, SIGNAL(triggered()), this, SLOT(openButtonClicked()));
+    connect(saveAction, SIGNAL(triggered()), this, SLOT(saveButtonClicked()));
+    connect(selectAllAction, &QAction::triggered, this, [this]() {
+        this->textBrowser()->selectAll();
+    });
+    connect(updatesAction, &QAction::triggered, this, [this]() {
+        this->checkForUpdates(UpdateManager::CheckFrequency::Immediately);
+    });
+    connect(contactAction, SIGNAL(triggered()), this, SLOT(contactSupport()));
+    connect(aboutAction, &QAction::triggered, this, [this]() {
+        this->about->exec();
+    });
+    connect(userManualAction, SIGNAL(triggered()), this, SLOT(openUserManual()));
 #endif
-	if (isMaximized()) {
-		ui.maximizeButton->setType(TitleBarButton::Type::Restore);
-	}
 
 	ui.segmentedControl->addSegment(tr("Protocol Layer"));
 	ui.segmentedControl->addSegment(tr("Application Layer"));
@@ -99,6 +144,14 @@ void MainWindow::applicationReceivedArguments(QStringList arguments) {
 	}
 }
 
+void MainWindow::openUserManual() {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(qApp->applicationDirPath().append("/User Manual.pdf")));
+}
+
+void MainWindow::contactSupport() {
+    QDesktopServices::openUrl(QUrl("mailto:support@cardcentric.com"));
+}
+
 void MainWindow::checkForUpdates(UpdateManager::CheckFrequency frequency) {
     UpdateManager::sharedManager().checkVersion(frequency, [](std::optional<QString> version) -> UpdateManager::UpdateAction {
 		if (!version.has_value()) return UpdateManager::UpdateAction::DoNothing;
@@ -130,16 +183,16 @@ void MainWindow::showSettingsContextMenu() {
 	contextMenu.setStyleSheet("QMenu::separator { margin: 0px 0px 0px -30px; } QMenu::item { padding: 6px 7px 6px 15px; color: black; } QMenu::item:selected { background-color: rgba(0, 0, 0, 25); }");
 	contextMenu.setWindowFlags(contextMenu.windowFlags() | Qt::NoDropShadowWindowHint);
 
-	QAction update(tr("Check for Updates"), this);
-	QAction support(tr("Contact Support"), this);
-	QAction about(tr("About ScET..."), this);
+    QAction update(tr("Check for Updates"), &contextMenu);
+    QAction support(tr("Contact Support"), &contextMenu);
+    QAction about(tr("About ScET..."), &contextMenu);
+    QAction userManual(tr("User Manual..."), &contextMenu);
 
+    connect(&userManual, SIGNAL(triggered()), this, SLOT(openUserManual()));
 	connect(&update, &QAction::triggered, this, [this]() {
 		this->checkForUpdates(UpdateManager::CheckFrequency::Immediately);
 	});
-    connect(&support, &QAction::triggered, this, []() {
-		QDesktopServices::openUrl(QUrl("mailto:support@cardcentric.com"));
-	});
+    connect(&support, SIGNAL(triggered()), this, SLOT(contactSupport()));
 	connect(&about, &QAction::triggered, this, [this]() {
 		this->about->exec();
 	});
@@ -148,6 +201,8 @@ void MainWindow::showSettingsContextMenu() {
 	contextMenu.addAction(&support);
 	contextMenu.addSeparator();
 	contextMenu.addAction(&about);
+    contextMenu.addSeparator();
+    contextMenu.addAction(&userManual);
 
 	QPoint position = ui.settingsButton->pos();
 	position.setY(position.y() + ui.settingsButton->geometry().height()); // account for height
@@ -351,7 +406,7 @@ void MainWindow::checkboxStateChanged(int rawValue) {
 				listView()->setRowHidden(i, true);
 			}
 		} else { // ATR
-			textBrowser()->setTextColor(Qt::black);
+            textBrowser()->setTextColor(palette().text().color());
 			textBrowser()->insertPlainText(output + "\n");
 		}
 	}
@@ -429,7 +484,7 @@ void MainWindow::apduCommandRecieved(Tracer *tracer, const QString &output, cons
 void MainWindow::atrCommandReceived(Tracer *tracer, const QString &output) {
 	commands.append(std::make_tuple(output, std::nullopt));
 	textBrowserInsertAtEnd();
-	textBrowser()->setTextColor(Qt::black);
+    textBrowser()->setTextColor(palette().text().color());
 	textBrowser()->insertPlainText(output + "\n");
 }
 
@@ -441,7 +496,7 @@ void MainWindow::updateTextBrowser(const QString &output, const APDUCommand *com
 	textBrowserInsertAtEnd(); // append data to end. this is done in case the user highlights anything while this method is being called. when anything is highlighed, it changes the cursor's position to there and that's where the data will be inserted. 
     int offset, length; // the offset and length of the section of the APDU command in the output string
 	offset = 26; // apdu and timestamp
-	textBrowser()->setTextColor(Qt::black);
+    textBrowser()->setTextColor(palette().text().color());
 	textBrowser()->insertPlainText(output.left(offset));
 	textBrowser()->setTextColor(headerColor());
 	length = 15; // header (CLA, INS, P1, P2, Lc. Each item 2 digits long. 5 * 2 = 10) and the space before and after each (5).
@@ -515,6 +570,8 @@ void MainWindow::showMaxRestore() {
 	isMaximized() ? showNormal() : showMaximized();
 }
 
+#if defined(Q_OS_WIN)
+
 void MainWindow::changeEvent(QEvent *event) {
 	if (event->type() == QEvent::WindowStateChange) {
 		QWindowStateChangeEvent *stateChangeEvent = static_cast<QWindowStateChangeEvent *>(event);
@@ -528,7 +585,7 @@ void MainWindow::changeEvent(QEvent *event) {
 	QWidget::changeEvent(event);
 }
 
-#if defined(Q_OS_WIN)
+
 
 bool MainWindow::shouldMoveWindow() {
 	QWidget *action = QApplication::widgetAt(QCursor::pos());

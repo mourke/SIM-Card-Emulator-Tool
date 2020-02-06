@@ -15,7 +15,7 @@ void Segment::setSelected(const bool &selected) {
 void Segment::paintEvent(QPaintEvent *paintEvent) {
 	QPainter painter(this);
 
-	QColor textColor;
+    QColor textColor;
 
 	if (isSelected()) {
         textColor = selectedTextColor();
@@ -57,5 +57,5 @@ void Segment::sizeToFit() {
 	static const int spacing = 12;
 	QFontMetrics metrics(font());
     int height = metrics.height() + spacing + SELECTED_INDICATOR_HEIGHT;
-    setMinimumSize(metrics.width(text()), height);
+    setMinimumSize(metrics.width(text()) + 1, height);
 }

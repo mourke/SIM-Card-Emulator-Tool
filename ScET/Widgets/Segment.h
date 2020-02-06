@@ -78,7 +78,11 @@ public:
 	 *
 	 * @retval	The default color of the text.
 	 */
-	QColor textColor() const { return m_textColor; }
+    QColor textColor() const {
+        QColor color = palette().text().color();
+        color.setAlpha(145);
+        return m_textColor.value_or(color);
+    }
 
 	/**
 	 * The text color of the segment when the mouse has hovered
@@ -86,7 +90,7 @@ public:
 	 *
 	 * @retval	The color of the highlighted text.
 	 */
-	QColor highlightedTextColor() const { return m_highlightedTextColor; }
+    QColor highlightedTextColor() const { return m_highlightedTextColor.value_or(palette().text().color()); }
 
 	/**
 	 * The text color of the segment when the mouse has hovered
@@ -95,7 +99,7 @@ public:
 	 *
 	 * @retval	The color of the pressed text.
 	 */
-	QColor pressedTextColor() const { return m_pressedTextColor; }
+    QColor pressedTextColor() const { return m_pressedTextColor.value_or(palette().text().color()); }
 
 	/**
 	 * The text color of the segment when the mouse has been clicked
@@ -104,7 +108,7 @@ public:
 	 *
 	 * @retval	The color of the selected text.
 	 */
-	QColor selectedTextColor() const { return m_selectedTextColor; }
+    QColor selectedTextColor() const { return m_selectedTextColor.value_or(palette().text().color()); }
 
 	/**
 	 * The color of the segment when the mouse has been clicked
@@ -113,7 +117,7 @@ public:
 	 *
 	 * @retval	The color of the selected text.
 	 */
-	QColor selectedIndicatorColor() const { return m_selectedIndicatorColor; }
+    QColor selectedIndicatorColor() const { return m_selectedIndicatorColor; }
 
 	/**
 	 * Sets the default text color of the of the button.
@@ -181,10 +185,10 @@ protected:
 	void mousePressEvent(QMouseEvent *mouseEvent) override;
 
 private:
-	bool highlighted = false;
+    bool highlighted = false;
     QColor m_selectedIndicatorColor;
-	QColor m_textColor = QColor(0, 0, 0, 145);
-	QColor m_highlightedTextColor, m_pressedTextColor, m_selectedTextColor = Qt::black;
+    std::optional<QColor> m_textColor;
+    std::optional<QColor> m_highlightedTextColor, m_pressedTextColor, m_selectedTextColor;
 	const int SELECTED_INDICATOR_HEIGHT = 2;
 
 

@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	SetProcessDPIAware(); // must be called before the main event loop
 #endif
 
-	SingleApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+    SingleApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
 	SingleApplication application(argc, argv, true, SingleApplication::Mode::SecondaryNotification);
 
 	if (application.isSecondary()) {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
 	QFontDatabase::addApplicationFont(":/Fonts/Avenir");
 
-	SingleApplication::setFont(QFont("Avenir", 8, QFont::Black));
+    SingleApplication::setFont(QFont("Avenir", QFont().pointSize(), QFont::Black));
 
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();

@@ -9,7 +9,7 @@ FramelessMainWindow::FramelessMainWindow(QWidget *parent) : QMainWindow(parent) 
 
     [nativeWindow setStyleMask:[nativeWindow styleMask] | NSWindowStyleMaskFullSizeContentView | NSWindowTitleHidden];
     [nativeWindow setTitlebarAppearsTransparent:YES];
-    [nativeWindow setMovableByWindowBackground:YES];
+    [nativeWindow setTitleVisibility:NSWindowTitleHidden];
 
     setContentsMargins(0, 25, 0, 0); // account for titlebar
 }

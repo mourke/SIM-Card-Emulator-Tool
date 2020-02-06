@@ -53,6 +53,8 @@ private slots:
 	void showMaxRestore();
 	void listViewItemClicked(const QItemSelection &item);
 	void textBrowserTextSelected();
+    void openUserManual();
+    void contactSupport();
 
 	// MARK: - Tracer signals
 	void tracerStartedSniffing(Tracer *tracer);
@@ -80,9 +82,9 @@ private:
 	void openFile(const QString &fileName);
 	void applicationReceivedArguments(QStringList arguments);
 	void checkForUpdates(UpdateManager::CheckFrequency frequency);
-	void changeEvent(QEvent *event) override;
 
 #if defined(Q_OS_WIN)
+	void changeEvent(QEvent *event) override;
 	bool shouldMoveWindow() override;
 #endif
 	void updateCurrentPageWidget();

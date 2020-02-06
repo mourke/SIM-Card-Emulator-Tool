@@ -6,6 +6,7 @@ include($$PWD/../ScET.pri)
 
 TEMPLATE = app
 TARGET = ScET
+
 QT += core network gui svg uitools widgets networkauth
 win32 {
     QT += winextras
@@ -24,6 +25,8 @@ LIBS += -L$$PWD/../Frameworks/lib/ -lusb-1.0
 
 mac {
     LIBS += -framework AppKit
+    ICON += Resources/ScET.icns
+    QMAKE_INFO_PLIST += Resources/Info.plist
 }
 
 CONFIG(debug, debug|release) {
