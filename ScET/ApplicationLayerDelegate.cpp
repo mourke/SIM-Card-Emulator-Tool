@@ -7,16 +7,17 @@
 #include <QPainter>
 #include <QStyleOptionViewItem>
 #include "Colors.h"
+#include "FontSizes.h"
 
 ApplicationLayerDelegate::ApplicationLayerDelegate(MainWindow *parent) : QStyledItemDelegate(parent) {
 
 }
 
-int draw(std::optional<QPainter *> painter, const QStyleOptionViewItem &option, const QStandardItem *item) {
+int ApplicationLayerDelegate::draw(std::optional<QPainter *> painter, const QStyleOptionViewItem &option, const QStandardItem *item) const {
 	const auto applicationMap = item->data().toMap();
 
-	static const QFont boldFont("Courier New", 11, QFont::Bold);
-	static const QFont font("Courier New", 11, QFont::Normal);
+    static const QFont boldFont("Courier New", FONT_SIZE_MEDIUM, QFont::Bold);
+    static const QFont font("Courier New", FONT_SIZE_MEDIUM, QFont::Normal);
 	static const QFontMetrics boldMetrics = QFontMetrics(boldFont);
 	static const QFontMetrics metrics = QFontMetrics(font);
 
@@ -25,11 +26,13 @@ int draw(std::optional<QPainter *> painter, const QStyleOptionViewItem &option, 
 
 	if (painter.has_value()) {
         auto p = *painter;
-		p->fillRect(option.rect, Qt::white);
+        auto parent = qobject_cast<MainWindow *>(this->parent());
+        auto palette = parent->palette();
+        p->fillRect(option.rect, palette.base().color());
 		p->setPen(headerColor());
 		p->setFont(boldFont);
 		p->drawText(x, y, item->text());
-		p->setPen(Qt::black);
+        p->setPen(palette.text().color());
 	}
 
 	y += 5;

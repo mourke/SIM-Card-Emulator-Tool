@@ -6,6 +6,7 @@
 #include <optional>
 #include "UpdateManager.h"
 #include <libusb.h>
+#include <QDebug>
 
 class QMouseEvent;
 class Tracer;
@@ -25,7 +26,6 @@ class MainWindow : public FramelessMainWindow {
 
 public:
 	MainWindow(QWidget *parent = Q_NULLPTR);
-
 	QTextBrowser * textBrowser() const { return ui.textBrowser; }
 	QListView * listView() const { return ui.listView; }
 	QWidget * mainToolBar() const { return ui.mainToolBar; }

@@ -14,6 +14,7 @@
 #include "ApplicationLayerDelegate.h"
 #include <QStandardItemModel>
 #include <QVariant>
+#include "FontSizes.h"
 
 #if defined(Q_OS_WIN)
 #include "singleapplication.h"
@@ -23,12 +24,6 @@
 
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.setupUi(this);
-
-    if (QOperatingSystemVersion::MacOS == QOperatingSystemVersion::currentType()) {
-        QFont font = ui.segmentedControl->font();
-        font.setPointSize(14);
-        ui.segmentedControl->setFont(font);
-    }
 
 #if defined(Q_OS_WIN)
 	restoreState(); // restore after ui updated
@@ -76,6 +71,26 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
     });
     connect(userManualAction, SIGNAL(triggered()), this, SLOT(openUserManual()));
 #endif
+
+    QFont font;
+    QWidget *controls[] = {ui.segmentedControl, ui.SIMToolkitCheckBox, ui.authenticationCheckBox, ui.fileIOCheckBox};
+    for (QWidget *control : controls) {
+        font = control->font();
+        font.setPointSize(FONT_SIZE_CONTROL);
+        control->setFont(font);
+    }
+
+    font = textBrowser()->font();
+    font.setPointSize(FONT_SIZE_MEDIUM);
+    textBrowser()->setFont(font);
+
+    font = ui.titleLabel->font();
+    font.setPointSize(FONT_SIZE_LARGE);
+    ui.titleLabel->setFont(font);
+
+    font = ui.subtitleLabel->font();
+    font.setPointSize(FONT_SIZE_MEDIUM);
+    ui.subtitleLabel->setFont(font);
 
 	ui.segmentedControl->addSegment(tr("Protocol Layer"));
 	ui.segmentedControl->addSegment(tr("Application Layer"));

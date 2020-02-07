@@ -37,6 +37,7 @@ Tracer::Tracer(libusb_device *device, libusb_context *context) : QObject(nullptr
 
 Tracer::~Tracer() {
 	delete splitter;
+    stopSniffing();
 	libusb_unref_device(device); // TracerManager has increased the reference count of the device and we need to decrement it
 }
 

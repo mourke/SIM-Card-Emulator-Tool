@@ -40,12 +40,12 @@ TracerManager::TracerManager() : QObject(nullptr) {
 
 	assert(error == LIBUSB_SUCCESS && "Failed to create hotplug callback");
 
-	handlingEvents = true;
+    handlingEvents = true;
 
-	libUSBEventsThread = std::thread([this]() {
-		while (handlingEvents) {
-			int error = libusb_handle_events_completed(context, nullptr);
-			if (error != LIBUSB_SUCCESS) {
+    libUSBEventsThread = std::thread([this]() {
+        while (handlingEvents) {
+            int error = libusb_handle_events_completed(context, nullptr);
+            if (error != LIBUSB_SUCCESS) {
                 printf("Failed to handle events: %s", libUSBErrorToString(static_cast<libusb_error>(error)).toStdString().c_str());
 			}
 		}
@@ -53,13 +53,15 @@ TracerManager::TracerManager() : QObject(nullptr) {
 }
 
 TracerManager::~TracerManager() {
-	handlingEvents = false;
-	if (libUSBEventsThread.joinable()) libUSBEventsThread.join();
-	for (Tracer *tracer : tracers) {
-		stopManagingTracer(tracer);
-	}
-	libusb_hotplug_deregister_callback(context, hotplugHandle);
-	libusb_exit(this->context);
+    for (Tracer *tracer : tracers) {
+        stopManagingTracer(tracer);
+    }
+
+    handlingEvents = false;
+    libusb_hotplug_deregister_callback(context, hotplugHandle);
+    if (libUSBEventsThread.joinable()) libUSBEventsThread.join();
+
+    libusb_exit(this->context);
 }
 
 std::optional<Tracer *> TracerManager::findTracer() {

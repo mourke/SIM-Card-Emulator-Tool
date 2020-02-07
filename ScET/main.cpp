@@ -1,6 +1,7 @@
 #include "Windows/MainWindow.h"
 #include "Version.h"
 #include <QFontDatabase>
+#include "FontSizes.h"
 
 #if defined(Q_OS_WIN)
 #include "singleapplication.h"
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
 
 	QFontDatabase::addApplicationFont(":/Fonts/Avenir");
 
-    QApplication::setFont(QFont("Avenir", QFont().pointSize(), QFont::Black));
+    QApplication::setFont(QFont("Avenir", FONT_SIZE_NORMAL, QFont::Black));
 
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();

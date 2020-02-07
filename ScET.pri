@@ -15,7 +15,8 @@ HEADERS += Colors.h \
     Tracer/TracerManager.h \
     Widgets/Segment.h \
     Widgets/SegmentedControl.h \
-    Widgets/Buttons/ToolBarButton.h
+    Widgets/Buttons/ToolBarButton.h \
+    FontSizes.h
 SOURCES += ApplicationLayerDelegate.cpp \
     Errors.cpp \
     FileManager.cpp \
