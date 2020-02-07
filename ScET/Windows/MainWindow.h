@@ -55,6 +55,7 @@ private slots:
 	void textBrowserTextSelected();
     void openUserManual();
     void contactSupport();
+    void openFile(const QString &fileName);
 
 	// MARK: - Tracer signals
 	void tracerStartedSniffing(Tracer *tracer);
@@ -78,8 +79,7 @@ private:
 	void clearCurrentTrace();
 	void updateTextBrowser(const QString &output, const APDUCommand *command);
 	void textBrowserInsertAtStart();
-	void textBrowserInsertAtEnd();
-	void openFile(const QString &fileName);
+    void textBrowserInsertAtEnd();
 	void applicationReceivedArguments(QStringList arguments);
 	void checkForUpdates(UpdateManager::CheckFrequency frequency);
 

@@ -5,6 +5,8 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>sts</string>
@@ -15,8 +17,8 @@
 			<string>FileIcon.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>SIM Trace Session</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>

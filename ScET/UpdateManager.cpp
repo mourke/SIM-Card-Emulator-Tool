@@ -1,7 +1,6 @@
 #include "UpdateManager.h"
 #include <QSettings>
-#include "singleapplication.h"
-
+#include <QApplication>
 
 UpdateManager::UpdateManager() {
 	QSettings settings;
@@ -60,7 +59,7 @@ void UpdateManager::finishedCheckingForUpdates(int exitCode, QProcess::ExitStatu
 	setLastVersionCheckPerformedOnDate(QDate::currentDate());
 
 
-    SingleApplication *application = qobject_cast<SingleApplication *>(SingleApplication::instance());
+    QApplication *application = qobject_cast<QApplication *>(QApplication::instance());
 	QByteArray data = checkForUpdatesProcess.readAllStandardOutput();
 
 

@@ -8,13 +8,18 @@
 #include "Errors.h"
 #include "Colors.h"
 #include "FileManager.h"
-#include "singleapplication.h"
 #include "UpdateManager.h"
 #include "AboutDialog.h"
 #include "Segment.h"
 #include "ApplicationLayerDelegate.h"
 #include <QStandardItemModel>
 #include <QVariant>
+
+#if defined(Q_OS_WIN)
+#include "singleapplication.h"
+#elif defined(Q_OS_MAC)
+#include "OpenFileApplication.h"
+#endif
 
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.setupUi(this);
@@ -40,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
     QMenu *editMenu = menuBar()->addMenu(tr("Edit"));
     QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
 
-    // TODO: Make sure all of these are implemented
     QAction *clearAction = editMenu->addAction(tr("Clear Tracing Session"));
     QAction *selectAllAction = editMenu->addAction(tr("Select All"));
     QAction *userManualAction = helpMenu->addAction(tr("User Manual"));
@@ -105,19 +109,25 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	QObject::connect(&manager, SIGNAL(atrCommandReceived(Tracer *, const QString &)), this, SLOT(atrCommandReceived(Tracer *, const QString &)));
 	QObject::connect(&manager, SIGNAL(simTraceCommandReceived(Tracer *, const QString &)), this, SLOT(simTraceCommandReceived(Tracer *, const QString &)));
 
+#if defined(Q_OS_WIN)
     SingleApplication *application = qobject_cast<SingleApplication *>(SingleApplication::instance());
-	QObject::connect(application, &QApplication::applicationStateChanged, [this](Qt::ApplicationState state) {
-		if (state == Qt::ApplicationState::ApplicationActive) {
-			checkForUpdates(UpdateManager::CheckFrequency::Daily);
-		}
-	});
 	QObject::connect(application, &SingleApplication::receivedMessage, this, [this](quint32 instanceId, QByteArray message) {
-		auto arguments = QString::fromUtf8(message).split("»");
+        auto arguments = QString::fromUtf8(message).split("»");
 		applicationReceivedArguments(arguments);
 	});
 
 	auto arguments = QApplication::arguments();
 	applicationReceivedArguments(arguments);
+#elif defined(Q_OS_MAC)
+    OpenFileApplication *application = qobject_cast<OpenFileApplication *>(OpenFileApplication::instance());
+    QObject::connect(application, SIGNAL(openFile(const QString &)), this, SLOT(openFile(const QString &)));
+#endif
+
+    QObject::connect(application, &QApplication::applicationStateChanged, [this](Qt::ApplicationState state) {
+        if (state == Qt::ApplicationState::ApplicationActive) {
+            checkForUpdates(UpdateManager::CheckFrequency::Daily);
+        }
+    });
 
 	QObject::connect(textBrowser(), &QWidget::customContextMenuRequested, this, [this](const QPoint &position) {
 		QMenu *contextMenu = this->textBrowser()->createStandardContextMenu();
@@ -136,6 +146,8 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	QObject::connect(textBrowser(), SIGNAL(selectionChanged()), this, SLOT(textBrowserTextSelected()));
 }
 
+#if defined(Q_OS_WIN)
+
 void MainWindow::applicationReceivedArguments(QStringList arguments) {
 	if (arguments.size() > 1) {
 		QString fileName = arguments.at(1);
@@ -143,6 +155,8 @@ void MainWindow::applicationReceivedArguments(QStringList arguments) {
 		openFile(fileName);
 	}
 }
+
+#endif
 
 void MainWindow::openUserManual() {
     QDesktopServices::openUrl(QUrl::fromLocalFile(qApp->applicationDirPath().append("/User Manual.pdf")));

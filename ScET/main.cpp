@@ -1,52 +1,57 @@
-#include "singleapplication.h"
 #include "Windows/MainWindow.h"
 #include "Version.h"
 #include <QFontDatabase>
 
 #if defined(Q_OS_WIN)
+#include "singleapplication.h"
 #include <windows.h>
 #include <WinUser.h>
+#elif defined(Q_OS_MAC)
+#include "OpenFileApplication.h"
 #endif
 
 
 int main(int argc, char *argv[]) {
-#ifdef Q_OS_WIN
-	SetProcessDPIAware(); // must be called before the main event loop
-#endif
+    QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
 
-    SingleApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-	SingleApplication application(argc, argv, true, SingleApplication::Mode::SecondaryNotification);
-
-	if (application.isSecondary()) {
 #if defined(Q_OS_WIN)
-		AllowSetForegroundWindow(DWORD(application.primaryPid()));
+	SetProcessDPIAware(); // must be called before the main event loop
+    SingleApplication application(argc, argv, true, SingleApplication::Mode::SecondaryNotification);
+
+    if (application.isSecondary()) {
+        AllowSetForegroundWindow(DWORD(application.primaryPid()));
+        application.sendMessage(application.arguments().join("»").toUtf8());
+        exit(0);
+    }
+#elif defined(Q_OS_MAC)
+    OpenFileApplication application(argc, argv);
 #endif
-		application.sendMessage(application.arguments().join("»").toUtf8());
-		exit(0);
 
-	}
-
-	SingleApplication::setOrganizationName(VER_COMPANYNAME_STR);
-	SingleApplication::setOrganizationDomain(VER_COMPANYDOMAIN_STR);
-	SingleApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
-	SingleApplication::setApplicationVersion(VER_FILEVERSION_STR);
+    QApplication::setOrganizationName(VER_COMPANYNAME_STR);
+    QApplication::setOrganizationDomain(VER_COMPANYDOMAIN_STR);
+    QApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
+    QApplication::setApplicationVersion(VER_FILEVERSION_STR);
 
 	QFontDatabase::addApplicationFont(":/Fonts/Avenir");
 
-    SingleApplication::setFont(QFont("Avenir", QFont().pointSize(), QFont::Black));
+    QApplication::setFont(QFont("Avenir", QFont().pointSize(), QFont::Black));
 
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();
+
+#if defined(Q_OS_WIN)
 
 	if (application.isPrimary()) {
 		QObject::connect(&application, &SingleApplication::instanceStarted, [mainWindow]() {
 			if (mainWindow->isMinimized()) {
 				mainWindow->showNormal();
 			} else {
-				mainWindow->activateWindow();
+                mainWindow->activateWindow();
 			}
 		});
 	}
+
+#endif
 
 	return application.exec();
 }
