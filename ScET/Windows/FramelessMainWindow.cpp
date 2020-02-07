@@ -6,7 +6,7 @@
 #include <dwmapi.h>
 #pragma comment (lib,"Dwmapi.lib") 
 
-FramelessMainWindow::FramelessMainWindow(QWidget *parent) : QMainWindow(parent) {
+FramelessMainWindow::FramelessMainWindow(QWidget *parent) : RemembersStateMainWindow(parent) {
 	QApplication::instance()->installEventFilter(this);
 	restoreState();
 	QString styleSheet = "FramelessMainWindow { border: 1px solid %1; }";
@@ -15,45 +15,8 @@ FramelessMainWindow::FramelessMainWindow(QWidget *parent) : QMainWindow(parent) 
 	setWindowFlags(windowFlags() | Qt::Window | Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMaximizeButtonHint);
 }
 
-
-void FramelessMainWindow::restoreState() {
-	QSettings settings;
-
-	settings.beginGroup("FramelessMainWindow");
-
-	restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
-	move(settings.value("pos", pos()).toPoint());
-	resize(settings.value("size", size()).toSize());
-
-	if (settings.value("maximized", isMaximized()).toBool()) {
-		showMaximized();
-	}
-
-	settings.endGroup();
-}
-
-void FramelessMainWindow::saveState() {
-	QSettings settings;
-
-	settings.beginGroup("FramelessMainWindow");
-
-	settings.setValue("geometry", saveGeometry());
-	settings.setValue("maximized", isMaximized());
-
-	if (!isMaximized()) {
-		settings.setValue("pos", pos());
-		settings.setValue("size", size());
-	}
-
-	settings.endGroup();
-}
-
-void FramelessMainWindow::closeEvent(QCloseEvent *closeEvent) {
-	saveState();
-}
-
 void FramelessMainWindow::showEvent(QShowEvent *event) {
-	QWidget::showEvent(event);
+    QMainWindow::showEvent(event);
 	HWND hwnd = (HWND)this->winId();
 	DWORD style = GetWindowLong(hwnd, GWL_STYLE);
 	SetWindowLong(hwnd, GWL_STYLE, style | WS_MAXIMIZEBOX | WS_THICKFRAME | WS_CAPTION);
@@ -191,7 +154,7 @@ bool FramelessMainWindow::nativeEvent(const QByteArray &eventType, void *message
 	}
 	}
 
-	return QWidget::nativeEvent(eventType, message, result);
+    return QMainWindow::nativeEvent(eventType, message, result);
 }
 
 void FramelessMainWindow::setContentsMargins(const QMargins &contentsMargins) {
@@ -256,5 +219,5 @@ bool FramelessMainWindow::eventFilter(QObject *watched, QEvent *event) {
 	if (watched->parent() == this && event->type() == QEvent::Type::Enter) {
 		setCursor(Qt::ArrowCursor);
 	}
-	return QObject::eventFilter(watched, event);
+    return QMainWindow::eventFilter(watched, event);
 }

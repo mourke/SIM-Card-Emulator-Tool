@@ -2,7 +2,7 @@
 #import <AppKit/NSView.h>
 #import <AppKit/NSWindow.h>
 
-FramelessMainWindow::FramelessMainWindow(QWidget *parent) : QMainWindow(parent) {
+FramelessMainWindow::FramelessMainWindow(QWidget *parent) : RemembersStateMainWindow(parent) {
     auto windowId = this->winId();
     NSView *nativeView = reinterpret_cast<NSView *>(windowId);
     NSWindow *nativeWindow = [nativeView window];

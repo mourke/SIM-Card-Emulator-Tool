@@ -1,11 +1,11 @@
 #ifndef FRAMELESS_MAIN_WINDOW_H
 #define FRAMELESS_MAIN_WINDOW_H
 
-#include <QMainWindow>
+#include "RemembersStateMainWindow.h"
 
 class QMouseEvent;
 
-class FramelessMainWindow : public QMainWindow {
+class FramelessMainWindow : public RemembersStateMainWindow {
 	Q_OBJECT
 
 public:
@@ -14,7 +14,6 @@ public:
 #if defined(Q_OS_WIN)
 
 private:
-	void closeEvent(QCloseEvent *closeEvent) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 	void showEvent(QShowEvent *event) override;
@@ -32,9 +31,6 @@ private:
     bool rightMousePressedDown = false;
 
 protected:
-	void restoreState();
-	void saveState();
-
 	virtual bool shouldMoveWindow();
 
 #endif

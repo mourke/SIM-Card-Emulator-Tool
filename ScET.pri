@@ -16,7 +16,8 @@ HEADERS += Colors.h \
     Widgets/Segment.h \
     Widgets/SegmentedControl.h \
     Widgets/Buttons/ToolBarButton.h \
-    FontSizes.h
+    FontSizes.h \
+    Windows/RemembersStateMainWindow.h
 SOURCES += ApplicationLayerDelegate.cpp \
     Errors.cpp \
     FileManager.cpp \
@@ -30,7 +31,8 @@ SOURCES += ApplicationLayerDelegate.cpp \
     Widgets/SegmentedControl.cpp \
     Widgets/Buttons/ToolBarButton.cpp \
     Widgets/Buttons/TitleBarButton.cpp \
-    Windows/MainWindow.cpp
+    Windows/MainWindow.cpp \
+    Windows/RemembersStateMainWindow.cpp
 FORMS += Widgets/AboutDialog.ui \
     Windows/MainWindow.ui
 TRANSLATIONS += Resources/Localisation/scet_es.ts \

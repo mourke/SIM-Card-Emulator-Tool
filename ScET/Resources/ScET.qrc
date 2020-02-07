@@ -19,5 +19,6 @@
         <file alias="Start">Assets/Start.svg</file>
         <file alias="Stop">Assets/Stop.svg</file>
         <file alias="USB">Assets/USB.svg</file>
+        <file>User Manual.pdf</file>
     </qresource>
 </RCC>

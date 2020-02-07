@@ -545,7 +545,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="protocolPage">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -703,10 +703,8 @@
         </property>
         <item>
          <widget class="QListView" name="listView">
-          <property name="styleSheet">
-           <string notr="true">QListView {
-    background: rgb(211, 211, 211) 
-}</string>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="verticalScrollMode">
            <enum>QAbstractItemView::ScrollPerItem</enum>

@@ -24,15 +24,12 @@
 
 MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.setupUi(this);
+    restoreState(); // restore after ui updated
 
 #if defined(Q_OS_WIN)
-	restoreState(); // restore after ui updated
-
     if (isMaximized()) {
         ui.maximizeButton->setType(TitleBarButton::Type::Restore);
     }
-
-
 #elif defined(Q_OS_MAC)
     delete ui.titleBar;
 
@@ -104,8 +101,11 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 		this->updateCurrentPageWidget();
 	});
 
-	ui.stackedWidget->setBackgroundRole(QPalette::ColorRole::Light);
 	about = new AboutDialog(this);
+
+    auto palette = listView()->palette();
+    palette.setColor(QPalette::ColorRole::Base, palette.alternateBase().color());
+    listView()->setPalette(palette);
 
 	TracerManager &manager = TracerManager::sharedManager();
 	auto tracer = manager.findTracer();
@@ -174,7 +174,11 @@ void MainWindow::applicationReceivedArguments(QStringList arguments) {
 #endif
 
 void MainWindow::openUserManual() {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(qApp->applicationDirPath().append("/User Manual.pdf")));
+    QString tempPath = QDir::fromNativeSeparators(QDir::tempPath());
+    QString fileName = "User Manual.pdf";
+    QString filePath = tempPath + "/" + fileName;
+    QFile::copy(":/" + fileName, filePath);
+    QDesktopServices::openUrl(QUrl::fromLocalFile(filePath));
 }
 
 void MainWindow::contactSupport() {
