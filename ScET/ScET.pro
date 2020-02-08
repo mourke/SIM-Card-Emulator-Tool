@@ -27,6 +27,9 @@ mac {
     LIBS += -framework AppKit
     ICON += Resources/ScET.icns
     QMAKE_INFO_PLIST += Resources/Info.plist
+    FILE_ICON.files = Resources/FileIcon.icns
+    FILE_ICON.path = Contents/Resources
+    QMAKE_BUNDLE_DATA += FILE_ICON
 }
 
 CONFIG(debug, debug|release) {
