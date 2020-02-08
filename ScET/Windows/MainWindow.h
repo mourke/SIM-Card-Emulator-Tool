@@ -56,6 +56,7 @@ private slots:
     void openUserManual();
     void contactSupport();
     void openFile(const QString &fileName);
+    void showAboutDialog();
 
 	// MARK: - Tracer signals
 	void tracerStartedSniffing(Tracer *tracer);
@@ -69,8 +70,7 @@ private slots:
 	
 private:
 	Ui::MainWindow ui;
-	APDUFilter filter = All;
-	AboutDialog *about;
+    APDUFilter filter = All;
 	std::optional<Tracer *> tracer;
 	QVector<std::tuple<QString, std::optional<const APDUCommand *>>> commands;
 	QString simTraceCommands;

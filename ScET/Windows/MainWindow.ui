@@ -545,7 +545,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="protocolPage">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -618,6 +618,9 @@
         </property>
         <item>
          <widget class="QWidget" name="hotpluggingWidget" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="spacing">
             <number>0</number>
@@ -637,11 +640,6 @@
            </item>
            <item>
             <widget class="QLabel" name="titleLabel">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/USB&quot;/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Connect sniffer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>

@@ -140,8 +140,7 @@ public:
 	 *
 	 * @retval The width of the segment.
 	 */
-	int widthForSegment(segmented_index_t index) const;
-
+    int widthForSegment(segmented_index_t index) const;
 signals:
 	/**
 	 * Emitted when the selected segment index has been changed.

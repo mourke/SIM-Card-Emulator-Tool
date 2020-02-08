@@ -57,5 +57,5 @@ void Segment::sizeToFit() {
 	static const int spacing = 12;
 	QFontMetrics metrics(font());
     int height = metrics.height() + spacing + SELECTED_INDICATOR_HEIGHT;
-    setMinimumSize(metrics.width(text()) + 1, height);
+    setMinimumSize(metrics.horizontalAdvance(text()) + 1, height);
 }

@@ -33,7 +33,9 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationName(VER_FILEDESCRIPTION_STR);
     QApplication::setApplicationVersion(VER_FILEVERSION_STR);
 
-	QFontDatabase::addApplicationFont(":/Fonts/Avenir");
+    if (!QFontDatabase().hasFamily("Avenir")) {
+        QFontDatabase::addApplicationFont(":/Fonts/Avenir");
+    }
 
     QApplication::setFont(QFont("Avenir", FONT_SIZE_NORMAL, QFont::Black));
 

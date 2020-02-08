@@ -63,9 +63,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
         this->checkForUpdates(UpdateManager::CheckFrequency::Immediately);
     });
     connect(contactAction, SIGNAL(triggered()), this, SLOT(contactSupport()));
-    connect(aboutAction, &QAction::triggered, this, [this]() {
-        this->about->exec();
-    });
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
     connect(userManualAction, SIGNAL(triggered()), this, SLOT(openUserManual()));
 #endif
 
@@ -92,20 +90,19 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 	ui.segmentedControl->addSegment(tr("Protocol Layer"));
 	ui.segmentedControl->addSegment(tr("Application Layer"));
 
-	for (Segment *segment : ui.segmentedControl->segments()) {
-		segment->setSelectedIndicatorColor(brandColor());
-		segment->sizeToFit();
+    for (Segment *segment : ui.segmentedControl->segments()) {
+        segment->setSelectedIndicatorColor(brandColor());
 	}
 
 	QObject::connect(ui.segmentedControl, &SegmentedControl::selectedSegmentIndexChanged, this, [this](segmented_index_t selectedSegmentIndex) {
 		this->updateCurrentPageWidget();
-	});
-
-	about = new AboutDialog(this);
+    });
 
     auto palette = listView()->palette();
     palette.setColor(QPalette::ColorRole::Base, palette.alternateBase().color());
     listView()->setPalette(palette);
+
+    ui.hotpluggingWidget->setBackgroundRole(QPalette::ColorRole::Base); // make background white/black instead off off-gray
 
 	TracerManager &manager = TracerManager::sharedManager();
 	auto tracer = manager.findTracer();
@@ -226,9 +223,7 @@ void MainWindow::showSettingsContextMenu() {
 		this->checkForUpdates(UpdateManager::CheckFrequency::Immediately);
 	});
     connect(&support, SIGNAL(triggered()), this, SLOT(contactSupport()));
-	connect(&about, &QAction::triggered, this, [this]() {
-		this->about->exec();
-	});
+    connect(&about, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
 
 	contextMenu.addAction(&update);
 	contextMenu.addAction(&support);
@@ -241,6 +236,10 @@ void MainWindow::showSettingsContextMenu() {
 	position.setY(position.y() + ui.settingsButton->geometry().height()); // account for height
 	position.setX(position.x() + 1); // account for border
 	contextMenu.exec(mapToGlobal(position));
+}
+
+void MainWindow::showAboutDialog() {
+    AboutDialog().exec();
 }
 
 void MainWindow::startButtonClicked() {

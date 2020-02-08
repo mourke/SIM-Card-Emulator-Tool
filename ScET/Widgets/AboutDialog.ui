@@ -58,7 +58,6 @@
      </property>
      <property name="font">
       <font>
-       <family>MS Shell Dlg 2</family>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -78,7 +77,6 @@
      </property>
      <property name="font">
       <font>
-       <family>MS Shell Dlg 2</family>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -98,7 +96,6 @@
      </property>
      <property name="font">
       <font>
-       <family>MS Shell Dlg 2</family>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -118,7 +115,6 @@
      </property>
      <property name="font">
       <font>
-       <family>MS Shell Dlg 2</family>
        <weight>50</weight>
        <bold>false</bold>
       </font>
@@ -135,7 +131,6 @@
     <widget class="QLabel" name="supportEmail">
      <property name="font">
       <font>
-       <family>MS Shell Dlg 2</family>
        <weight>75</weight>
        <bold>true</bold>
       </font>
@@ -152,7 +147,6 @@
     <widget class="QLabel" name="website">
      <property name="font">
       <font>
-       <family>MS Shell Dlg 2</family>
        <weight>75</weight>
        <bold>true</bold>
       </font>
