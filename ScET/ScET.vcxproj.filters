@@ -92,6 +92,9 @@
     <ClCompile Include="ApplicationLayerDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Windows\RemembersStateMainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Windows\MainWindow.h">
@@ -131,6 +134,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ApplicationLayerDelegate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="Windows\RemembersStateMainWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -235,6 +241,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FontSizes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,7 +6,6 @@
 #include <optional>
 #include "UpdateManager.h"
 #include <libusb.h>
-#include <QDebug>
 
 class QMouseEvent;
 class Tracer;

@@ -1,9 +1,10 @@
+#define NOMINMAX // stop MSVC from interfering with std::min/max
+
 #include "ApplicationLayerDelegate.h"
 #include "Windows/MainWindow.h"
 #include "Tracer/APDUCommand.h"
 #include <QVariant>
 #include <QStandardItemModel>
-#include <QDebug>
 #include <QPainter>
 #include <QStyleOptionViewItem>
 #include "Colors.h"

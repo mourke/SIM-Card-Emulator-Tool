@@ -2,6 +2,7 @@
 #define SEGMENT_H
 
 #include <QAbstractButton>
+#include <optional>
 
 /** A segment class to go into the SegmentedControl
  *

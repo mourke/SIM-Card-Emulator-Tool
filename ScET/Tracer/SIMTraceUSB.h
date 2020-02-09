@@ -18,7 +18,7 @@ enum SIMTraceFlag : uint8_t {
 	PPSFiDi = 0x08
 };
 
-struct __attribute__((__packed__)) SIMTraceHeader {
+struct SIMTraceHeader {
 	SIMTraceCommand command;
 	SIMTraceFlag flags;
 	uint8_t reset[2];

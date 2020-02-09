@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
 #endif
 
     QFont font;
-    QWidget *controls[] = {ui.segmentedControl, ui.SIMToolkitCheckBox, ui.authenticationCheckBox, ui.fileIOCheckBox};
+    QWidget *controls[] = {ui.segmentedControl, ui.SIMToolkitCheckBox, ui.authenticationCheckBox, ui.fileIOCheckBox, ui.startButton, ui.clearButton, ui.stopButton, ui.saveButton, ui.openButton};
     for (QWidget *control : controls) {
         font = control->font();
         font.setPointSize(FONT_SIZE_CONTROL);
@@ -102,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
     palette.setColor(QPalette::ColorRole::Base, palette.alternateBase().color());
     listView()->setPalette(palette);
 
+	ui.mainToolBar->setBackgroundRole(QPalette::ColorRole::Base);
     ui.hotpluggingWidget->setBackgroundRole(QPalette::ColorRole::Base); // make background white/black instead off off-gray
 
 	TracerManager &manager = TracerManager::sharedManager();
