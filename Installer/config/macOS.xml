@@ -6,7 +6,7 @@
     <Publisher>Card Centric</Publisher>
 	<ProductUrl>http://en.cardcentric.com/</ProductUrl>
     <StartMenuDir>Card Centric Ltd.</StartMenuDir>
-    <TargetDir>@ApplicationsDirX64@/ScET</TargetDir>
+    <TargetDir>@ApplicationsDirX64@</TargetDir>
 	<RemoteRepositories>
         <Repository>
             <Url>https://mourke.github.io/macOS/</Url>
