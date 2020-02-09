@@ -102,6 +102,8 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
     palette.setColor(QPalette::ColorRole::Base, palette.alternateBase().color());
     listView()->setPalette(palette);
 
+    setBackgroundRole(QPalette::ColorRole::Base);
+    ui.bottomBar->setBackgroundRole(QPalette::ColorRole::Background);
 	ui.mainToolBar->setBackgroundRole(QPalette::ColorRole::Base);
     ui.hotpluggingWidget->setBackgroundRole(QPalette::ColorRole::Base); // make background white/black instead off off-gray
 
