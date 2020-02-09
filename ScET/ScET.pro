@@ -7,12 +7,12 @@ include($$PWD/../ScET.pri)
 TEMPLATE = app
 TARGET = ScET
 
-QT += core network gui svg uitools widgets networkauth
+QT += core gui widgets
 win32 {
     QT += winextras
 }
 CONFIG += debug console
-DEFINES += QAPPLICATION_CLASS=QApplication _UNICODE _ENABLE_EXTENDED_ALIGNED_STORAGE WIN64 QT_DLL QT_NETWORK_LIB QT_NETWORKAUTH_LIB QT_SVG_LIB QT_WIDGETS_LIB QT_WINEXTRAS_LIB QT_UITOOLS_LIB
+DEFINES += QAPPLICATION_CLASS=QApplication
 INCLUDEPATH += $$PWD/../Frameworks/include \
                $$PWD/GeneratedFiles \
                . \
@@ -44,8 +44,6 @@ OBJECTS_DIR += debug
 UI_DIR += $$PWD/GeneratedFiles
 RCC_DIR += $$PWD/GeneratedFiles
 
-TRANSLATIONS += Resources/Localisation/scet_es.ts \
-    Resources/Localisation/scet_fr.ts
 CONFIG += c++17
 QMAKE_CXXFLAGS += -std=c++17
 

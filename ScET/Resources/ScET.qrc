@@ -20,5 +20,6 @@
         <file alias="Stop">Assets/Stop.svg</file>
         <file alias="USB">Assets/USB.svg</file>
         <file>User Manual.pdf</file>
+        <file>Localisation/scet_es.qm</file>
     </qresource>
 </RCC>

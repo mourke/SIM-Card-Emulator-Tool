@@ -2,6 +2,7 @@
 #include "Version.h"
 #include <QFontDatabase>
 #include "FontSizes.h"
+#include <QTranslator>
 
 #if defined(Q_OS_WIN)
 #include "singleapplication.h"
@@ -38,6 +39,11 @@ int main(int argc, char *argv[]) {
     }
 
     QApplication::setFont(QFont("Avenir", FONT_SIZE_NORMAL, QFont::Black));
+
+    QTranslator translator;
+    QLocale locale = QLocale::system();
+    translator.load(":/Localisation/scet_" + locale.name().split("_").first() + ".qm");
+    application.installTranslator(&translator);
 
 	MainWindow *mainWindow = new MainWindow();
 	mainWindow->show();

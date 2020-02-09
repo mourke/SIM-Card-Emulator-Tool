@@ -1,5 +1,4 @@
 #include "Errors.h"
-#include <libusb.h>
 #include <QString>
 #include <QObject>
 

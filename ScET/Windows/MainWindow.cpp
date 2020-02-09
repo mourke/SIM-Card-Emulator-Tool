@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
     QAction *aboutAction = fileMenu->addAction(tr("About ScET"));
     QAction *updatesAction = fileMenu->addAction(tr("Check for Updates"));
 
+    aboutAction->setMenuRole(QAction::MenuRole::AboutRole);
     updatesAction->setMenuRole(QAction::MenuRole::ApplicationSpecificRole);
     openAction->setShortcut(QKeySequence::Open);
     saveAction->setShortcut(QKeySequence::Save);
@@ -103,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) : FramelessMainWindow(parent) {
     listView()->setPalette(palette);
 
     setBackgroundRole(QPalette::ColorRole::Base);
-    ui.bottomBar->setBackgroundRole(QPalette::ColorRole::Background);
+    ui.bottomBar->setBackgroundRole(QPalette::ColorRole::Window);
 	ui.mainToolBar->setBackgroundRole(QPalette::ColorRole::Base);
     ui.hotpluggingWidget->setBackgroundRole(QPalette::ColorRole::Base); // make background white/black instead off off-gray
 
@@ -265,7 +266,7 @@ void MainWindow::stopButtonClicked() {
 void MainWindow::saveButtonClicked() {
 	const QString fileName = QFileDialog::getSaveFileName(this,
 		tr("Save SIM Tracing Session"), "",
-		tr("HTML Document (*.html);;SIM Tracing Session (*.sts);;ETSI Test Script (*.ldr)"));
+        "HTML Document (*.html);;SIM Tracing Session (*.sts);;ETSI Test Script (*.ldr)");
 
 	if (!fileName.isEmpty()) {
 		const QString extension = QFileInfo(fileName).suffix();
@@ -292,7 +293,7 @@ void MainWindow::saveButtonClicked() {
 void MainWindow::openButtonClicked() {
 	const QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Open SIM Tracing Session"), "",
-		tr("SIM Tracing Session (*.sts)"));
+        "SIM Tracing Session (*.sts)");
 
 	if (!fileName.isEmpty()) {
 		openFile(fileName);
