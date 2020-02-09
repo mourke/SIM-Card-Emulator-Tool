@@ -7,7 +7,7 @@ ScET is a tool that records the live behaviour of a SIM card when connected to a
 1. Update Installer/packages/com.cardcentric.scet/meta/package.xml
 2. Update ScET/Resources/Info.plist
 3. Update ScET/Version.h
-4. Run Release.bat on Windows or Release.sh
+4. Run Release.bat on Windows or Release.sh on macOS
 
 ## Release new installer
 

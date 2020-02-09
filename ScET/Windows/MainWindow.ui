@@ -786,11 +786,6 @@
        </item>
        <item>
         <widget class="QCheckBox" name="SIMToolkitCheckBox">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>STK/CAT</string>
          </property>
@@ -814,11 +809,6 @@
        </item>
        <item>
         <widget class="QCheckBox" name="fileIOCheckBox">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>File IO</string>
          </property>
@@ -842,11 +832,6 @@
        </item>
        <item>
         <widget class="QCheckBox" name="authenticationCheckBox">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>Authentication</string>
          </property>

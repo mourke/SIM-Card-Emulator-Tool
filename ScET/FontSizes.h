@@ -9,9 +9,9 @@
 #define FONT_SIZE_MEDIUM 13
 #define FONT_SIZE_NORMAL 12
 #elif defined(Q_OS_WIN)
-#define FONT_SIZE_LARGE 15
-#define FONT_SIZE_CONTROL 13
-#define FONT_SIZE_MEDIUM 11
+#define FONT_SIZE_LARGE 13
+#define FONT_SIZE_CONTROL 11
+#define FONT_SIZE_MEDIUM 10
 #define FONT_SIZE_NORMAL 8
 #endif
 
