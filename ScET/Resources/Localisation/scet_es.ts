@@ -53,13 +53,13 @@
         <location filename="../../Windows/MainWindow.ui" line="345"/>
         <location filename="../../Windows/MainWindow.ui" line="348"/>
         <source>Start</source>
-        <translation>Empezar</translation>
+        <translation>Iniciar</translation>
     </message>
     <message>
         <location filename="../../Windows/MainWindow.ui" line="389"/>
         <location filename="../../Windows/MainWindow.ui" line="392"/>
         <source>Stop</source>
-        <translation>Terminar</translation>
+        <translation>Detener</translation>
     </message>
     <message>
         <location filename="../../Windows/MainWindow.ui" line="427"/>
@@ -88,7 +88,7 @@
     <message>
         <location filename="../../Windows/MainWindow.ui" line="666"/>
         <source>Connect sniffer and press start to begin tracing</source>
-        <translation>Conecta el sniffer y pulsar empezar para hacer el trace</translation>
+        <translation>Conecta el sniffer y pulsa iniciar para empezar a sniffear</translation>
     </message>
     <message>
         <location filename="../../Windows/MainWindow.ui" line="795"/>
