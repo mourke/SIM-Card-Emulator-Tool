@@ -7,11 +7,11 @@ include($$PWD/../ScET.pri)
 TEMPLATE = app
 TARGET = ScET
 
-QT += core gui widgets
+QT += core gui widgets svg
 win32 {
-    QT += winextras
+    QT += winextras network
 }
-CONFIG += debug console
+CONFIG += console
 DEFINES += QAPPLICATION_CLASS=QApplication
 INCLUDEPATH += $$PWD/../Frameworks/include \
                $$PWD/GeneratedFiles \
@@ -34,13 +34,14 @@ mac {
 
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/../x64/Debug
-}
-CONFIG(release, debug|release) {
+    MOC_DIR += $$PWD/GeneratedFiles/Debug
+    OBJECTS_DIR += $$PWD/x64/Debug
+} else {
     DESTDIR = $$PWD/../x64/Release
+    MOC_DIR += $$PWD/GeneratedFiles/Release
+    OBJECTS_DIR += $$PWD/x64/Release
 }
 
-MOC_DIR += $$PWD/GeneratedFiles
-OBJECTS_DIR += debug
 UI_DIR += $$PWD/GeneratedFiles
 RCC_DIR += $$PWD/GeneratedFiles
 

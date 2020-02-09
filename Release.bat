@@ -17,7 +17,7 @@ ECHO ============================
 ECHO Packaging...
 ECHO ============================
 "%ProgramFiles%\7-Zip\7z.exe" a "%HOMEPATH%\Documents\GitHub\SIM-Card-Emulator-Tool\Installer\packages\com.cardcentric.scet\data\ScET.7z" "%HOMEPATH%\Documents\GitHub\SIM-Card-Emulator-Tool\x64\Release\*"
-E:\Qt\QtIFW-3.1.1\bin\repogen.exe -v --update -p "%HOMEPATH%\Documents\GitHub\SIM-Card-Emulator-Tool\Installer\packages" "%HOMEPATH%\Documents\GitHub\mourke.github.io"
+E:\Qt\QtIFW-3.1.1\bin\repogen.exe -v --update -p "%HOMEPATH%\Documents\GitHub\SIM-Card-Emulator-Tool\Installer\packages" "%HOMEPATH%\Documents\GitHub\mourke.github.io\Windows"
 
 ECHO ============================
 ECHO Done!
