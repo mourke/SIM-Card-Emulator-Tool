@@ -2,6 +2,8 @@
 
 TITLE Update ScET Release
 
+set VCINSTALLDIR=E:\Program Files\Microsoft Visual Studio\2019\Enterprise\VC
+
 ECHO ============================
 ECHO Compiling...
 ECHO ============================
