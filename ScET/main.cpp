@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <WinUser.h>
 #elif defined(Q_OS_MAC)
+#include "CocoaInitializer.h"
 #include "OpenFileApplication.h"
 #endif
 
@@ -26,6 +27,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 #elif defined(Q_OS_MAC)
+    CocoaInitializer initializer; // create autoreleasepool
     OpenFileApplication application(argc, argv);
 #endif
 

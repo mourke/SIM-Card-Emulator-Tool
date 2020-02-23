@@ -28,6 +28,10 @@
 *.exe
 *.out
 *.app
+*.dmg
+
+# Allow all files inside Frameworks
+!Frameworks/**/*
 
 *.DS_Store
 Build/

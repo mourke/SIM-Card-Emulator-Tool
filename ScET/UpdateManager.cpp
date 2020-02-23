@@ -20,6 +20,14 @@ UpdateManager::UpdateManager() {
 	QObject::connect(&checkForUpdatesProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finishedCheckingForUpdates(int, QProcess::ExitStatus)));
 }
 
+void UpdateManager::checkVersion(CheckFrequency frequency, std::optional<Callback> callback = std::nullopt) {
+    if (frequency == CheckFrequency::Immediately || static_cast<int>(frequency) <= daysSinceLastVersionCheckDate()) {
+        checkForUpdates(callback);
+    } else if (callback.has_value()) {
+        std::invoke(*callback, std::nullopt);
+    }
+}
+
 long long int UpdateManager::daysSinceLastVersionCheckDate() const {
 	if (!lastVersionCheckPerformedOnDate.has_value()) return 0;
     return QDate::currentDate().daysTo(*lastVersionCheckPerformedOnDate);

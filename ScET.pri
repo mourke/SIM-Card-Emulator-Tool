@@ -26,7 +26,6 @@ SOURCES += ApplicationLayerDelegate.cpp \
     Tracer/APDUSplitter.cpp \
     Tracer/Tracer.cpp \
     Tracer/TracerManager.cpp \
-    UpdateManager.cpp \
     Widgets/Segment.cpp \
     Widgets/SegmentedControl.cpp \
     Widgets/Buttons/ToolBarButton.cpp \
@@ -44,14 +43,18 @@ win32 {
                Windows/FramelessMainWindow.cpp \
                Widgets/AboutDialog.cpp \
                singleapplication.cpp \
-               singleapplication_p.cpp
+               singleapplication_p.cpp \
+               UpdateManager.cpp
     HEADERS += singleapplication.h
 }
 
 mac {
     OBJECTIVE_SOURCES += Colors.mm \
                          Windows/FramelessMainWindow.mm \
-                         Widgets/AboutDialog.mm
-    HEADERS += OpenFileApplication.h
+                         Widgets/AboutDialog.mm \
+                         CocoaInitializer.mm \
+                         UpdateManager.mm
+    HEADERS += OpenFileApplication.h \
+               CocoaInitializer.h
     SOURCES += OpenFileApplication.cpp
 }

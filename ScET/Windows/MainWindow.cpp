@@ -187,6 +187,7 @@ void MainWindow::contactSupport() {
 }
 
 void MainWindow::checkForUpdates(UpdateManager::CheckFrequency frequency) {
+#if defined(Q_OS_WIN)
     UpdateManager::sharedManager().checkVersion(frequency, [](std::optional<QString> version) -> UpdateManager::UpdateAction {
 		if (!version.has_value()) return UpdateManager::UpdateAction::DoNothing;
 
@@ -210,6 +211,9 @@ void MainWindow::checkForUpdates(UpdateManager::CheckFrequency frequency) {
             throw std::exception(); // RFU
         }
 	});
+#elif defined(Q_OS_MAC)
+    UpdateManager::sharedManager().checkForUpdates(frequency);
+#endif
 }
 
 void MainWindow::showSettingsContextMenu() {

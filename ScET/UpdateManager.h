@@ -25,24 +25,25 @@ public:
 		Weekly = 7
 	};
 
-	/**
-	 * Determines the action that should be taken after an update is found.
-	 *
-	 *	- Skip:			Skip this version and stop reminding the user of this version.
-	 *	- DoNothing:	Do nothing and keep reminding the user of this version.
-	 *	- Update:		Close the application and begin the update.
-	 */
-	enum class UpdateAction {
-		Skip,
-		DoNothing,
-		Update
-	};
-
 	/** The shared manager instance */
 	static UpdateManager & sharedManager() {
 		static UpdateManager instance;
 		return instance;
 	}
+
+#if defined(Q_OS_WIN)
+    /**
+     * Determines the action that should be taken after an update is found.
+     *
+     *	- Skip:			Skip this version and stop reminding the user of this version.
+     *	- DoNothing:	Do nothing and keep reminding the user of this version.
+     *	- Update:		Close the application and begin the update.
+     */
+    enum class UpdateAction {
+        Skip,
+        DoNothing,
+        Update
+    };
 
 	/** 
 	 * The function called after updates have been checked for.
@@ -53,20 +54,17 @@ public:
 	 */
     typedef std::function<UpdateAction(std::optional<QString>)> Callback;
 
-	/** 
-	 * Checks for new releases.
-	 * 
-	 * @param	frequency	The frequency with which to check.
-	 * @param	callback	The function called when updates have been checked.
-	 */
-    void checkVersion(CheckFrequency frequency, std::optional<Callback> callback = std::nullopt) {
-		if (frequency == CheckFrequency::Immediately || static_cast<int>(frequency) <= daysSinceLastVersionCheckDate()) {
-			checkForUpdates(callback);
-		} else if (callback.has_value()) {
-            std::invoke(*callback, std::nullopt);
-		}
-	}
+    /**
+     * Checks for new releases.
+     *
+     * @param	frequency	The frequency with which to check.
+     * @param	callback	The function called when updates have been checked.
+     */
+    void checkVersion(CheckFrequency frequency, std::optional<Callback> callback = std::nullopt);
+
 private:
+    void checkForUpdates(std::optional<Callback> callback);
+
 	/** 
 	 * The version that the user does not want installed. If the user has never 
 	 * skipped an update, this variable will be nullopt, otherwise it will be
@@ -79,25 +77,42 @@ private:
 
 	void setSkipReleaseVersion(const QString &version);
 	void setLastVersionCheckPerformedOnDate(const QDate &date);
-
-	/**
-	 * @retval	The number of days it has been since the application
-	 * has been checked for updates.
-	 */
-    long long int daysSinceLastVersionCheckDate() const;
-
-	void checkForUpdates(std::optional<Callback> callback);
 	
 
 	QProcess checkForUpdatesProcess;
-	std::optional<Callback> m_callback;
-					
-	UpdateManager();
-	~UpdateManager();
+    std::optional<Callback> m_callback;
 
-	Q_DISABLE_COPY(UpdateManager)
 private slots:
 	void finishedCheckingForUpdates(int exitCode, QProcess::ExitStatus exitStatus);
+
+#elif defined(Q_OS_MAC)
+public:
+    /**
+     * Checks for updates. Checks will be done in the background unless
+     * frequency == CheckFrequency::Immediately, in which case, checking UI will be presented
+     * to the user.
+     *
+     * Regardless of the frequency, when an update is found, a popup is presented and shown to the
+     * user where they can decide what to do.
+     *
+     * @param	frequency	The frequency with which to check.
+     */
+    void checkForUpdates(CheckFrequency frequency);
+private:
+    class UpdateManagerPrivate;
+    UpdateManagerPrivate *p;
+#endif
+
+    UpdateManager();
+    ~UpdateManager();
+
+    /**
+     * @retval	The number of days it has been since the application
+     * has been checked for updates.
+     */
+    long long int daysSinceLastVersionCheckDate() const;
+
+    Q_DISABLE_COPY(UpdateManager)
 };
 
 #endif // UPDATE_MANAGER_H

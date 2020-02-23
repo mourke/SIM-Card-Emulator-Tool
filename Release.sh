@@ -1,4 +1,8 @@
-~/Qt/5.14.1/clang_64/bin/qmake -makefile -Wnone ScET/ScET.pro -o ScET/GeneratedFiles/Release/Makefile -spec macx-clang CONFIG+=x86_64 CONFIG+=qtquickcompiler CONFIG+=release
+rm -rf x64/Release/
+rm -rf ScET/x64/Release/
+rm -rf ScET/GeneratedFiles/
+
+~/Qt/5.14.1/clang_64/bin/qmake -makefile -Wnone ScET/ScET.pro -o ScET/GeneratedFiles/Release/Makefile -spec macx-clang CONFIG+=x86_64 CONFIG+=release
 
 cd ScET/GeneratedFiles/Release/
 
@@ -10,8 +14,14 @@ cd ..
 
 cd ..
 
-~/Qt/5.14.1/clang_64/bin/macdeployqt x64/Release/ScET.app
+cd x64/Release
 
-~/Qt/Tools/QtInstallerFramework/3.2/bin/archivegen Installer/packages/com.cardcentric.scet/data/ScET.7z ./x64/Release/ScET.app
+~/Qt/5.14.1/clang_64/bin/macdeployqt ScET.app -dmg -codesign="Apple Development"
 
-~/Qt/Tools/QtInstallerFramework/3.2/bin/repogen -v --update -p Installer/packages ~/Documents/mourke.github.io/macOS
+cd ..
+
+cd ..
+
+mv x64/Release/ScET.dmg .
+
+sign_update ScET.dmg
